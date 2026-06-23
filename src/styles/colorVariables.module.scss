@@ -1,18 +1,31 @@
-// Brand colors - customize per project
-$primary: #2094D2;
-$primary-dark: #010D27;
-$primary-light: #fefefe;
+// HELISA Brand Colors
+$azul-medio: #004894;
+$azul-oscuro: #002C77;
+$rojo: #E2352C;
+$celeste-claro: #C6E5EB;
+
+$primary: $azul-medio;
+$primary-dark: $azul-oscuro;
+$primary-light: $celeste-claro;
+$accent: $rojo;
 $secondary: #2BBB92;
 
 $white: #fefefe;
+$black: #000000;
 $text-light: #fefefe;
 $text-secondary: #6b7280;
+$gris-oscuro: #444342;
+$gris-fondo: #EDEDED;
+$gris-medio: #9D9B9B;
+$gris-border: #D8D8D8;
+
+$verde: #87CB28;
 
 // Alert colors
 $alert-warning: #f59e0b;
 $alert-info: #3b82f6;
-$alert-success: #10b981;
-$alert-error: #ef4444;
+$alert-success: $verde;
+$alert-error: $rojo;
 $alert-warning-bg: rgba($alert-warning, 0.1);
 $alert-info-bg: rgba($alert-info, 0.1);
 $alert-success-bg: rgba($alert-success, 0.1);
