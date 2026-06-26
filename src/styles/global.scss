@@ -9,15 +9,15 @@ body {
   margin: 0;
   padding: 0;
   font-family: $font-principal;
-  background-color: $azul-oscuro;
-  color: $white;
+  background-color: $background;
+  color: $foreground;
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
 ::selection {
-  background: rgba($rojo, 0.3);
+  background: $black;
   color: $white;
 }
 
@@ -26,15 +26,15 @@ body {
 }
 
 ::-webkit-scrollbar-track {
-  background: $azul-oscuro;
+  background: $background-soft;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: $azul-medio;
+  background: $gray-400;
   border-radius: 3px;
 
   &:hover {
-    background: $rojo;
+    background: $black;
   }
 }
 
@@ -54,7 +54,7 @@ button {
 }
 
 :focus-visible {
-  outline: 2px solid $celeste-claro;
+  outline: 2px solid $black;
   outline-offset: 3px;
 }
 
@@ -89,16 +89,16 @@ button {
 
 .container {
   width: 100%;
-  max-width: 1200px;
+  max-width: 1280px;
   margin: 0 auto;
   box-sizing: border-box;
 
   @media (min-width: 1440px) {
-    max-width: 1320px;
+    max-width: 1400px;
   }
 
   @media (min-width: 1920px) {
-    max-width: 1680px;
+    max-width: 1600px;
   }
 }
 
@@ -107,50 +107,65 @@ button {
 }
 
 .text-gradient {
-  background: linear-gradient(135deg, $celeste-claro 0%, $azul-medio 50%, $rojo 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  color: $gray-500;
 }
 
 .text-gradient--blue {
-  background: linear-gradient(135deg, $white 0%, $celeste-claro 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  color: $gray-500;
 }
 
 .section-label {
   display: block;
   font-family: $font-secondary;
-  font-size: 0.75rem;
-  font-weight: 700;
-  letter-spacing: 0.2em;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.25em;
   text-transform: uppercase;
-  color: $rojo;
+  color: $foreground-muted;
   margin-bottom: 1rem;
 }
 
 .section-title {
   font-family: $font-display;
-  font-size: clamp(2rem, 5vw, 3.5rem);
-  font-weight: 700;
-  letter-spacing: -0.03em;
-  line-height: 1.1;
+  font-size: clamp(2.25rem, 5.5vw, 4rem);
+  font-weight: 500;
+  letter-spacing: -0.04em;
+  line-height: 1.05;
   margin: 0 0 1.5rem;
+  color: $foreground;
 }
 
 .page-enter-active,
 .page-leave-active {
-  transition: opacity 0.4s ease, transform 0.4s ease;
+  transition: opacity 0.5s ease, transform 0.5s ease;
 }
 
 .page-enter-from {
   opacity: 0;
-  transform: translateY(20px);
+  transform: translateY(30px);
 }
 
 .page-leave-to {
   opacity: 0;
-  transform: translateY(-20px);
+  transform: translateY(-30px);
+}
+
+// Utility helpers
+.split-line {
+  display: block;
+}
+
+.label-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: $font-secondary;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: $foreground-muted;
+  border: 1px solid $border;
+  padding: 0.55rem 1.1rem;
+  border-radius: 100px;
 }

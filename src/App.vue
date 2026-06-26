@@ -39,19 +39,4 @@ import ScrollToTop from '@/components/ScrollToTop.vue'
   width: 100%;
   margin: 0 auto;
 }
-
-.page-enter-active,
-.page-leave-active {
-  transition: opacity 0.4s ease, transform 0.4s ease;
-}
-
-.page-enter-from {
-  opacity: 0;
-  transform: translateY(20px);
-}
-
-.page-leave-to {
-  opacity: 0;
-  transform: translateY(-20px);
-}
 </style>

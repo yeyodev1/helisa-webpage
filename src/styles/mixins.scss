@@ -1,0 +1,17 @@
+@use './colorVariables.module.scss' as *;
+@use './fonts.module.scss' as *;
+
+@mixin label-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: $font-secondary;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: $foreground-muted;
+  border: 1px solid $border;
+  padding: 0.55rem 1.1rem;
+  border-radius: 100px;
+}

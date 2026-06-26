@@ -47,22 +47,22 @@ onUnmounted(() => {
   width: 48px;
   height: 48px;
   border-radius: 50%;
-  background: rgba($azul-medio, 0.9);
-  border: 1px solid rgba($white, 0.1);
+  background: $black;
+  border: 1px solid rgba($white, 0.15);
   color: $white;
   font-size: 1rem;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  backdrop-filter: blur(10px);
-  box-shadow: 0 10px 30px rgba($black, 0.25);
+  box-shadow: 0 10px 30px rgba($black, 0.12);
   transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 
   &:hover {
-    background: $rojo;
+    background: $white;
+    color: $black;
+    border-color: $black;
     transform: translateY(-3px);
-    box-shadow: 0 15px 40px rgba($rojo, 0.3);
   }
 }
 

@@ -98,7 +98,6 @@ const submitForm = async () => {
 
   isSubmitting.value = true
 
-  // Simulate CRM API call
   await new Promise((resolve) => setTimeout(resolve, 1200))
 
   const newLead: Lead = {
@@ -117,7 +116,6 @@ const submitForm = async () => {
   leads.value.unshift(newLead)
   saveLeads()
 
-  // Reset form
   form.value = { name: '', email: '', phone: '', company: '', message: '' }
   rating.value = 0
   hoverRating.value = 0
@@ -193,12 +191,14 @@ onUnmounted(() => {
 <template>
   <main class="rating-page">
     <section class="rating-header">
-      <div class="rating-header__bg" />
+      <div class="rating-header__bg">
+        <div class="rating-header__grid" />
+      </div>
       <div class="container rating-header__content">
-        <span class="rating-header__label">CRM Mock</span>
-        <h1 class="rating-header__title">Califica y <span class="text-gradient">guarda</span></h1>
+        <span class="rating-header__label">Contacto</span>
+        <h1 class="rating-header__title">Califica y <span class="text-gradient">contacta</span></h1>
         <p class="rating-header__desc">
-          Tu opinión nos ayuda a mejorar. Califica tu experiencia y guardamos el lead en el CRM de demostración.
+          Tu opinión nos ayuda a mejorar. Califica tu experiencia y déjanos tus datos para asesorarte.
         </p>
       </div>
     </section>
@@ -270,7 +270,7 @@ onUnmounted(() => {
           <button type="submit" class="rating-form__submit" :disabled="isSubmitting || !isFormValid">
             <span v-if="isSubmitting" class="rating-form__spinner" />
             <template v-else>
-              Guardar en CRM
+              Guardar y contactar
               <i class="fa-solid fa-arrow-right"></i>
             </template>
           </button>
@@ -355,20 +355,30 @@ onUnmounted(() => {
 
 .rating-header {
   position: relative;
-  min-height: 50vh;
+  min-height: 55vh;
   display: flex;
   align-items: center;
   justify-content: center;
   overflow: hidden;
   text-align: center;
+  background: $white;
+  border-bottom: 1px solid $border;
 
   &__bg {
     position: absolute;
     inset: 0;
-    background:
-      radial-gradient(ellipse 80% 60% at 50% 0%, rgba($azul-medio, 0.4) 0%, transparent 60%),
-      radial-gradient(ellipse 50% 50% at 80% 100%, rgba($rojo, 0.1) 0%, transparent 50%),
-      linear-gradient(180deg, $azul-oscuro 0%, darken($azul-oscuro, 3%) 100%);
+    z-index: 0;
+  }
+
+  &__grid {
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient($gray-100 1px, transparent 1px),
+      linear-gradient(90deg, $gray-100 1px, transparent 1px);
+    background-size: 80px 80px;
+    opacity: 0.5;
+    mask-image: radial-gradient(ellipse 80% 70% at 50% 0%, $black 0%, transparent 70%);
   }
 
   &__content {
@@ -377,34 +387,28 @@ onUnmounted(() => {
     width: 100%;
     max-width: 800px;
     margin: 0 auto;
-    padding: 6rem 1.5rem;
+    padding: 8rem 1.5rem 5rem;
     box-sizing: border-box;
   }
 
   &__label {
-    display: inline-block;
-    font-family: $font-secondary;
-    font-size: 0.75rem;
-    font-weight: 700;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    color: $rojo;
+    @include label-pill;
     margin-bottom: 1.5rem;
   }
 
   &__title {
     font-family: $font-display;
     font-size: clamp(2.5rem, 8vw, 5rem);
-    font-weight: 800;
-    letter-spacing: -0.04em;
-    line-height: 1;
+    font-weight: 500;
+    letter-spacing: -0.05em;
+    line-height: 1.05;
     margin: 0 0 1.5rem;
   }
 
   &__desc {
     font-family: $font-secondary;
     font-size: 1.1rem;
-    color: rgba($white, 0.6);
+    color: $foreground-muted;
     max-width: 550px;
     margin: 0 auto;
     line-height: 1.7;
@@ -412,7 +416,7 @@ onUnmounted(() => {
 }
 
 .rating-body {
-  background: linear-gradient(180deg, darken($azul-oscuro, 3%) 0%, $azul-oscuro 100%);
+  background: $background-soft;
 
   &__grid {
     display: grid;
@@ -434,8 +438,8 @@ onUnmounted(() => {
   width: 100%;
   max-width: 700px;
   box-sizing: border-box;
-  background: rgba($white, 0.02);
-  border: 1px solid rgba($white, 0.06);
+  background: $white;
+  border: 1px solid $border;
   border-radius: 24px;
   padding: 2.5rem;
 
@@ -449,22 +453,24 @@ onUnmounted(() => {
 
   &__title {
     font-family: $font-display;
-    font-size: 1.75rem;
-    font-weight: 700;
+    font-size: 1.5rem;
+    font-weight: 500;
+    color: $black;
     margin: 0 0 1.5rem;
   }
 
   &__subtitle {
     font-family: $font-display;
-    font-size: 1.1rem;
-    font-weight: 600;
+    font-size: 1.05rem;
+    font-weight: 500;
+    color: $black;
     margin: 0 0 1.25rem;
   }
 
   &__section {
     margin-bottom: 2.5rem;
     padding-bottom: 2.5rem;
-    border-bottom: 1px solid rgba($white, 0.06);
+    border-bottom: 1px solid $border;
 
     &:last-of-type {
       margin-bottom: 0;
@@ -491,24 +497,24 @@ onUnmounted(() => {
     width: 100%;
     padding: 1.1rem 2rem;
     margin-top: 2rem;
-    background: $rojo;
+    background: $black;
     color: $white;
     border: none;
-    border-radius: 12px;
+    border-radius: 100px;
     font-family: $font-secondary;
-    font-size: 1rem;
-    font-weight: 600;
+    font-size: 0.95rem;
+    font-weight: 500;
     cursor: pointer;
     transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 
     &:hover:not(:disabled) {
-      background: lighten($rojo, 8%);
+      background: $gray-800;
       transform: translateY(-2px);
-      box-shadow: 0 8px 30px rgba($rojo, 0.3);
+      box-shadow: 0 10px 30px rgba($black, 0.15);
     }
 
     &:disabled {
-      opacity: 0.6;
+      opacity: 0.5;
       cursor: not-allowed;
     }
   }
@@ -533,10 +539,10 @@ onUnmounted(() => {
   margin-bottom: 0.75rem;
 
   &__star {
-    font-size: 2.5rem;
+    font-size: 2.25rem;
     background: none;
     border: none;
-    color: rgba($white, 0.15);
+    color: $gray-300;
     cursor: pointer;
     transition: all 0.2s;
     padding: 0;
@@ -546,16 +552,15 @@ onUnmounted(() => {
     }
 
     &--active {
-      color: #fbbf24;
-      filter: drop-shadow(0 0 10px rgba(#fbbf24, 0.4));
+      color: $black;
     }
   }
 
   &__label {
     display: block;
     font-family: $font-secondary;
-    font-size: 0.9rem;
-    color: $celeste-claro;
+    font-size: 0.85rem;
+    color: $foreground-muted;
     margin-bottom: 1.5rem;
   }
 }
@@ -567,19 +572,19 @@ onUnmounted(() => {
 
   &__tag {
     padding: 0.5rem 1rem;
-    background: rgba($white, 0.04);
-    border: 1px solid rgba($white, 0.1);
+    background: $background-soft;
+    border: 1px solid $border;
     border-radius: 100px;
-    color: rgba($white, 0.7);
+    color: $foreground-muted;
     font-family: $font-secondary;
-    font-size: 0.85rem;
+    font-size: 0.8rem;
     cursor: pointer;
     transition: all 0.3s;
 
     &:hover,
     &--active {
-      background: rgba($azul-medio, 0.25);
-      border-color: $azul-medio;
+      background: $black;
+      border-color: $black;
       color: $white;
     }
   }
@@ -592,18 +597,18 @@ onUnmounted(() => {
 
   &__label {
     font-family: $font-secondary;
-    font-size: 0.85rem;
+    font-size: 0.8rem;
     font-weight: 500;
-    color: rgba($white, 0.7);
+    color: $foreground-muted;
   }
 
   &__input {
     width: 100%;
     padding: 1rem 1.25rem;
-    background: rgba($white, 0.04);
-    border: 1px solid rgba($white, 0.1);
-    border-radius: 10px;
-    color: $white;
+    background: $white;
+    border: 1px solid $border;
+    border-radius: 12px;
+    color: $black;
     font-family: $font-secondary;
     font-size: 0.95rem;
     outline: none;
@@ -611,13 +616,12 @@ onUnmounted(() => {
     box-sizing: border-box;
 
     &::placeholder {
-      color: rgba($white, 0.3);
+      color: $gray-400;
     }
 
     &:focus {
-      border-color: $azul-medio;
-      background: rgba($azul-medio, 0.08);
-      box-shadow: 0 0 0 3px rgba($azul-medio, 0.15);
+      border-color: $black;
+      box-shadow: 0 0 0 3px $ring;
     }
   }
 
@@ -632,23 +636,24 @@ onUnmounted(() => {
   top: 100px;
 
   &__card {
-    background: rgba($white, 0.02);
-    border: 1px solid rgba($white, 0.06);
+    background: $white;
+    border: 1px solid $border;
     border-radius: 24px;
     padding: 2rem;
   }
 
   &__title {
     font-family: $font-display;
-    font-size: 1.4rem;
-    font-weight: 700;
+    font-size: 1.25rem;
+    font-weight: 500;
+    color: $black;
     margin: 0 0 1rem;
   }
 
   &__desc {
     font-family: $font-secondary;
     font-size: 0.9rem;
-    color: rgba($white, 0.55);
+    color: $foreground-muted;
     line-height: 1.6;
     margin: 0 0 1.5rem;
   }
@@ -662,41 +667,41 @@ onUnmounted(() => {
 
   &__stat {
     text-align: center;
-    padding: 1rem;
-    background: rgba($white, 0.03);
+    padding: 1.25rem 1rem;
+    background: $background-soft;
     border-radius: 12px;
   }
 
   &__stat-value {
     display: block;
     font-family: $font-display;
-    font-size: 1.75rem;
-    font-weight: 700;
-    color: $celeste-claro;
+    font-size: 1.5rem;
+    font-weight: 500;
+    color: $black;
   }
 
   &__stat-label {
     font-family: $font-secondary;
-    font-size: 0.75rem;
-    color: rgba($white, 0.45);
+    font-size: 0.7rem;
+    color: $foreground-muted;
   }
 
   &__toggle {
     width: 100%;
     padding: 0.9rem;
     background: transparent;
-    border: 1px solid rgba($white, 0.15);
-    border-radius: 10px;
-    color: $white;
+    border: 1px solid $border;
+    border-radius: 100px;
+    color: $black;
     font-family: $font-secondary;
-    font-size: 0.9rem;
-    font-weight: 600;
+    font-size: 0.85rem;
+    font-weight: 500;
     cursor: pointer;
     transition: all 0.3s;
 
     &:hover {
-      border-color: $celeste-claro;
-      color: $celeste-claro;
+      border-color: $black;
+      background: rgba($black, 0.03);
     }
   }
 }
@@ -704,21 +709,23 @@ onUnmounted(() => {
 .leads-panel {
   margin-top: 4rem;
   padding-top: 4rem;
-  border-top: 1px solid rgba($white, 0.06);
+  border-top: 1px solid $border;
 
   &__title {
     font-family: $font-display;
-    font-size: 1.75rem;
-    font-weight: 700;
+    font-size: 1.5rem;
+    font-weight: 500;
+    color: $black;
     margin: 0 0 1.5rem;
   }
 
   &__empty {
     font-family: $font-secondary;
-    color: rgba($white, 0.5);
+    color: $foreground-muted;
     padding: 3rem;
     text-align: center;
-    background: rgba($white, 0.02);
+    background: $white;
+    border: 1px solid $border;
     border-radius: 16px;
   }
 }
@@ -738,8 +745,8 @@ onUnmounted(() => {
 }
 
 .lead-card {
-  background: rgba($white, 0.02);
-  border: 1px solid rgba($white, 0.06);
+  background: $white;
+  border: 1px solid $border;
   border-radius: 16px;
   padding: 1.5rem;
 
@@ -752,41 +759,44 @@ onUnmounted(() => {
 
   &__name {
     font-family: $font-display;
-    font-size: 1.1rem;
-    font-weight: 600;
+    font-size: 1.05rem;
+    font-weight: 500;
+    color: $black;
     margin: 0;
   }
 
   &__date {
     display: block;
     font-family: $font-secondary;
-    font-size: 0.75rem;
-    color: rgba($white, 0.4);
+    font-size: 0.7rem;
+    color: $foreground-muted;
     margin-top: 0.25rem;
   }
 
   &__status {
     font-family: $font-secondary;
-    font-size: 0.7rem;
-    font-weight: 700;
+    font-size: 0.65rem;
+    font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.05em;
     padding: 0.25rem 0.6rem;
     border-radius: 100px;
+    background: $background-soft;
+    color: $foreground-muted;
 
     &--nuevo {
-      background: rgba($azul-medio, 0.2);
-      color: $celeste-claro;
+      background: $black;
+      color: $white;
     }
 
     &--contactado {
-      background: rgba($verde, 0.15);
-      color: $verde;
+      background: $gray-200;
+      color: $black;
     }
 
     &--calificado {
-      background: rgba($rojo, 0.15);
-      color: $rojo;
+      background: $gray-700;
+      color: $white;
     }
   }
 
@@ -797,11 +807,11 @@ onUnmounted(() => {
   }
 
   &__star {
-    font-size: 0.9rem;
-    color: rgba($white, 0.1);
+    font-size: 0.85rem;
+    color: $gray-300;
 
     &--active {
-      color: #fbbf24;
+      color: $black;
     }
   }
 
@@ -815,8 +825,8 @@ onUnmounted(() => {
   &__tag {
     font-family: $font-secondary;
     font-size: 0.7rem;
-    color: rgba($white, 0.6);
-    background: rgba($white, 0.05);
+    color: $foreground-muted;
+    background: $background-soft;
     padding: 0.2rem 0.5rem;
     border-radius: 4px;
   }
@@ -824,7 +834,7 @@ onUnmounted(() => {
   &__message {
     font-family: $font-secondary;
     font-size: 0.85rem;
-    color: rgba($white, 0.55);
+    color: $foreground-muted;
     line-height: 1.5;
     margin: 0 0 0.75rem;
   }
@@ -834,24 +844,25 @@ onUnmounted(() => {
     flex-direction: column;
     gap: 0.25rem;
     font-family: $font-secondary;
-    font-size: 0.8rem;
-    color: rgba($white, 0.4);
+    font-size: 0.75rem;
+    color: $foreground-muted;
     margin-bottom: 1rem;
   }
 
   &__delete {
     background: none;
-    border: 1px solid rgba($rojo, 0.3);
-    color: $rojo;
+    border: 1px solid $border;
+    color: $foreground-muted;
     padding: 0.5rem 1rem;
-    border-radius: 6px;
+    border-radius: 100px;
     font-family: $font-secondary;
-    font-size: 0.8rem;
+    font-size: 0.75rem;
     cursor: pointer;
     transition: all 0.3s;
 
     &:hover {
-      background: rgba($rojo, 0.1);
+      border-color: $black;
+      color: $black;
     }
   }
 }
@@ -864,20 +875,19 @@ onUnmounted(() => {
   padding: 1rem 1.5rem;
   border-radius: 12px;
   font-family: $font-secondary;
-  font-size: 0.95rem;
+  font-size: 0.9rem;
   font-weight: 500;
-  box-shadow: 0 10px 40px rgba($black, 0.3);
+  box-shadow: 0 10px 40px rgba($black, 0.1);
 
   &--success {
-    background: rgba($verde, 0.15);
-    border: 1px solid rgba($verde, 0.3);
-    color: $verde;
+    background: $black;
+    color: $white;
   }
 
   &--error {
-    background: rgba($rojo, 0.15);
-    border: 1px solid rgba($rojo, 0.3);
-    color: $rojo;
+    background: $white;
+    border: 1px solid $border;
+    color: $black;
   }
 }
 

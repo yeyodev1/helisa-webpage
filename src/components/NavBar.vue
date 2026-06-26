@@ -7,7 +7,7 @@ const isMobileOpen = ref(false)
 const route = useRoute()
 
 const handleScroll = () => {
-  isScrolled.value = window.scrollY > 60
+  isScrolled.value = window.scrollY > 40
 }
 
 onMounted(() => {
@@ -21,8 +21,9 @@ onUnmounted(() => {
 const navLinks = [
   { label: 'Inicio', to: '/' },
   { label: 'Productos', to: '/productos' },
+  { label: 'Proyectos', to: '/proyectos' },
   { label: 'Nosotros', to: '/nosotros' },
-  { label: 'Calificar', to: '/calificar' },
+  { label: 'Contacto', to: '/calificar' },
 ]
 
 const isActive = (path: string) => route.path === path
@@ -32,7 +33,7 @@ const isActive = (path: string) => route.path === path
   <nav :class="['navbar', { 'navbar--scrolled': isScrolled }]">
     <div class="navbar__inner">
       <RouterLink to="/" class="navbar__logo" aria-label="HELISA - Ir al inicio">
-        <i class="fa-solid fa-droplet navbar__logo-icon"></i>
+        <img src="/images/logo/helisa-logo.png" alt="HELISA" class="navbar__logo-img" />
         <span class="navbar__logo-text">HELISA</span>
       </RouterLink>
 
@@ -47,6 +48,15 @@ const isActive = (path: string) => route.path === path
           {{ link.label }}
         </RouterLink>
       </div>
+
+      <a
+        href="https://api.whatsapp.com/send/?phone=5930987125598&text=Hola,+quisiera+comunicarme+con+un+asesor"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="navbar__cta"
+      >
+        Escríbenos
+      </a>
 
       <button class="navbar__hamburger" @click="isMobileOpen = !isMobileOpen" :aria-label="isMobileOpen ? 'Cerrar menú' : 'Abrir menú'">
         <span :class="['hamburger-line', { open: isMobileOpen }]" />
@@ -64,6 +74,15 @@ const isActive = (path: string) => route.path === path
         >
           {{ link.label }}
         </RouterLink>
+        <a
+          href="https://api.whatsapp.com/send/?phone=5930987125598&text=Hola,+quisiera+comunicarme+con+un+asesor"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="navbar__mobile-cta"
+          @click="isMobileOpen = false"
+        >
+          Escríbenos por WhatsApp
+        </a>
       </div>
     </Transition>
   </nav>
@@ -79,76 +98,62 @@ const isActive = (path: string) => route.path === path
   left: 0;
   right: 0;
   z-index: 1000;
-  padding: 1rem 1.5rem;
-  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  padding: 1.25rem 1.5rem;
+  transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
 
   @media (min-width: 768px) {
     padding: 1.5rem 3rem;
   }
 
   @media (min-width: 1024px) {
-    padding: 1.5rem 4rem;
+    padding: 1.75rem 4rem;
   }
 
   &--scrolled {
-    background: rgba($azul-oscuro, 0.8);
-    backdrop-filter: blur(24px);
-    -webkit-backdrop-filter: blur(24px);
-    border-bottom: 1px solid rgba($white, 0.06);
-    padding: 0.75rem 1.5rem;
+    background: rgba($white, 0.92);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-bottom: 1px solid $border;
+    padding: 0.875rem 1.5rem;
 
     @media (min-width: 768px) {
-      padding: 0.75rem 3rem;
+      padding: 0.875rem 3rem;
     }
 
     @media (min-width: 1024px) {
-      padding: 0.75rem 4rem;
+      padding: 0.875rem 4rem;
     }
   }
 
   &__inner {
     width: 100%;
-    max-width: 1200px;
+    max-width: 1400px;
     margin: 0 auto;
     display: flex;
     align-items: center;
     justify-content: space-between;
     box-sizing: border-box;
-
-    @media (min-width: 1440px) {
-      max-width: 1320px;
-    }
-
-    @media (min-width: 1920px) {
-      max-width: 1680px;
-    }
   }
 
   &__logo {
     display: flex;
     align-items: center;
     gap: 0.75rem;
+    z-index: 1001;
   }
 
-  &__logo-icon {
-    font-size: 1.75rem;
-    color: $celeste-claro;
-    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-  }
-
-  &__logo:hover &__logo-icon {
-    transform: scale(1.1) rotate(5deg);
+  &__logo-img {
+    width: 40px;
+    height: 40px;
+    object-fit: contain;
   }
 
   &__logo-text {
     font-family: $font-display;
-    font-weight: 700;
-    font-size: 1.5rem;
-    letter-spacing: 0.05em;
-    background: linear-gradient(135deg, $white 0%, $celeste-claro 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+    font-weight: 600;
+    font-size: 1.25rem;
+    letter-spacing: -0.02em;
+    color: $black;
   }
 
   &__links {
@@ -162,9 +167,9 @@ const isActive = (path: string) => route.path === path
   }
 
   &__link {
-    color: rgba($white, 0.75);
+    color: $foreground-muted;
     font-family: $font-secondary;
-    font-size: 0.9rem;
+    font-size: 0.85rem;
     font-weight: 500;
     position: relative;
     padding: 0.25rem 0;
@@ -176,18 +181,39 @@ const isActive = (path: string) => route.path === path
       bottom: -2px;
       left: 0;
       width: 0;
-      height: 2px;
-      background: $rojo;
-      transition: width 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      height: 1px;
+      background: $black;
+      transition: width 0.4s cubic-bezier(0.16, 1, 0.3, 1);
     }
 
     &:hover,
     &--active {
-      color: $white;
+      color: $black;
 
       &::after {
         width: 100%;
       }
+    }
+  }
+
+  &__cta {
+    display: none;
+    padding: 0.7rem 1.25rem;
+    background: $black;
+    color: $white;
+    border-radius: 100px;
+    font-family: $font-secondary;
+    font-size: 0.8rem;
+    font-weight: 500;
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+
+    &:hover {
+      background: $gray-800;
+      transform: translateY(-1px);
+    }
+
+    @media (min-width: 768px) {
+      display: inline-flex;
     }
   }
 
@@ -200,7 +226,7 @@ const isActive = (path: string) => route.path === path
     cursor: pointer;
     width: 32px;
     height: 32px;
-    z-index: 10;
+    z-index: 1001;
 
     @media (min-width: 768px) {
       display: none;
@@ -213,34 +239,47 @@ const isActive = (path: string) => route.path === path
     left: 0;
     right: 0;
     bottom: 0;
-    background: rgba($azul-oscuro, 0.98);
+    background: rgba($white, 0.98);
     backdrop-filter: blur(20px);
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 2rem;
+    gap: 1.5rem;
+    z-index: 1000;
 
     &-link {
-      color: $white;
+      color: $black;
       font-family: $font-display;
       font-size: 2rem;
-      font-weight: 600;
+      font-weight: 500;
+      letter-spacing: -0.03em;
       transition: color 0.3s;
 
       &:hover,
       &.router-link-active {
-        color: $rojo;
+        color: $gray-500;
       }
+    }
+
+    &-cta {
+      margin-top: 1rem;
+      padding: 0.9rem 1.5rem;
+      background: $black;
+      color: $white;
+      border-radius: 100px;
+      font-family: $font-secondary;
+      font-size: 0.85rem;
+      font-weight: 500;
     }
   }
 }
 
 .hamburger-line {
   display: block;
-  width: 24px;
-  height: 2px;
-  background: $white;
+  width: 22px;
+  height: 1.5px;
+  background: $black;
   position: relative;
   transition: all 0.3s;
 
@@ -250,17 +289,17 @@ const isActive = (path: string) => route.path === path
     position: absolute;
     left: 0;
     width: 100%;
-    height: 2px;
-    background: $white;
+    height: 1.5px;
+    background: $black;
     transition: all 0.3s;
   }
 
   &::before {
-    top: -8px;
+    top: -7px;
   }
 
   &::after {
-    top: 8px;
+    top: 7px;
   }
 
   &.open {
@@ -280,7 +319,7 @@ const isActive = (path: string) => route.path === path
 
 .mobile-menu-enter-active,
 .mobile-menu-leave-active {
-  transition: opacity 0.3s ease;
+  transition: opacity 0.4s ease;
 }
 
 .mobile-menu-enter-from,

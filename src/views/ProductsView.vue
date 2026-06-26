@@ -58,10 +58,13 @@ onMounted(() => {
     .from('.page-header__desc', { y: 30, opacity: 0, duration: 0.8, ease: 'power3.out' }, '-=0.6')
 
   document.querySelectorAll('.product-row').forEach((row, i) => {
-    const tween = gsap.from(row, {
-      y: 80,
-      opacity: 0,
-      duration: 1,
+    const tween = gsap.fromTo(row, {
+      y: 40,
+      opacity: 1,
+    }, {
+      y: 0,
+      opacity: 1,
+      duration: 0.8,
       ease: 'power3.out',
       scrollTrigger: { trigger: row, start: 'top 85%', toggleActions: 'play none none none' },
       delay: i % 2 === 0 ? 0 : 0.1,
@@ -70,10 +73,13 @@ onMounted(() => {
   })
 
   document.querySelectorAll('.feature-card').forEach((card, i) => {
-    const tween = gsap.from(card, {
-      y: 60,
-      opacity: 0,
-      duration: 0.8,
+    const tween = gsap.fromTo(card, {
+      y: 30,
+      opacity: 1,
+    }, {
+      y: 0,
+      opacity: 1,
+      duration: 0.7,
       delay: i * 0.1,
       ease: 'power3.out',
       scrollTrigger: { trigger: card.parentElement, start: 'top 80%', toggleActions: 'play none none none' },
@@ -90,7 +96,9 @@ onUnmounted(() => {
 <template>
   <main class="products-page">
     <section class="page-header">
-      <div class="page-header__bg" />
+      <div class="page-header__bg">
+        <div class="page-header__grid" />
+      </div>
       <div class="container page-header__content">
         <span class="page-header__label">Portafolio</span>
         <h1 class="page-header__title">Productos y <span class="text-gradient">tecnologías</span></h1>
@@ -112,7 +120,6 @@ onUnmounted(() => {
             <div class="product-row__visual">
               <div class="product-row__image-wrapper">
                 <img :src="product.image" :alt="product.title" class="product-row__image" />
-                <div class="product-row__image-overlay" />
               </div>
               <div class="product-row__badge">
                 <i :class="['fa-solid', product.icon]"></i>
@@ -187,14 +194,24 @@ onUnmounted(() => {
   justify-content: center;
   overflow: hidden;
   text-align: center;
+  background: $white;
+  border-bottom: 1px solid $border;
 
   &__bg {
     position: absolute;
     inset: 0;
-    background:
-      radial-gradient(ellipse 80% 60% at 50% 0%, rgba($azul-medio, 0.4) 0%, transparent 60%),
-      radial-gradient(ellipse 50% 50% at 80% 100%, rgba($rojo, 0.1) 0%, transparent 50%),
-      linear-gradient(180deg, $azul-oscuro 0%, darken($azul-oscuro, 3%) 100%);
+    z-index: 0;
+  }
+
+  &__grid {
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient($gray-100 1px, transparent 1px),
+      linear-gradient(90deg, $gray-100 1px, transparent 1px);
+    background-size: 80px 80px;
+    opacity: 0.5;
+    mask-image: radial-gradient(ellipse 80% 70% at 50% 0%, $black 0%, transparent 70%);
   }
 
   &__content {
@@ -203,34 +220,28 @@ onUnmounted(() => {
     width: 100%;
     max-width: 900px;
     margin: 0 auto;
-    padding: 6rem 1.5rem;
+    padding: 8rem 1.5rem 5rem;
     box-sizing: border-box;
   }
 
   &__label {
-    display: inline-block;
-    font-family: $font-secondary;
-    font-size: 0.75rem;
-    font-weight: 700;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    color: $rojo;
+    @include label-pill;
     margin-bottom: 1.5rem;
   }
 
   &__title {
     font-family: $font-display;
     font-size: clamp(2.5rem, 8vw, 5rem);
-    font-weight: 800;
-    letter-spacing: -0.04em;
-    line-height: 1;
+    font-weight: 500;
+    letter-spacing: -0.05em;
+    line-height: 1.05;
     margin: 0 0 1.5rem;
   }
 
   &__desc {
     font-family: $font-secondary;
     font-size: 1.1rem;
-    color: rgba($white, 0.6);
+    color: $foreground-muted;
     max-width: 550px;
     margin: 0 auto;
     line-height: 1.7;
@@ -238,12 +249,12 @@ onUnmounted(() => {
 }
 
 .products-list {
-  background: linear-gradient(180deg, darken($azul-oscuro, 3%) 0%, $azul-oscuro 100%);
+  background: $background-soft;
 
   &__items {
     display: flex;
     flex-direction: column;
-    gap: 4rem;
+    gap: 5rem;
 
     @media (min-width: 1024px) {
       gap: 8rem;
@@ -290,41 +301,36 @@ onUnmounted(() => {
     border-radius: 24px;
     overflow: hidden;
     aspect-ratio: 4 / 3;
-    box-shadow: 0 30px 60px rgba($black, 0.3);
+    border: 1px solid $border;
   }
 
   &__image {
     width: 100%;
     height: 100%;
     object-fit: cover;
+    filter: grayscale(20%);
     transition: transform 0.8s ease;
 
     &:hover {
-      transform: scale(1.05);
+      transform: scale(1.03);
     }
-  }
-
-  &__image-overlay {
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(135deg, rgba($azul-medio, 0.25), rgba($azul-oscuro, 0.4));
   }
 
   &__badge {
     position: absolute;
     bottom: -20px;
     right: 2rem;
-    width: 70px;
-    height: 70px;
+    width: 64px;
+    height: 64px;
     border-radius: 50%;
-    background: $azul-medio;
-    border: 4px solid $azul-oscuro;
+    background: $black;
+    border: 4px solid $white;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.75rem;
+    font-size: 1.5rem;
     color: $white;
-    box-shadow: 0 10px 30px rgba($black, 0.25);
+    box-shadow: 0 10px 30px rgba($black, 0.08);
 
     @media (min-width: 1024px) {
       right: -30px;
@@ -341,19 +347,20 @@ onUnmounted(() => {
 
   &__subtitle {
     font-family: $font-secondary;
-    font-size: 0.75rem;
-    font-weight: 700;
-    letter-spacing: 0.2em;
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.25em;
     text-transform: uppercase;
-    color: $rojo;
+    color: $foreground-muted;
     margin-bottom: 0.75rem;
     display: block;
   }
 
   &__title {
     font-family: $font-display;
-    font-size: clamp(2rem, 4vw, 3rem);
-    font-weight: 700;
+    font-size: clamp(1.75rem, 3.5vw, 2.5rem);
+    font-weight: 500;
+    color: $black;
     letter-spacing: -0.03em;
     margin: 0 0 1rem;
   }
@@ -361,7 +368,7 @@ onUnmounted(() => {
   &__desc {
     font-family: $font-secondary;
     font-size: 1rem;
-    color: rgba($white, 0.6);
+    color: $foreground-muted;
     line-height: 1.8;
     margin: 0 0 1.5rem;
   }
@@ -385,20 +392,23 @@ onUnmounted(() => {
     align-items: center;
     gap: 0.5rem;
     font-family: $font-secondary;
-    font-size: 0.9rem;
-    color: rgba($white, 0.75);
-    background: rgba($white, 0.04);
+    font-size: 0.85rem;
+    color: $foreground-muted;
+    background: $white;
+    border: 1px solid $border;
     padding: 0.5rem 1rem;
     border-radius: 100px;
   }
 
   &__check {
-    color: $verde;
+    color: $black;
+    font-size: 0.75rem;
   }
 }
 
 .features {
-  background: linear-gradient(180deg, $azul-oscuro 0%, darken($azul-oscuro, 3%) 100%);
+  background: $white;
+  border-top: 1px solid $border;
 
   .section-header {
     text-align: center;
@@ -417,36 +427,38 @@ onUnmounted(() => {
 }
 
 .feature-card {
-  background: rgba($white, 0.02);
-  border: 1px solid rgba($white, 0.06);
+  background: $background-soft;
+  border: 1px solid $border;
   border-radius: 20px;
   padding: 2.5rem 2rem;
   text-align: center;
   transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 
   &:hover {
-    background: rgba($azul-medio, 0.1);
-    border-color: rgba($celeste-claro, 0.15);
+    background: $white;
+    border-color: $black;
     transform: translateY(-6px);
+    box-shadow: 0 20px 40px rgba($black, 0.06);
   }
 
   &__icon {
-    font-size: 2.5rem;
+    font-size: 2rem;
     margin: 0 auto 1.5rem;
-    color: $celeste-claro;
+    color: $black;
   }
 
   &__title {
     font-family: $font-display;
-    font-size: 1.25rem;
-    font-weight: 600;
+    font-size: 1.15rem;
+    font-weight: 500;
+    color: $black;
     margin: 0 0 0.75rem;
   }
 
   &__desc {
     font-family: $font-secondary;
     font-size: 0.9rem;
-    color: rgba($white, 0.55);
+    color: $foreground-muted;
     line-height: 1.6;
     margin: 0;
   }
@@ -462,21 +474,21 @@ onUnmounted(() => {
   gap: 0.5rem;
   padding: 1rem 2rem;
   border: none;
-  border-radius: 10px;
+  border-radius: 100px;
   font-family: $font-secondary;
-  font-size: 0.95rem;
-  font-weight: 600;
+  font-size: 0.9rem;
+  font-weight: 500;
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 
   &--outline {
     background: transparent;
-    color: $white;
-    border: 1px solid rgba($white, 0.2);
+    color: $black;
+    border: 1px solid $border;
 
     &:hover {
-      border-color: $rojo;
-      color: $rojo;
+      border-color: $black;
+      background: rgba($black, 0.03);
       transform: translateY(-2px);
     }
   }

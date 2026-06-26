@@ -33,23 +33,27 @@ onMounted(() => {
     scrollTrigger: { trigger: '.story', start: 'top 75%', toggleActions: 'play none none none' },
   })
   storyTl
-    .from('.story__label', { y: 30, opacity: 0, duration: 0.6 })
-    .from('.story__title', { y: 60, opacity: 0, duration: 0.8 }, '-=0.3')
-    .from('.story__text p', { y: 40, opacity: 0, duration: 0.8, stagger: 0.15 }, '-=0.4')
-    .from('.story__image-wrapper', { scale: 1.1, opacity: 0, duration: 1 }, '-=0.6')
+    .fromTo('.story__label', { y: 20, opacity: 1 }, { y: 0, opacity: 1, duration: 0.6 })
+    .fromTo('.story__title', { y: 40, opacity: 1 }, { y: 0, opacity: 1, duration: 0.8 }, '-=0.3')
+    .fromTo('.story__text p', { y: 24, opacity: 1 }, { y: 0, opacity: 1, duration: 0.8, stagger: 0.15 }, '-=0.4')
+    .fromTo('.story__image-wrapper', { scale: 1.03, opacity: 1 }, { scale: 1, opacity: 1, duration: 1 }, '-=0.6')
   if (storyTl.scrollTrigger) triggers.push(storyTl.scrollTrigger)
 
   document.querySelectorAll('.value-card').forEach((card, i) => {
-    const tween = gsap.from(card, {
-      y: 60, opacity: 0, duration: 0.8, delay: i * 0.1, ease: 'power3.out',
+    const tween = gsap.fromTo(card, {
+      y: 30, opacity: 1,
+    }, {
+      y: 0, opacity: 1, duration: 0.7, delay: i * 0.1, ease: 'power3.out',
       scrollTrigger: { trigger: '.values__grid', start: 'top 80%', toggleActions: 'play none none none' },
     })
     if (tween.scrollTrigger) triggers.push(tween.scrollTrigger)
   })
 
-  document.querySelectorAll('.timeline__item').forEach((item, i) => {
-    const tween = gsap.from(item, {
-      x: i % 2 === 0 ? -60 : 60, opacity: 0, duration: 1, ease: 'power3.out',
+  document.querySelectorAll('.timeline__item').forEach((item) => {
+    const tween = gsap.fromTo(item, {
+      y: 30, opacity: 1,
+    }, {
+      y: 0, opacity: 1, duration: 0.8, ease: 'power3.out',
       scrollTrigger: { trigger: item, start: 'top 85%', toggleActions: 'play none none none' },
     })
     if (tween.scrollTrigger) triggers.push(tween.scrollTrigger)
@@ -64,7 +68,9 @@ onUnmounted(() => {
 <template>
   <main class="about-page">
     <section class="about-header">
-      <div class="about-header__bg" />
+      <div class="about-header__bg">
+        <div class="about-header__grid" />
+      </div>
       <div class="container about-header__content">
         <span class="about-header__label">Nosotros</span>
         <h1 class="about-header__title">Health &amp; <span class="text-gradient">Life S.A.</span></h1>
@@ -78,7 +84,6 @@ onUnmounted(() => {
       <div class="container story__grid">
         <div class="story__image-wrapper reveal-item">
           <img src="/images/nave-supersacos.jpg" alt="Instalaciones HELISA" class="story__image" />
-          <div class="story__image-overlay" />
         </div>
         <div class="story__text">
           <span class="section-label reveal-item">Nuestra esencia</span>
@@ -134,11 +139,10 @@ onUnmounted(() => {
           <h2 class="section-title">Nuestro <span class="text-gradient">camino</span></h2>
         </div>
         <div class="timeline__wrapper">
-          <div class="timeline__line" />
           <div class="timeline__items">
-            <div v-for="(item, index) in timeline" :key="item.year" class="timeline__item" :class="{ 'timeline__item--right': index % 2 !== 0 }">
+            <div v-for="(item, index) in timeline" :key="item.year" class="timeline__item">
               <div class="timeline__dot" />
-              <div class="timeline__content">
+              <div class="timeline__content" :class="{ 'timeline__content--right': index % 2 !== 0 }">
                 <span class="timeline__year">{{ item.year }}</span>
                 <h3 class="timeline__title">{{ item.title }}</h3>
                 <p class="timeline__desc">{{ item.desc }}</p>
@@ -167,14 +171,24 @@ onUnmounted(() => {
   justify-content: center;
   overflow: hidden;
   text-align: center;
+  background: $white;
+  border-bottom: 1px solid $border;
 
   &__bg {
     position: absolute;
     inset: 0;
-    background:
-      radial-gradient(ellipse 80% 60% at 50% 0%, rgba($azul-medio, 0.4) 0%, transparent 60%),
-      radial-gradient(ellipse 50% 50% at 20% 100%, rgba($celeste-claro, 0.1) 0%, transparent 50%),
-      linear-gradient(180deg, $azul-oscuro 0%, darken($azul-oscuro, 3%) 100%);
+    z-index: 0;
+  }
+
+  &__grid {
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient($gray-100 1px, transparent 1px),
+      linear-gradient(90deg, $gray-100 1px, transparent 1px);
+    background-size: 80px 80px;
+    opacity: 0.5;
+    mask-image: radial-gradient(ellipse 80% 70% at 50% 0%, $black 0%, transparent 70%);
   }
 
   &__content {
@@ -183,34 +197,28 @@ onUnmounted(() => {
     width: 100%;
     max-width: 900px;
     margin: 0 auto;
-    padding: 6rem 1.5rem;
+    padding: 8rem 1.5rem 5rem;
     box-sizing: border-box;
   }
 
   &__label {
-    display: inline-block;
-    font-family: $font-secondary;
-    font-size: 0.75rem;
-    font-weight: 700;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    color: $rojo;
+    @include label-pill;
     margin-bottom: 1.5rem;
   }
 
   &__title {
     font-family: $font-display;
     font-size: clamp(2.5rem, 8vw, 5rem);
-    font-weight: 800;
-    letter-spacing: -0.04em;
-    line-height: 1;
+    font-weight: 500;
+    letter-spacing: -0.05em;
+    line-height: 1.05;
     margin: 0 0 1.5rem;
   }
 
   &__desc {
     font-family: $font-secondary;
     font-size: 1.1rem;
-    color: rgba($white, 0.6);
+    color: $foreground-muted;
     max-width: 550px;
     margin: 0 auto;
     line-height: 1.7;
@@ -218,24 +226,17 @@ onUnmounted(() => {
 }
 
 .story {
-  background: linear-gradient(180deg, darken($azul-oscuro, 3%) 0%, $azul-oscuro 100%);
+  background: $background-soft;
 
   &__grid {
     display: grid;
     grid-template-columns: 1fr;
     gap: 4rem;
     align-items: center;
-    margin: 2rem auto;
 
     @media (min-width: 1024px) {
       grid-template-columns: 1fr 1fr;
       gap: 6rem;
-      margin: 3rem auto;
-    }
-
-    @media (min-width: 1600px) {
-      gap: 8rem;
-      margin: 4rem auto;
     }
   }
 
@@ -244,19 +245,14 @@ onUnmounted(() => {
     border-radius: 24px;
     overflow: hidden;
     aspect-ratio: 4 / 3;
-    box-shadow: 0 30px 60px rgba($black, 0.3);
+    border: 1px solid $border;
   }
 
   &__image {
     width: 100%;
     height: 100%;
     object-fit: cover;
-  }
-
-  &__image-overlay {
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(135deg, rgba($azul-medio, 0.25), rgba($azul-oscuro, 0.4));
+    filter: grayscale(20%);
   }
 
   &__text {
@@ -269,7 +265,7 @@ onUnmounted(() => {
     p {
       font-family: $font-secondary;
       font-size: 1.05rem;
-      color: rgba($white, 0.6);
+      color: $foreground-muted;
       line-height: 1.8;
       margin: 0 0 1.25rem;
     }
@@ -281,22 +277,23 @@ onUnmounted(() => {
     gap: 0.75rem;
     margin-top: 1rem;
     padding: 1rem 1.5rem;
-    background: rgba($white, 0.03);
-    border: 1px solid rgba($white, 0.08);
+    background: $white;
+    border: 1px solid $border;
     border-radius: 12px;
     font-family: $font-secondary;
     font-style: italic;
-    color: rgba($white, 0.7);
+    color: $foreground-muted;
 
     i {
-      color: $rojo;
+      color: $black;
       font-size: 1.25rem;
     }
   }
 }
 
 .values {
-  background: linear-gradient(180deg, $azul-oscuro 0%, darken($azul-oscuro, 3%) 100%);
+  background: $white;
+  border-top: 1px solid $border;
 
   .section-header {
     text-align: center;
@@ -319,8 +316,8 @@ onUnmounted(() => {
 }
 
 .value-card {
-  background: rgba($white, 0.02);
-  border: 1px solid rgba($white, 0.06);
+  background: $background-soft;
+  border: 1px solid $border;
   border-radius: 20px;
   padding: 2rem;
   text-align: center;
@@ -329,35 +326,37 @@ onUnmounted(() => {
 
   &:hover,
   &--active {
-    background: rgba($azul-medio, 0.12);
-    border-color: rgba($celeste-claro, 0.2);
+    background: $white;
+    border-color: $black;
     transform: translateY(-6px);
+    box-shadow: 0 20px 40px rgba($black, 0.06);
   }
 
   &__icon {
-    font-size: 2.5rem;
-    color: $celeste-claro;
+    font-size: 2rem;
+    color: $black;
     margin-bottom: 1.5rem;
   }
 
   &__title {
     font-family: $font-display;
-    font-size: 1.25rem;
-    font-weight: 600;
+    font-size: 1.15rem;
+    font-weight: 500;
+    color: $black;
     margin: 0 0 0.5rem;
   }
 
   &__desc {
     font-family: $font-secondary;
     font-size: 0.9rem;
-    color: rgba($white, 0.55);
+    color: $foreground-muted;
     line-height: 1.6;
     margin: 0;
   }
 }
 
 .timeline {
-  background: linear-gradient(180deg, darken($azul-oscuro, 3%) 0%, $azul-oscuro 100%);
+  background: $background-soft;
 
   .section-header {
     text-align: center;
@@ -370,107 +369,93 @@ onUnmounted(() => {
     margin: 0 auto;
   }
 
-  &__line {
-    position: absolute;
-    left: 50%;
-    top: 0;
-    bottom: 0;
-    width: 2px;
-    background: linear-gradient(to bottom, $azul-medio, $rojo);
-    transform: translateX(-50%);
-
-    @media (max-width: 767px) {
-      left: 20px;
-    }
-  }
-
   &__items {
     position: relative;
+
+    &::before {
+      content: '';
+      position: absolute;
+      left: 20px;
+      top: 0;
+      bottom: 0;
+      width: 1px;
+      background: $border;
+
+      @media (min-width: 768px) {
+        left: 50%;
+        transform: translateX(-50%);
+      }
+    }
   }
 
   &__item {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 4rem;
-    margin-bottom: 4rem;
     position: relative;
+    padding-left: 60px;
+    margin-bottom: 3rem;
 
-    @media (max-width: 767px) {
-      grid-template-columns: 1fr;
-      padding-left: 50px;
-      gap: 0;
+    @media (min-width: 768px) {
+      padding-left: 0;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4rem;
+      margin-bottom: 4rem;
     }
 
-    &--right {
-      .timeline__content {
-        grid-column: 2;
-        text-align: left;
-
-        @media (max-width: 767px) {
-          grid-column: 1;
-        }
-      }
+    &:last-child {
+      margin-bottom: 0;
     }
   }
 
   &__dot {
     position: absolute;
-    left: 50%;
+    left: 14px;
     top: 0;
-    width: 16px;
-    height: 16px;
+    width: 14px;
+    height: 14px;
     border-radius: 50%;
-    background: $rojo;
-    border: 3px solid $azul-oscuro;
-    transform: translateX(-50%);
-    box-shadow: 0 0 20px rgba($rojo, 0.5);
+    background: $black;
+    border: 3px solid $white;
 
-    @media (max-width: 767px) {
-      left: 20px;
+    @media (min-width: 768px) {
+      left: 50%;
+      transform: translateX(-50%);
     }
   }
 
   &__content {
-    background: rgba($white, 0.03);
-    border: 1px solid rgba($white, 0.06);
+    background: $white;
+    border: 1px solid $border;
     border-radius: 16px;
     padding: 1.5rem 2rem;
 
-    @media (max-width: 767px) {
-      padding: 1.25rem;
-    }
-  }
-
-  &__item:not(&--right) &__content {
-    grid-column: 1;
-    text-align: right;
-
-    @media (max-width: 767px) {
-      grid-column: 1;
-      text-align: left;
+    @media (min-width: 768px) {
+      &--right {
+        grid-column: 2;
+      }
     }
   }
 
   &__year {
     display: block;
     font-family: $font-display;
-    font-size: 2rem;
-    font-weight: 800;
-    color: $celeste-claro;
+    font-size: 1.75rem;
+    font-weight: 500;
+    color: $black;
     margin-bottom: 0.25rem;
   }
 
   &__title {
     font-family: $font-display;
-    font-size: 1.25rem;
-    font-weight: 600;
+    font-size: 1.15rem;
+    font-weight: 500;
+    color: $black;
     margin: 0 0 0.5rem;
   }
 
   &__desc {
     font-family: $font-secondary;
     font-size: 0.9rem;
-    color: rgba($white, 0.55);
+    color: $foreground-muted;
     line-height: 1.6;
     margin: 0;
   }
