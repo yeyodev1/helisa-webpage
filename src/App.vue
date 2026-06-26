@@ -27,12 +27,16 @@ import ScrollToTop from '@/components/ScrollToTop.vue'
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+  align-items: center;
 }
 
 .app-main {
   flex: 1;
   width: 100%;
+  max-width: 1440px;
   margin: 0 auto;
+  padding-top: 2rem;
+  padding-bottom: 2rem;
 }
 
 .app-footer {
