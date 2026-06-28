@@ -405,29 +405,37 @@ onUnmounted(() => {
             <div class="projects-stat__icon">
               <i class="fa-solid fa-calendar-check"></i>
             </div>
-            <span class="projects-stat__value">15+</span>
-            <span class="projects-stat__label">Años de experiencia</span>
+            <div class="projects-stat__body">
+              <span class="projects-stat__value">15+</span>
+              <span class="projects-stat__label">Años de experiencia</span>
+            </div>
           </div>
           <div class="projects-stat">
             <div class="projects-stat__icon">
               <i class="fa-solid fa-clipboard-check"></i>
             </div>
-            <span class="projects-stat__value">500+</span>
-            <span class="projects-stat__label">Proyectos ejecutados</span>
+            <div class="projects-stat__body">
+              <span class="projects-stat__value">500+</span>
+              <span class="projects-stat__label">Proyectos ejecutados</span>
+            </div>
           </div>
           <div class="projects-stat">
             <div class="projects-stat__icon">
               <i class="fa-solid fa-layer-group"></i>
             </div>
-            <span class="projects-stat__value">10</span>
-            <span class="projects-stat__label">Sectores atendidos</span>
+            <div class="projects-stat__body">
+              <span class="projects-stat__value">10</span>
+              <span class="projects-stat__label">Sectores atendidos</span>
+            </div>
           </div>
           <div class="projects-stat">
             <div class="projects-stat__icon">
               <i class="fa-solid fa-headset"></i>
             </div>
-            <span class="projects-stat__value">24/7</span>
-            <span class="projects-stat__label">Soporte técnico</span>
+            <div class="projects-stat__body">
+              <span class="projects-stat__value">24/7</span>
+              <span class="projects-stat__label">Soporte técnico</span>
+            </div>
           </div>
         </div>
       </div>
@@ -441,6 +449,18 @@ onUnmounted(() => {
 
 .projects-page {
   padding-top: 80px;
+
+  section {
+    margin-top: 3rem;
+
+    @media (min-width: 768px) {
+      margin-top: 4rem;
+    }
+
+    @media (min-width: 1024px) {
+      margin-top: 5rem;
+    }
+  }
 }
 
 .projects-header {
@@ -769,17 +789,19 @@ onUnmounted(() => {
   }
 
   &__layout {
-    display: grid;
-    grid-template-columns: 1fr;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
     gap: 1.5rem;
     width: 100%;
+    padding: 1.25rem;
 
-    @media (min-width: 640px) {
-      grid-template-columns: repeat(2, 1fr);
+    @media (min-width: 768px) {
+      padding: 2.5rem;
     }
 
     @media (min-width: 1024px) {
-      grid-template-columns: repeat(3, 1fr);
+      padding: 4rem;
     }
   }
 }
@@ -798,6 +820,15 @@ onUnmounted(() => {
   border: 1px solid $border;
   border-radius: 28px;
   transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  width: 100%;
+
+  @media (min-width: 640px) {
+    width: calc((100% - 1.5rem) / 2);
+  }
+
+  @media (min-width: 1024px) {
+    width: calc((100% - 3rem) / 3);
+  }
 
   &:hover {
     border-color: $gray-300;
@@ -811,7 +842,7 @@ onUnmounted(() => {
 
   &--large {
     @media (min-width: 1024px) {
-      grid-column: span 2;
+      width: calc(2 * ((100% - 3rem) / 3) + 1.5rem);
 
       .project-card__visual {
         aspect-ratio: 21 / 9;
@@ -909,28 +940,44 @@ onUnmounted(() => {
   }
 
   &__grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
+    display: flex;
+    flex-direction: column;
     gap: 1.5rem;
     width: 100%;
+    padding: 1.25rem;
+    margin-top: 1rem;
+    margin-bottom: 1rem;
 
     @media (min-width: 768px) {
-      grid-template-columns: repeat(4, 1fr);
+      padding: 2.5rem;
+      margin-top: 2rem;
+      margin-bottom: 2rem;
+    }
+
+    @media (min-width: 1024px) {
+      padding: 4rem;
+      margin-top: 3rem;
+      margin-bottom: 3rem;
     }
   }
 }
 
 .projects-stat {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   align-items: center;
-  justify-content: center;
-  gap: 0.75rem;
-  text-align: center;
-  padding: 2rem 1rem;
+  justify-content: flex-start;
+  gap: 1.5rem;
+  text-align: left;
+  padding: 2rem 1.5rem;
   border: 1px solid $border;
   border-radius: 20px;
   transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+
+  @media (min-width: 768px) {
+    padding: 2.5rem 2rem;
+    gap: 2rem;
+  }
 
   &:hover {
     border-color: $black;
@@ -942,18 +989,32 @@ onUnmounted(() => {
     display: flex;
     justify-content: center;
     align-items: center;
-    width: 48px;
-    height: 48px;
+    width: 56px;
+    height: 56px;
     background: $black;
-    border-radius: 14px;
+    border-radius: 16px;
     color: $white;
-    font-size: 1.1rem;
+    font-size: 1.3rem;
+    flex-shrink: 0;
+
+    @media (min-width: 768px) {
+      width: 64px;
+      height: 64px;
+      font-size: 1.5rem;
+      border-radius: 18px;
+    }
+  }
+
+  &__body {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
   }
 
   &__value {
     display: block;
     font-family: $font-display;
-    font-size: clamp(2rem, 4vw, 3rem);
+    font-size: clamp(1.5rem, 3vw, 2rem);
     font-weight: 500;
     letter-spacing: -0.04em;
     color: $black;
@@ -961,8 +1022,9 @@ onUnmounted(() => {
 
   &__label {
     font-family: $font-secondary;
-    font-size: 0.8rem;
+    font-size: 0.85rem;
     color: $foreground-muted;
+    line-height: 1.4;
   }
 }
 </style>
