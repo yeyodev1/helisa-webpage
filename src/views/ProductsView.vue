@@ -57,38 +57,38 @@ const whyUs = [
 ]
 
 onMounted(() => {
-  const headerTl = gsap.timeline()
-  headerTl
-    .from('.page-header__label', { y: 30, opacity: 0, duration: 0.8, ease: 'power3.out' })
-    .from('.page-header__title', { y: 80, opacity: 0, duration: 1, ease: 'power4.out' }, '-=0.5')
-    .from('.page-header__desc', { y: 30, opacity: 0, duration: 0.8, ease: 'power3.out' }, '-=0.6')
+  const tl = gsap.timeline()
+  tl.from('.hero-badge', { y: 20, opacity: 0, duration: 0.8, ease: 'power3.out' })
+    .from('.hero-title span > span', { y: 100, opacity: 0, duration: 1, stagger: 0.1, ease: 'power4.out', clipPath: 'inset(0% 0% 100% 0%)' }, '-=0.5')
+    .from('.hero-desc', { y: 20, opacity: 0, duration: 0.8, ease: 'power3.out' }, '-=0.6')
 
-  document.querySelectorAll('.product-row').forEach((row, i) => {
-    const tween = gsap.fromTo(row, {
-      y: 40,
-      opacity: 1,
+  document.querySelectorAll('.product-card').forEach((card, i) => {
+    const tween = gsap.fromTo(card, {
+      y: 60,
+      opacity: 0,
+      scale: 0.95
     }, {
       y: 0,
       opacity: 1,
-      duration: 0.8,
+      scale: 1,
+      duration: 1,
       ease: 'power3.out',
-      scrollTrigger: { trigger: row, start: 'top 85%', toggleActions: 'play none none none' },
-      delay: i % 2 === 0 ? 0 : 0.1,
+      scrollTrigger: { trigger: card, start: 'top 85%', toggleActions: 'play none none none' }
     })
     if (tween.scrollTrigger) triggers.push(tween.scrollTrigger)
   })
 
   document.querySelectorAll('.why-card').forEach((card, i) => {
     const tween = gsap.fromTo(card, {
-      y: 30,
-      opacity: 1,
+      y: 40,
+      opacity: 0,
     }, {
       y: 0,
       opacity: 1,
-      duration: 0.7,
+      duration: 0.8,
       delay: i * 0.1,
       ease: 'power3.out',
-      scrollTrigger: { trigger: '.why__grid', start: 'top 80%', toggleActions: 'play none none none' },
+      scrollTrigger: { trigger: '.why-grid', start: 'top 80%', toggleActions: 'play none none none' },
     })
     if (tween.scrollTrigger) triggers.push(tween.scrollTrigger)
   })
@@ -101,15 +101,20 @@ onUnmounted(() => {
 
 <template>
   <main class="products-page">
-    <section class="page-header">
-      <div class="page-header__bg">
-        <div class="page-header__grid" />
+    <section class="products-hero">
+      <div class="products-hero__bg">
+        <div class="products-hero__grid"></div>
+        <div class="products-hero__glow"></div>
       </div>
-      <div class="container page-header__content">
-        <span class="page-header__label">Portafolio</span>
-        <h1 class="page-header__title">Productos y <span class="text-gradient">tecnologías</span></h1>
-        <p class="page-header__desc">
-          Soluciones de tratamiento de agua y aire respaldadas por ingeniería y experiencia.
+      
+      <div class="container products-hero__content">
+        <div class="hero-badge">Portafolio</div>
+        <h1 class="hero-title">
+          <span class="line-wrap"><span>Productos y</span></span>
+          <span class="line-wrap"><span class="text-gradient">tecnologías</span></span>
+        </h1>
+        <p class="hero-desc">
+          Soluciones de tratamiento de agua y aire respaldadas por ingeniería, innovación tecnológica y experiencia real.
         </p>
       </div>
     </section>
@@ -118,35 +123,32 @@ onUnmounted(() => {
       <div class="container">
         <div class="products-list__items">
           <article
-            v-for="(product, index) in products"
+            v-for="product in products"
             :key="product.id"
-            class="product-row"
-            :class="{ 'product-row--reverse': index % 2 !== 0 }"
+            class="product-card"
           >
-            <div class="product-row__visual">
-              <div class="product-row__frame">
-                <div class="product-row__image-wrapper">
-                  <img :src="product.image" :alt="product.title" class="product-row__image" />
-                </div>
-                <div class="product-row__badge">
-                  <i :class="['fa-solid', product.icon]"></i>
-                </div>
-              </div>
-              <div class="product-row__ring" aria-hidden="true"></div>
+            <div class="product-card__bg">
+              <img :src="product.image" :alt="product.title" class="product-card__image" loading="lazy" />
+              <div class="product-card__overlay"></div>
             </div>
-            <div class="product-row__content">
-              <span class="product-row__subtitle">{{ product.subtitle }}</span>
-              <h2 class="product-row__title">{{ product.title }}</h2>
-              <p class="product-row__desc">{{ product.description }}</p>
-              <ul class="product-row__features">
-                <li v-for="feature in product.features" :key="feature" class="product-row__feature">
-                  <i class="fa-solid fa-circle-check product-row__check"></i>
-                  {{ feature }}
+            
+            <div class="product-card__content">
+              <div class="product-card__icon">
+                <i :class="['fa-solid', product.icon]"></i>
+              </div>
+              <span class="product-card__subtitle">{{ product.subtitle }}</span>
+              <h2 class="product-card__title">{{ product.title }}</h2>
+              <p class="product-card__desc">{{ product.description }}</p>
+              
+              <ul class="product-card__features">
+                <li v-for="feature in product.features" :key="feature">
+                  <i class="fa-solid fa-check"></i> {{ feature }}
                 </li>
               </ul>
+              
               <button
                 type="button"
-                class="btn btn--outline product-row__cta"
+                class="btn btn--glass product-card__cta"
                 :aria-label="`Solicitar cotización de ${product.title}`"
                 @click="navigate('/calificar')"
               >
@@ -159,13 +161,14 @@ onUnmounted(() => {
       </div>
     </section>
 
-    <section class="why section-padding">
+    <section class="why-section section-padding">
+      <div class="why-section__bg"></div>
       <div class="container">
-        <div class="section-header">
-          <span class="section-label">¿Por qué elegirnos?</span>
-          <h2 class="section-title">Compromiso de <span class="text-gradient">principio a fin</span></h2>
+        <div class="why-header">
+          <span class="why-label">¿Por qué elegirnos?</span>
+          <h2 class="why-title">Compromiso de <span class="text-gradient">principio a fin</span></h2>
         </div>
-        <div class="why__grid">
+        <div class="why-grid">
           <div v-for="item in whyUs" :key="item.title" class="why-card">
             <div class="why-card__icon">
               <i :class="['fa-solid', item.icon]"></i>
@@ -180,23 +183,141 @@ onUnmounted(() => {
 </template>
 
 <style lang="scss" scoped>
-@use '@/styles/colorVariables.module.scss' as *;
-@use '@/styles/fonts.module.scss' as *;
-
 .products-page {
   padding-top: 80px;
+  background-color: $background;
+  overflow: hidden;
 }
 
-.page-header {
+/* HERO SECTION */
+.products-hero {
   position: relative;
-  min-height: 60vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
+  padding: 8rem 0 6rem;
   text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  &__bg {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    overflow: hidden;
+  }
+
+  &__grid {
+    position: absolute;
+    inset: -50%;
+    width: 200%;
+    height: 200%;
+    background-image:
+      linear-gradient($border 1px, transparent 1px),
+      linear-gradient(90deg, $border 1px, transparent 1px);
+    background-size: 100px 100px;
+    opacity: 0.4;
+    transform: perspective(500px) rotateX(60deg) translateY(-100px) translateZ(-200px);
+    animation: gridMove 20s linear infinite;
+  }
+
+  &__glow {
+    position: absolute;
+    top: -20%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60vw;
+    height: 60vw;
+    background: radial-gradient(circle, rgba($black, 0.03) 0%, transparent 70%);
+    border-radius: 50%;
+    filter: blur(60px);
+  }
+
+  &__content {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    max-width: 900px;
+    width: 100%;
+    padding: 0 1.5rem;
+    box-sizing: border-box;
+  }
+}
+
+@keyframes gridMove {
+  0% {
+    transform: perspective(500px) rotateX(60deg) translateY(0) translateZ(-200px);
+  }
+
+  100% {
+    transform: perspective(500px) rotateX(60deg) translateY(100px) translateZ(-200px);
+  }
+}
+
+.hero-badge {
+  @include label-pill;
+  margin-bottom: 2rem;
   background: $white;
-  border-bottom: 1px solid $border;
+  border: 1px solid $border;
+  box-shadow: 0 4px 20px rgba($black, 0.03);
+}
+
+.hero-title {
+  font-family: $font-display;
+  font-size: clamp(3.5rem, 9vw, 7.5rem);
+  font-weight: 500;
+  line-height: 1.05;
+  letter-spacing: -0.04em;
+  color: $black;
+  margin: 0 0 1.5rem;
+
+  .line-wrap {
+    display: block;
+    overflow: hidden;
+    padding-bottom: 0.1em;
+
+    >span {
+      display: inline-block;
+      transform-origin: left bottom;
+    }
+  }
+}
+
+.hero-desc {
+  font-family: $font-secondary;
+  font-size: clamp(1.1rem, 2vw, 1.35rem);
+  color: $foreground-muted;
+  max-width: 650px;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
+/* PRODUCTS LIST */
+.products-list {
+  position: relative;
+  z-index: 2;
+
+  &__items {
+    display: flex;
+    flex-direction: column;
+    gap: 4rem;
+    width: 100%;
+    max-width: 1000px;
+    margin: 0 auto;
+  }
+}
+
+.product-card {
+  position: relative;
+  width: 100%;
+  border-radius: 40px;
+  overflow: hidden;
+  background: $black;
+  box-shadow: 0 30px 60px rgba($black, 0.15);
+  display: flex;
+  flex-direction: column;
+  min-height: 600px;
 
   &__bg {
     position: absolute;
@@ -204,15 +325,29 @@ onUnmounted(() => {
     z-index: 0;
   }
 
-  &__grid {
+  &__image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    filter: grayscale(100%);
+    opacity: 0.6;
+    transition: all 1s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  &__overlay {
     position: absolute;
     inset: 0;
-    background-image:
-      linear-gradient($gray-100 1px, transparent 1px),
-      linear-gradient(90deg, $gray-100 1px, transparent 1px);
-    background-size: 80px 80px;
-    opacity: 0.5;
-    mask-image: radial-gradient(ellipse 80% 70% at 50% 0%, $black 0%, transparent 70%);
+    background: linear-gradient(to top,
+        rgba($black, 0.95) 0%,
+        rgba($black, 0.8) 40%,
+        rgba($black, 0.4) 100%);
+  }
+
+  &:hover &__image {
+    filter: grayscale(0%);
+    opacity: 0.8;
+    transform: scale(1.05);
   }
 
   &__content {
@@ -221,261 +356,164 @@ onUnmounted(() => {
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
-    gap: 1.5rem;
-    width: 100%;
-    max-width: 900px;
-    padding: 8rem 1.5rem 5rem;
-    box-sizing: border-box;
+    text-align: center;
+    padding: 4rem 2rem;
+    margin-top: auto;
+
+    @media (min-width: 768px) {
+      padding: 5rem 4rem;
+    }
   }
 
-  &__label {
-    @include label-pill;
+  &__icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: rgba($white, 0.1);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba($white, 0.2);
+    color: $white;
+    font-size: 2rem;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 10px 30px rgba($black, 0.2);
+  }
+
+  &__subtitle {
+    font-family: $font-secondary;
+    font-size: 0.85rem;
+    font-weight: 600;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: rgba($white, 0.7);
+    margin-bottom: 0.5rem;
   }
 
   &__title {
     font-family: $font-display;
-    font-size: clamp(2.5rem, 8vw, 5rem);
+    font-size: clamp(2.5rem, 6vw, 4.5rem);
     font-weight: 500;
-    letter-spacing: -0.05em;
-    line-height: 1.05;
-    margin: 0;
+    color: $white;
+    letter-spacing: -0.03em;
+    line-height: 1.1;
+    margin: 0 0 1.5rem;
   }
 
   &__desc {
     font-family: $font-secondary;
     font-size: 1.1rem;
-    color: $foreground-muted;
-    max-width: 550px;
-    margin: 0;
+    color: rgba($white, 0.8);
     line-height: 1.7;
-  }
-}
-
-.products-list {
-  background: $background-soft;
-
-  .container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-    max-width: 1280px;
-  }
-
-  &__items {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 6rem;
-    width: 100%;
-
-    @media (min-width: 1024px) {
-      gap: 8rem;
-    }
-  }
-}
-
-.product-row {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 3rem;
-  width: 100%;
-
-  @media (min-width: 1024px) {
-    flex-direction: row;
-    gap: 6rem;
-  }
-
-  &--reverse {
-    @media (min-width: 1024px) {
-      flex-direction: row-reverse;
-    }
-  }
-
-  &__visual {
-    position: relative;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 100%;
-    max-width: 520px;
-    padding: 2rem;
-  }
-
-  &__frame {
-    position: relative;
-    width: 100%;
-    padding: 1rem;
-    background: $white;
-    border: 1px solid $border;
-    border-radius: 32px;
-    box-shadow:
-      0 40px 80px -20px rgba($black, 0.08),
-      0 24px 40px -24px rgba($black, 0.04);
-    z-index: 1;
-  }
-
-  &__image-wrapper {
-    position: relative;
-    border-radius: 20px;
-    overflow: hidden;
-    aspect-ratio: 4 / 3;
-  }
-
-  &__image {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    filter: grayscale(20%);
-    transition: transform 0.8s ease;
-
-    &:hover {
-      transform: scale(1.05);
-    }
-  }
-
-  &__badge {
-    position: absolute;
-    bottom: -0.75rem;
-    right: -0.75rem;
-    width: 64px;
-    height: 64px;
-    border-radius: 20px;
-    background: $black;
-    border: 4px solid $white;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.5rem;
-    color: $white;
-    box-shadow: 0 20px 50px rgba($black, 0.1);
-    z-index: 2;
-  }
-
-  &__ring {
-    position: absolute;
-    top: 0;
-    right: 0;
-    width: 70%;
-    height: 70%;
-    border: 1px dashed $border;
-    border-radius: 50%;
-    transform: translate(15%, -10%);
-    z-index: 0;
-    pointer-events: none;
-    animation: productRingRotate 60s linear infinite;
-  }
-
-  &__content {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-    gap: 1rem;
-    max-width: 520px;
-
-    @media (min-width: 1024px) {
-      align-items: flex-start;
-      text-align: left;
-    }
-  }
-
-  &__subtitle {
-    font-family: $font-secondary;
-    font-size: 0.7rem;
-    font-weight: 600;
-    letter-spacing: 0.25em;
-    text-transform: uppercase;
-    color: $foreground-muted;
-  }
-
-  &__title {
-    font-family: $font-display;
-    font-size: clamp(1.75rem, 3.5vw, 2.5rem);
-    font-weight: 500;
-    color: $black;
-    letter-spacing: -0.03em;
-    margin: 0;
-  }
-
-  &__desc {
-    font-family: $font-secondary;
-    font-size: 1rem;
-    color: $foreground-muted;
-    line-height: 1.8;
-    margin: 0;
+    max-width: 600px;
+    margin: 0 0 2.5rem;
   }
 
   &__features {
     list-style: none;
     padding: 0;
-    margin: 0.5rem 0 0;
+    margin: 0 0 3rem;
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
-    gap: 0.75rem;
+    gap: 1rem;
+    max-width: 800px;
 
-    @media (min-width: 1024px) {
-      justify-content: flex-start;
+    li {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-family: $font-secondary;
+      font-size: 0.95rem;
+      color: $white;
+      background: rgba($white, 0.1);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba($white, 0.15);
+      padding: 0.65rem 1.25rem;
+      border-radius: 100px;
+
+      i {
+        color: rgba($white, 0.7);
+      }
     }
-  }
-
-  &__feature {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    font-family: $font-secondary;
-    font-size: 0.85rem;
-    color: $foreground-muted;
-    background: $white;
-    border: 1px solid $border;
-    padding: 0.5rem 1rem;
-    border-radius: 100px;
-  }
-
-  &__check {
-    color: $black;
-    font-size: 0.75rem;
-  }
-
-  &__cta {
-    margin-top: 0.75rem;
   }
 }
 
-.why {
+.btn--glass {
+  background: rgba($white, 0.1);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba($white, 0.2);
+  color: $white;
+  padding: 1.25rem 2.5rem;
+  border-radius: 100px;
+  font-family: $font-secondary;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+
+  &:hover {
+    background: $white;
+    color: $black;
+    transform: translateY(-2px);
+    box-shadow: 0 10px 30px rgba($black, 0.3);
+  }
+}
+
+/* WHY US SECTION */
+.why-section {
+  position: relative;
   background: $white;
-  border-top: 1px solid $border;
+  padding: 8rem 0;
+
+  &__bg {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at top, rgba($gray-100, 0.8) 0%, transparent 70%);
+  }
 
   .container {
+    position: relative;
+    z-index: 1;
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
-    gap: 3rem;
-    width: 100%;
-    max-width: 1280px;
+    margin: 0 auto;
+  }
+}
+
+.why-header {
+  text-align: center;
+  margin-bottom: 4rem;
+
+  .why-label {
+    @include label-pill;
+    background: $background;
+    margin-bottom: 1rem;
   }
 
-  .section-header {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-    gap: 0.75rem;
+  .why-title {
+    font-family: $font-display;
+    font-size: clamp(2.5rem, 5vw, 4rem);
+    font-weight: 500;
+    letter-spacing: -0.03em;
+    margin: 0;
   }
+}
 
-  &__grid {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 1.25rem;
-    width: 100%;
+.why-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2rem;
+  width: 100%;
+  max-width: 1100px;
+
+  @media (min-width: 768px) {
+    grid-template-columns: repeat(3, 1fr);
   }
 }
 
@@ -484,79 +522,53 @@ onUnmounted(() => {
   flex-direction: column;
   align-items: center;
   text-align: center;
-  gap: 1rem;
-  flex: 1 1 260px;
-  max-width: 360px;
-  background: $background-soft;
+  padding: 3rem 2rem;
+  background: rgba($white, 0.8);
+  backdrop-filter: blur(20px);
   border: 1px solid $border;
-  border-radius: 24px;
-  padding: 2.5rem 2rem;
-  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  border-radius: 32px;
+  transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
 
   &:hover {
     background: $white;
-    border-color: $black;
-    transform: translateY(-6px);
-    box-shadow: 0 20px 40px rgba($black, 0.06);
+    transform: translateY(-10px);
+    box-shadow: 0 30px 60px rgba($black, 0.05);
+    border-color: rgba($black, 0.1);
   }
 
   &__icon {
     display: flex;
     justify-content: center;
     align-items: center;
-    width: 56px;
-    height: 56px;
+    width: 80px;
+    height: 80px;
     background: $black;
-    border-radius: 16px;
+    border-radius: 24px;
     color: $white;
-    font-size: 1.35rem;
+    font-size: 1.75rem;
+    margin-bottom: 1.5rem;
+    transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  &:hover &__icon {
+    transform: scale(1.1) rotate(5deg);
   }
 
   &__title {
     font-family: $font-display;
-    font-size: 1.15rem;
+    font-size: 1.5rem;
     font-weight: 500;
     color: $black;
-    margin: 0;
+    margin: 0 0 1rem;
+    letter-spacing: -0.02em;
   }
 
   &__desc {
     font-family: $font-secondary;
-    font-size: 0.9rem;
+    font-size: 1rem;
     color: $foreground-muted;
     line-height: 1.6;
     margin: 0;
   }
-}
-
-.btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 1rem 2rem;
-  border: none;
-  border-radius: 100px;
-  font-family: $font-secondary;
-  font-size: 0.9rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-
-  &--outline {
-    background: transparent;
-    color: $black;
-    border: 1px solid $border;
-
-    &:hover {
-      border-color: $black;
-      background: rgba($black, 0.03);
-      transform: translateY(-2px);
-    }
-  }
-}
-
-@keyframes productRingRotate {
-  from { transform: translate(15%, -10%) rotate(0deg); }
-  to { transform: translate(15%, -10%) rotate(360deg); }
 }
 </style>

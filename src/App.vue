@@ -27,7 +27,6 @@ import ScrollToTop from '@/components/ScrollToTop.vue'
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  align-items: center;
 }
 
 .app-main {

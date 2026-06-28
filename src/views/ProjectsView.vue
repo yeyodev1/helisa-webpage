@@ -38,14 +38,6 @@ const projects: Project[] = [
     image: '/images/proyectos/petro-ecuador.png',
   },
   {
-    id: 2,
-    title: 'Campamento Petrolero',
-    category: 'Industria Petrolera',
-    location: 'Oriente',
-    description: 'Planta de potabilización para campamentos en zonas remotas del país.',
-    image: '/images/proyectos/repsol-duragas.png',
-  },
-  {
     id: 3,
     title: 'Repsol Duragas',
     category: 'Industria Petrolera',
@@ -54,27 +46,11 @@ const projects: Project[] = [
     image: '/images/proyectos/repsol-duragas.png',
   },
   {
-    id: 4,
-    title: 'Tratamiento para Laboratorios',
-    category: 'Laboratorios',
-    location: 'Quito',
-    description: 'Agua purificada para laboratorios de productos inyectables y análisis clínicos.',
-    image: '/images/proyectos/laboratorio-indunidas.png',
-  },
-  {
     id: 5,
     title: 'Laboratorios Indunidas',
     category: 'Laboratorios',
     location: 'Ecuador',
     description: 'Sistema de desmineralización para procesos farmacéuticos.',
-    image: '/images/proyectos/laboratorio-indunidas.png',
-  },
-  {
-    id: 6,
-    title: 'Veterinaria Quito',
-    category: 'Laboratorios',
-    location: 'Quito',
-    description: 'Equipo de doble columna para aplicaciones veterinarias especializadas.',
     image: '/images/proyectos/laboratorio-indunidas.png',
   },
   {
@@ -86,46 +62,6 @@ const projects: Project[] = [
     image: '/images/proyectos/agua-latina-playas.jpg',
   },
   {
-    id: 8,
-    title: 'Agua Viva Portoviejo',
-    category: 'Plantas Envasadoras',
-    location: 'Portoviejo',
-    description: 'Tratamiento de agua para planta embotelladora en Manabí.',
-    image: '/images/proyectos/agua-latina-playas.jpg',
-  },
-  {
-    id: 9,
-    title: 'Planta en la Isla Puna',
-    category: 'Plantas Envasadoras',
-    location: 'Isla Puna',
-    description: 'Sistema de purificación para producción de agua embotellada.',
-    image: '/images/proyectos/agua-latina-playas.jpg',
-  },
-  {
-    id: 10,
-    title: 'Planta en Durán',
-    category: 'Plantas Envasadoras',
-    location: 'Durán',
-    description: 'Planta envasadora con tecnología de ósmosis inversa.',
-    image: '/images/proyectos/agua-latina-playas.jpg',
-  },
-  {
-    id: 11,
-    title: 'Oriente Orion Agua Residual',
-    category: 'Potabilización y PTAR',
-    location: 'Oriente',
-    description: 'Planta de tratamiento de aguas residuales para operación petrolera.',
-    image: '/images/proyectos/avicola-2007.jpg',
-  },
-  {
-    id: 12,
-    title: 'Tabacalera Bucay',
-    category: 'Potabilización y PTAR',
-    location: 'Bucay',
-    description: 'Sistema de potabilización para procesos industriales de tabaco.',
-    image: '/images/proyectos/avicola-2007.jpg',
-  },
-  {
     id: 13,
     title: 'Avícola 2007',
     category: 'Sector Agrícola',
@@ -134,43 +70,11 @@ const projects: Project[] = [
     image: '/images/proyectos/avicola-2007.jpg',
   },
   {
-    id: 14,
-    title: 'Avícola en Bucay',
-    category: 'Sector Agrícola',
-    location: 'Bucay',
-    description: 'Purificación de agua para producción avícola de alta escala.',
-    image: '/images/proyectos/avicola-2007.jpg',
-  },
-  {
-    id: 15,
-    title: 'Avícola la Gloria',
-    category: 'Sector Agrícola',
-    location: 'Ecuador',
-    description: 'Sistema integral de tratamiento para planta avícola.',
-    image: '/images/proyectos/avicola-2007.jpg',
-  },
-  {
-    id: 16,
-    title: 'Centro de Diálisis',
-    category: 'Sector de Salud',
-    location: 'Ecuador',
-    description: 'Agua ultrapura para equipos médicos de diálisis.',
-    image: '/images/proyectos/hospital-alcivar.jpg',
-  },
-  {
     id: 17,
     title: 'Hospital Miguel H. Alcívar',
     category: 'Sector de Salud',
     location: 'Ecuador',
     description: 'Sistema de tratamiento de agua para áreas hospitalarias.',
-    image: '/images/proyectos/hospital-alcivar.jpg',
-  },
-  {
-    id: 18,
-    title: 'Hospital Pasaje',
-    category: 'Sector de Salud',
-    location: 'Pasaje',
-    description: 'Área de salud equipada con purificación especializada.',
     image: '/images/proyectos/hospital-alcivar.jpg',
   },
   {
@@ -187,14 +91,6 @@ const projects: Project[] = [
     category: 'Sector Educativo',
     location: 'Durán',
     description: 'Sistema de agua potable para institución educativa.',
-    image: '/images/proyectos/colegio-duran.jpg',
-  },
-  {
-    id: 21,
-    title: 'Universidad de Guayaquil',
-    category: 'Sector Educativo',
-    location: 'Guayaquil',
-    description: 'Planta de tratamiento para campus universitario.',
     image: '/images/proyectos/colegio-duran.jpg',
   },
   {
@@ -248,42 +144,65 @@ const setCategory = (cat: string) => {
   activeCategory.value = cat
   gsap.fromTo(
     '.project-card',
-    { opacity: 1, y: 24 },
+    { opacity: 0, y: 24 },
     { opacity: 1, y: 0, duration: 0.5, stagger: 0.04, ease: 'power3.out' },
   )
 }
 
 onMounted(() => {
-  const headerTl = gsap.timeline()
-  headerTl
-    .from('.projects-header__label', { y: 30, opacity: 0, duration: 0.8, ease: 'power3.out' })
-    .from('.projects-header__title', { y: 80, opacity: 0, duration: 1.2, ease: 'power4.out' }, '-=0.5')
-    .from('.projects-header__desc', { y: 30, opacity: 0, duration: 0.8, ease: 'power3.out' }, '-=0.7')
-    .from('.projects-header__filters', { y: 30, opacity: 0, duration: 0.8, ease: 'power3.out' }, '-=0.5')
-    .from('.projects-header__visual', { scale: 1.05, opacity: 0, duration: 1.2, ease: 'power3.out' }, '-=1')
+  const tl = gsap.timeline()
+  tl.from('.hero-badge', { y: 20, opacity: 0, duration: 0.8, ease: 'power3.out' })
+    .from('.hero-title span > span', { y: 100, opacity: 0, duration: 1, stagger: 0.1, ease: 'power4.out', clipPath: 'inset(0% 0% 100% 0%)' }, '-=0.5')
+    .from('.hero-desc', { y: 20, opacity: 0, duration: 0.8, ease: 'power3.out' }, '-=0.6')
+    .from('.projects-filters', { y: 30, opacity: 0, duration: 0.8, ease: 'power3.out' }, '-=0.4')
 
   document.querySelectorAll('.project-card').forEach((card, i) => {
     const tween = gsap.fromTo(card, {
-      y: 40,
-      opacity: 1,
+      y: 100,
+      opacity: 0,
+      rotationX: 10,
+      scale: 0.9,
+      transformPerspective: 1000
     }, {
       y: 0,
       opacity: 1,
-      duration: 0.7,
-      ease: 'power3.out',
-      scrollTrigger: { trigger: card, start: 'top 88%', toggleActions: 'play none none none' },
-      delay: (i % 3) * 0.06,
+      rotationX: 0,
+      scale: 1,
+      duration: 1.2,
+      ease: 'expo.out',
+      scrollTrigger: { trigger: card, start: 'top 85%', toggleActions: 'play none none reverse' },
+      delay: (i % 3) * 0.1,
     })
     if (tween.scrollTrigger) triggers.push(tween.scrollTrigger)
+
+    const img = card.querySelector('.project-card__image')
+    if (img) {
+      const imgTween = gsap.fromTo(img, {
+        yPercent: -15,
+        scale: 1.15
+      }, {
+        yPercent: 15,
+        ease: 'none',
+        scrollTrigger: {
+          trigger: card,
+          start: 'top bottom',
+          end: 'bottom top',
+          scrub: true
+        }
+      })
+      if (imgTween.scrollTrigger) triggers.push(imgTween.scrollTrigger)
+    }
   })
 
   document.querySelectorAll('.projects-stat').forEach((stat, i) => {
     const tween = gsap.fromTo(stat, {
-      y: 24,
-      opacity: 1,
+      y: 30,
+      opacity: 0,
+      scale: 0.95
     }, {
       y: 0,
       opacity: 1,
+      scale: 1,
       duration: 0.8,
       ease: 'power3.out',
       scrollTrigger: { trigger: '.projects-stats', start: 'top 85%', toggleActions: 'play none none none' },
@@ -300,69 +219,45 @@ onUnmounted(() => {
 
 <template>
   <main class="projects-page">
-    <section class="projects-header">
-      <div class="projects-header__bg">
-        <div class="projects-header__grid" />
+    <section class="projects-hero">
+      <div class="projects-hero__bg">
+        <div class="projects-hero__grid"></div>
+        <div class="projects-hero__glow"></div>
       </div>
+      
+      <div class="container projects-hero__content">
+        <div class="hero-badge">Portafolio</div>
+        <h1 class="hero-title">
+          <span class="line-wrap"><span>Proyectos que</span></span>
+          <span class="line-wrap"><span class="text-gradient">transforman vidas</span></span>
+        </h1>
+        <p class="hero-desc">
+          Más de 15 años instalando sistemas de tratamiento de agua y aire en los sectores más exigentes del Ecuador.
+        </p>
 
-      <div class="container projects-header__content">
-        <div class="projects-header__copy">
-          <span class="projects-header__label">Portafolio</span>
-          <h1 class="projects-header__title">
-            <span class="split-line">Proyectos que</span>
-            <span class="split-line text-gradient">transforman vidas</span>
-          </h1>
-          <p class="projects-header__desc">
-            Más de 15 años instalando sistemas de tratamiento de agua y aire en los sectores más exigentes del Ecuador.
-          </p>
-
-          <div class="projects-header__filters">
-            <div class="category-tabs" role="tablist" aria-label="Filtrar proyectos por categoría">
-              <button
-                v-for="cat in categories"
-                :key="cat"
-                type="button"
-                role="tab"
-                :aria-selected="activeCategory === cat"
-                :class="['category-tab', { 'category-tab--active': activeCategory === cat }]"
-                @click="setCategory(cat)"
-              >
-                {{ cat }}
-              </button>
-            </div>
-            <div class="search-field">
-              <i class="fa-solid fa-magnifying-glass search-field__icon"></i>
-              <input
-                v-model="searchQuery"
-                type="text"
-                placeholder="Buscar proyecto..."
-                class="search-field__input"
-              />
-            </div>
+        <div class="projects-filters">
+          <div class="category-tabs" role="tablist" aria-label="Filtrar proyectos por categoría">
+            <button
+              v-for="cat in categories"
+              :key="cat"
+              type="button"
+              role="tab"
+              :aria-selected="activeCategory === cat"
+              :class="['category-tab', { 'category-tab--active': activeCategory === cat }]"
+              @click="setCategory(cat)"
+            >
+              {{ cat }}
+            </button>
           </div>
-        </div>
-
-        <div class="projects-header__visual">
-          <div class="projects-header__frame">
-            <img src="/images/proyectos/petro-ecuador.png" alt="Proyecto destacado HELISA" class="projects-header__image" />
-
-            <div class="projects-header__badge projects-header__badge--top">
-              <span class="projects-header__badge-dot"></span>
-              <span class="projects-header__badge-text">En operación</span>
-            </div>
-
-            <div class="projects-header__badge projects-header__badge--bottom">
-              <div class="projects-header__badge-icon">
-                <i class="fa-solid fa-industry"></i>
-              </div>
-              <div class="projects-header__badge-body">
-                <span class="projects-header__badge-number">500+</span>
-                <span class="projects-header__badge-label">Proyectos ejecutados</span>
-              </div>
-            </div>
+          <div class="search-field">
+            <i class="fa-solid fa-magnifying-glass search-field__icon"></i>
+            <input
+              v-model="searchQuery"
+              type="text"
+              placeholder="Buscar proyecto..."
+              class="search-field__input"
+            />
           </div>
-
-          <div class="projects-header__ring" aria-hidden="true"></div>
         </div>
       </div>
     </section>
@@ -370,19 +265,23 @@ onUnmounted(() => {
     <section class="projects-grid section-padding">
       <div class="container">
         <div v-if="filteredProjects.length === 0" class="projects-empty">
+          <div class="projects-empty__icon"><i class="fa-solid fa-folder-open"></i></div>
           <p>No encontramos proyectos para esta búsqueda.</p>
         </div>
         <div v-else class="projects-grid__layout">
           <article
-            v-for="(project, index) in filteredProjects"
+            v-for="project in filteredProjects"
             :key="project.id"
-            :class="['project-card', { 'project-card--large': index % 5 === 0 }]"
+            class="project-card"
           >
             <div class="project-card__frame">
               <div class="project-card__visual">
                 <img :src="project.image" :alt="project.title" class="project-card__image" loading="lazy" />
                 <div class="project-card__overlay" />
-                <span class="project-card__category">{{ project.category }}</span>
+                <div class="project-card__category-badge">
+                  <i class="fa-solid fa-tag"></i>
+                  <span>{{ project.category }}</span>
+                </div>
               </div>
               <div class="project-card__content">
                 <h3 class="project-card__title">{{ project.title }}</h3>
@@ -444,50 +343,53 @@ onUnmounted(() => {
 </template>
 
 <style lang="scss" scoped>
-@use '@/styles/colorVariables.module.scss' as *;
-@use '@/styles/fonts.module.scss' as *;
-
 .projects-page {
   padding-top: 80px;
-
-  section {
-    margin-top: 3rem;
-
-    @media (min-width: 768px) {
-      margin-top: 4rem;
-    }
-
-    @media (min-width: 1024px) {
-      margin-top: 5rem;
-    }
-  }
+  background-color: $background;
+  overflow: hidden;
 }
 
-.projects-header {
+/* HERO SECTION */
+.projects-hero {
   position: relative;
-  min-height: 90vh;
+  padding: 8rem 0 4rem;
+  text-align: center;
   display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: center;
-  overflow: hidden;
-  background: $white;
-  border-bottom: 1px solid $border;
 
   &__bg {
     position: absolute;
     inset: 0;
     z-index: 0;
+    pointer-events: none;
+    overflow: hidden;
   }
 
   &__grid {
     position: absolute;
-    inset: 0;
+    inset: -50%;
+    width: 200%;
+    height: 200%;
     background-image:
-      linear-gradient($gray-100 1px, transparent 1px),
-      linear-gradient(90deg, $gray-100 1px, transparent 1px);
-    background-size: 80px 80px;
-    opacity: 0.6;
-    mask-image: radial-gradient(ellipse 80% 70% at 20% 0%, $black 0%, transparent 70%);
+      linear-gradient($border 1px, transparent 1px),
+      linear-gradient(90deg, $border 1px, transparent 1px);
+    background-size: 100px 100px;
+    opacity: 0.4;
+    transform: perspective(500px) rotateX(60deg) translateY(-100px) translateZ(-200px);
+    animation: gridMove 20s linear infinite;
+  }
+
+  &__glow {
+    position: absolute;
+    top: -20%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60vw;
+    height: 60vw;
+    background: radial-gradient(circle, rgba($black, 0.03) 0%, transparent 70%);
+    border-radius: 50%;
+    filter: blur(60px);
   }
 
   &__content {
@@ -496,231 +398,85 @@ onUnmounted(() => {
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
-    gap: 4rem;
+    max-width: 1000px;
     width: 100%;
-    max-width: 1280px;
-    padding: 8rem 1.5rem 5rem;
+    padding: 0 1.5rem;
     box-sizing: border-box;
+  }
+}
 
-    @media (min-width: 1024px) {
-      flex-direction: row;
-      align-items: center;
-      justify-content: space-between;
-      text-align: left;
-      padding: 10rem 3rem 6rem;
-      gap: 5rem;
-    }
+@keyframes gridMove {
+  0% {
+    transform: perspective(500px) rotateX(60deg) translateY(0) translateZ(-200px);
   }
 
-  &__copy {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-    gap: 1.5rem;
-    max-width: 640px;
-
-    @media (min-width: 1024px) {
-      align-items: flex-start;
-      text-align: left;
-    }
+  100% {
+    transform: perspective(500px) rotateX(60deg) translateY(100px) translateZ(-200px);
   }
+}
 
-  &__label {
-    @include label-pill;
-  }
+.hero-badge {
+  @include label-pill;
+  margin-bottom: 2rem;
+  background: $white;
+  border: 1px solid $border;
+  box-shadow: 0 4px 20px rgba($black, 0.03);
+}
 
-  &__title {
-    font-family: $font-display;
-    font-size: clamp(2.75rem, 9vw, 5.5rem);
-    font-weight: 500;
-    letter-spacing: -0.05em;
-    line-height: 1.05;
-    margin: 0;
+.hero-title {
+  font-family: $font-display;
+  font-size: clamp(3.5rem, 9vw, 7.5rem);
+  font-weight: 500;
+  line-height: 1.05;
+  letter-spacing: -0.04em;
+  color: $black;
+  margin: 0 0 1.5rem;
 
-    .split-line {
-      display: block;
-    }
-  }
-
-  &__desc {
-    font-family: $font-secondary;
-    font-size: clamp(1rem, 1.5vw, 1.25rem);
-    color: $foreground-muted;
-    max-width: 520px;
-    margin: 0;
-    line-height: 1.7;
-  }
-
-  &__filters {
-    display: flex;
-    flex-direction: column;
-    gap: 1.25rem;
-    width: 100%;
-
-    @media (min-width: 1024px) {
-      flex-direction: row;
-      align-items: center;
-      justify-content: flex-start;
-    }
-  }
-
-  &__visual {
-    position: relative;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 100%;
-    max-width: 480px;
-    padding: 2rem;
-  }
-
-  &__frame {
-    position: relative;
-    width: 100%;
-    padding: 1rem;
-    background: $white;
-    border: 1px solid $border;
-    border-radius: 36px;
-    box-shadow:
-      0 40px 80px -20px rgba($black, 0.08),
-      0 24px 40px -24px rgba($black, 0.04);
-    z-index: 1;
-  }
-
-  &__image {
-    width: 100%;
-    border-radius: 24px;
-    aspect-ratio: 4 / 5;
-    object-fit: cover;
+  .line-wrap {
     display: block;
-  }
+    overflow: hidden;
+    padding-bottom: 0.1em;
 
-  &__ring {
-    position: absolute;
-    top: 0;
-    right: 0;
-    width: 70%;
-    height: 70%;
-    border: 1px dashed $border;
-    border-radius: 50%;
-    transform: translate(15%, -10%);
-    z-index: 0;
-    pointer-events: none;
-    animation: projectsRingRotate 60s linear infinite;
-  }
-
-  &__badge {
-    position: absolute;
-    display: flex;
-    align-items: center;
-    gap: 0.65rem;
-    background: $white;
-    border: 1px solid $border;
-    border-radius: 100px;
-    box-shadow: 0 20px 50px rgba($black, 0.1);
-    z-index: 2;
-
-    &--top {
-      top: 0.5rem;
-      right: 0.5rem;
-      padding: 0.6rem 1rem;
-
-      @media (min-width: 1024px) {
-        top: 0;
-        right: -1rem;
-      }
-    }
-
-    &--bottom {
-      bottom: 0.5rem;
-      left: 0.5rem;
-      padding: 0.85rem 1.25rem;
-      border-radius: 20px;
-      gap: 1rem;
-
-      @media (min-width: 1024px) {
-        bottom: 0;
-        left: -2.5rem;
-      }
-    }
-
-    &-dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: $black;
-      box-shadow: 0 0 0 4px rgba($black, 0.08);
-    }
-
-    &-text {
-      font-family: $font-secondary;
-      font-size: 0.8rem;
-      font-weight: 500;
-      color: $black;
-      letter-spacing: 0.02em;
-    }
-
-    &-icon {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      width: 44px;
-      height: 44px;
-      background: $black;
-      border-radius: 14px;
-      color: $white;
-      font-size: 1.1rem;
-      flex-shrink: 0;
-    }
-
-    &-body {
-      display: flex;
-      flex-direction: column;
-      gap: 0.15rem;
-    }
-
-    &-number {
-      font-family: $font-display;
-      font-size: 1.5rem;
-      font-weight: 500;
-      letter-spacing: -0.04em;
-      color: $black;
-      line-height: 1;
-    }
-
-    &-label {
-      font-family: $font-secondary;
-      font-size: 0.7rem;
-      color: $foreground-muted;
+    >span {
+      display: inline-block;
+      transform-origin: left bottom;
     }
   }
+}
 
-  @keyframes projectsRingRotate {
-    from { transform: translate(15%, -10%) rotate(0deg); }
-    to { transform: translate(15%, -10%) rotate(360deg); }
-  }
+.hero-desc {
+  font-family: $font-secondary;
+  font-size: clamp(1.1rem, 2vw, 1.35rem);
+  color: $foreground-muted;
+  max-width: 700px;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
+.projects-filters {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2rem;
+  margin-top: 4rem;
+  width: 100%;
 }
 
 .category-tabs {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  gap: 0.5rem;
-
-  @media (min-width: 1024px) {
-    justify-content: flex-start;
-  }
+  gap: 0.75rem;
 }
 
 .category-tab {
-  padding: 0.55rem 1rem;
-  background: transparent;
-  border: 1px solid $border;
+  padding: 0.65rem 1.25rem;
+  background: rgba($white, 0.5);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba($border, 0.8);
   border-radius: 100px;
   font-family: $font-secondary;
-  font-size: 0.75rem;
+  font-size: 0.85rem;
   font-weight: 500;
   color: $foreground-muted;
   cursor: pointer;
@@ -730,40 +486,43 @@ onUnmounted(() => {
   &:hover {
     border-color: $black;
     color: $black;
+    transform: translateY(-2px);
   }
 
   &--active {
     background: $black;
     border-color: $black;
     color: $white;
+    box-shadow: 0 10px 20px rgba($black, 0.15);
   }
 }
 
 .search-field {
   position: relative;
   width: 100%;
-  max-width: 320px;
+  max-width: 400px;
 
   &__icon {
     position: absolute;
-    left: 1rem;
+    left: 1.25rem;
     top: 50%;
     transform: translateY(-50%);
     color: $gray-400;
-    font-size: 0.85rem;
+    font-size: 1rem;
   }
 
   &__input {
     width: 100%;
-    padding: 0.75rem 1rem 0.75rem 2.5rem;
+    padding: 1rem 1.5rem 1rem 3rem;
     background: $white;
     border: 1px solid $border;
     border-radius: 100px;
     font-family: $font-secondary;
-    font-size: 0.85rem;
+    font-size: 1rem;
     color: $black;
     outline: none;
-    transition: all 0.3s;
+    transition: all 0.4s;
+    box-shadow: 0 10px 30px rgba($black, 0.03);
 
     &::placeholder {
       color: $gray-400;
@@ -771,155 +530,169 @@ onUnmounted(() => {
 
     &:focus {
       border-color: $black;
-      box-shadow: 0 0 0 3px $ring;
-    }
-  }
-}
-
-.projects-grid {
-  background: $background-soft;
-
-  .container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-    max-width: 1280px;
-  }
-
-  &__layout {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 1.5rem;
-    width: 100%;
-    padding: 1.25rem;
-
-    @media (min-width: 768px) {
-      padding: 2.5rem;
-    }
-
-    @media (min-width: 1024px) {
-      padding: 4rem;
+      box-shadow: 0 10px 40px rgba($black, 0.1);
+      transform: translateY(-2px);
     }
   }
 }
 
 .projects-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 6rem 2rem;
   text-align: center;
-  padding: 5rem 1rem;
-  color: $foreground-muted;
-  font-family: $font-secondary;
+
+  &__icon {
+    font-size: 3rem;
+    color: $gray-300;
+    margin-bottom: 1.5rem;
+  }
+
+  p {
+    font-family: $font-secondary;
+    font-size: 1.25rem;
+    color: $foreground-muted;
+  }
+}
+
+.projects-grid {
+  position: relative;
+  z-index: 2;
+
+  &__layout {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2rem;
+    width: 100%;
+
+    @media (min-width: 640px) {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    @media (min-width: 1024px) {
+      margin: 0 auto;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 3rem;
+    }
+  }
 }
 
 .project-card {
-  position: relative;
-  padding: 0.75rem;
-  background: $white;
-  border: 1px solid $border;
-  border-radius: 28px;
-  transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  display: flex;
+  flex-direction: column;
   width: 100%;
-
-  @media (min-width: 640px) {
-    width: calc((100% - 1.5rem) / 2);
-  }
-
-  @media (min-width: 1024px) {
-    width: calc((100% - 3rem) / 3);
-  }
-
-  &:hover {
-    border-color: $gray-300;
-    transform: translateY(-6px);
-    box-shadow: 0 30px 60px rgba($black, 0.08);
-
-    .project-card__image {
-      transform: scale(1.05);
-    }
-  }
-
-  &--large {
-    @media (min-width: 1024px) {
-      width: calc(2 * ((100% - 3rem) / 3) + 1.5rem);
-
-      .project-card__visual {
-        aspect-ratio: 21 / 9;
-      }
-    }
-  }
+  cursor: default;
 
   &__frame {
-    overflow: hidden;
-    border-radius: 20px;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    background: rgba($white, 0.6);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba($white, 0.8);
+    border-radius: 32px;
+    padding: 1.25rem;
+    box-shadow:
+      0 20px 40px rgba($black, 0.04),
+      inset 0 0 0 1px rgba($white, 0.5);
+    transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  &:hover .project-card__frame {
+    background: $white;
+    transform: translateY(-8px);
+    box-shadow: 0 30px 60px rgba($black, 0.08);
   }
 
   &__visual {
     position: relative;
-    aspect-ratio: 4 / 3;
+    width: 100%;
+    border-radius: 24px;
     overflow: hidden;
-    background: $gray-100;
+    aspect-ratio: 4 / 3;
+    margin-bottom: 1.5rem;
   }
 
   &__image {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    transition: transform 0.8s ease;
+    transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  &:hover &__image {
+    transform: scale(1.08);
   }
 
   &__overlay {
     position: absolute;
     inset: 0;
-    background: linear-gradient(to top, rgba($black, 0.5) 0%, transparent 50%);
+    background: linear-gradient(to top, rgba($black, 0.4), transparent 50%);
+    opacity: 0;
+    transition: opacity 0.5s;
   }
 
-  &__category {
+  &:hover &__overlay {
+    opacity: 1;
+  }
+
+  &__category-badge {
     position: absolute;
-    top: 1rem;
+    bottom: 1rem;
     left: 1rem;
-    padding: 0.4rem 0.8rem;
-    background: $white;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: rgba($white, 0.9);
+    backdrop-filter: blur(10px);
+    padding: 0.5rem 1rem;
     border-radius: 100px;
     font-family: $font-secondary;
-    font-size: 0.65rem;
+    font-size: 0.75rem;
     font-weight: 600;
-    letter-spacing: 0.05em;
-    text-transform: uppercase;
     color: $black;
+    box-shadow: 0 10px 20px rgba($black, 0.1);
+    transform: translateY(20px);
+    opacity: 0;
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  &:hover &__category-badge {
+    transform: translateY(0);
+    opacity: 1;
   }
 
   &__content {
-    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    padding: 0 0.75rem 1rem;
+    flex: 1;
   }
 
   &__title {
     font-family: $font-display;
-    font-size: 1.25rem;
+    font-size: 1.5rem;
     font-weight: 500;
-    letter-spacing: -0.02em;
     color: $black;
-    margin: 0 0 0.35rem;
+    margin: 0 0 0.5rem;
+    letter-spacing: -0.02em;
   }
 
   &__location {
     display: flex;
     align-items: center;
-    gap: 0.4rem;
+    gap: 0.5rem;
     font-family: $font-secondary;
-    font-size: 0.75rem;
+    font-size: 0.85rem;
     color: $gray-500;
-    margin: 0 0 0.75rem;
-
-    i {
-      font-size: 0.7rem;
-    }
+    margin: 0 0 1rem;
   }
 
   &__desc {
     font-family: $font-secondary;
-    font-size: 0.85rem;
+    font-size: 0.95rem;
     color: $foreground-muted;
     line-height: 1.6;
     margin: 0;
@@ -927,104 +700,79 @@ onUnmounted(() => {
 }
 
 .projects-stats {
-  background: $white;
   border-top: 1px solid $border;
-
-  .container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-    max-width: 1280px;
-  }
+  background: $white;
 
   &__grid {
-    display: flex;
-    flex-direction: column;
-    gap: 1.5rem;
-    width: 100%;
-    padding: 1.25rem;
-    margin-top: 1rem;
-    margin-bottom: 1rem;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2rem;
 
-    @media (min-width: 768px) {
-      padding: 2.5rem;
-      margin-top: 2rem;
-      margin-bottom: 2rem;
+    @media (min-width: 640px) {
+      grid-template-columns: repeat(2, 1fr);
     }
 
     @media (min-width: 1024px) {
-      padding: 4rem;
-      margin-top: 3rem;
-      margin-bottom: 3rem;
+      grid-template-columns: repeat(4, 1fr);
     }
   }
 }
 
 .projects-stat {
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   align-items: center;
-  justify-content: flex-start;
-  gap: 1.5rem;
-  text-align: left;
-  padding: 2rem 1.5rem;
+  text-align: center;
+  gap: 1.25rem;
+  padding: 2.5rem;
+  background: $background-soft;
+  border-radius: 28px;
   border: 1px solid $border;
-  border-radius: 20px;
-  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-
-  @media (min-width: 768px) {
-    padding: 2.5rem 2rem;
-    gap: 2rem;
-  }
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 
   &:hover {
+    background: $white;
     border-color: $black;
-    transform: translateY(-4px);
-    box-shadow: 0 20px 40px rgba($black, 0.06);
+    transform: translateY(-8px);
+    box-shadow: 0 20px 40px rgba($black, 0.05);
   }
 
   &__icon {
     display: flex;
     justify-content: center;
     align-items: center;
-    width: 56px;
-    height: 56px;
+    width: 72px;
+    height: 72px;
     background: $black;
-    border-radius: 16px;
     color: $white;
-    font-size: 1.3rem;
-    flex-shrink: 0;
+    border-radius: 24px;
+    font-size: 1.75rem;
+    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  }
 
-    @media (min-width: 768px) {
-      width: 64px;
-      height: 64px;
-      font-size: 1.5rem;
-      border-radius: 18px;
-    }
+  &:hover &__icon {
+    transform: scale(1.1) rotate(-5deg);
   }
 
   &__body {
     display: flex;
     flex-direction: column;
-    gap: 0.15rem;
+    gap: 0.25rem;
   }
 
   &__value {
-    display: block;
     font-family: $font-display;
-    font-size: clamp(1.5rem, 3vw, 2rem);
+    font-size: 2.5rem;
     font-weight: 500;
-    letter-spacing: -0.04em;
     color: $black;
+    line-height: 1;
+    letter-spacing: -0.04em;
   }
 
   &__label {
     font-family: $font-secondary;
-    font-size: 0.85rem;
+    font-size: 0.95rem;
     color: $foreground-muted;
-    line-height: 1.4;
   }
 }
 </style>

@@ -161,7 +161,7 @@ const isActive = (path: string) => route.path === path
     align-items: center;
     gap: 2.5rem;
 
-    @media (min-width: 768px) {
+    @media (min-width: 1024px) {
       display: flex;
     }
   }
@@ -212,7 +212,7 @@ const isActive = (path: string) => route.path === path
       transform: translateY(-1px);
     }
 
-    @media (min-width: 768px) {
+    @media (min-width: 1024px) {
       display: inline-flex;
     }
   }
@@ -228,7 +228,7 @@ const isActive = (path: string) => route.path === path
     height: 32px;
     z-index: 1001;
 
-    @media (min-width: 768px) {
+    @media (min-width: 1024px) {
       display: none;
     }
   }

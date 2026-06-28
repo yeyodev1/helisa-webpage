@@ -241,6 +241,7 @@ section {
   width: 100%;
   max-width: 1280px;
   gap: 3rem;
+  margin: 0 auto;
 }
 
 .section-header {
@@ -461,8 +462,13 @@ section {
   }
 
   @keyframes heroRingRotate {
-    from { transform: translate(15%, -10%) rotate(0deg); }
-    to { transform: translate(15%, -10%) rotate(360deg); }
+    from {
+      transform: translate(15%, -10%) rotate(0deg);
+    }
+
+    to {
+      transform: translate(15%, -10%) rotate(360deg);
+    }
   }
 }
 
