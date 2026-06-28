@@ -36,7 +36,7 @@ onMounted(() => {
     .fromTo('.story__label', { y: 20, opacity: 1 }, { y: 0, opacity: 1, duration: 0.6 })
     .fromTo('.story__title', { y: 40, opacity: 1 }, { y: 0, opacity: 1, duration: 0.8 }, '-=0.3')
     .fromTo('.story__text p', { y: 24, opacity: 1 }, { y: 0, opacity: 1, duration: 0.8, stagger: 0.15 }, '-=0.4')
-    .fromTo('.story__image-wrapper', { scale: 1.03, opacity: 1 }, { scale: 1, opacity: 1, duration: 1 }, '-=0.6')
+    .fromTo('.story__visual', { scale: 1.03, opacity: 1 }, { scale: 1, opacity: 1, duration: 1 }, '-=0.6')
   if (storyTl.scrollTrigger) triggers.push(storyTl.scrollTrigger)
 
   document.querySelectorAll('.value-card').forEach((card, i) => {
@@ -81,10 +81,27 @@ onUnmounted(() => {
     </section>
 
     <section class="story section-padding">
-      <div class="container story__grid">
-        <div class="story__image-wrapper reveal-item">
-          <img src="/images/nave-supersacos.jpg" alt="Instalaciones HELISA" class="story__image" />
+      <div class="container story__inner">
+        <div class="story__visual">
+          <div class="story__frame">
+            <img src="/images/nave-supersacos.jpg" alt="Instalaciones HELISA" class="story__image" />
+            <div class="story__badge story__badge--top">
+              <span class="story__badge-dot"></span>
+              <span class="story__badge-text">Ecuador</span>
+            </div>
+            <div class="story__badge story__badge--bottom">
+              <div class="story__badge-icon">
+                <i class="fa-solid fa-heart"></i>
+              </div>
+              <div class="story__badge-body">
+                <span class="story__badge-number">2009</span>
+                <span class="story__badge-label">Desde</span>
+              </div>
+            </div>
+          </div>
+          <div class="story__ring" aria-hidden="true"></div>
         </div>
+
         <div class="story__text">
           <span class="section-label reveal-item">Nuestra esencia</span>
           <h2 class="section-title reveal-item">Pensando en <span class="text-gradient">su bienestar</span></h2>
@@ -124,7 +141,9 @@ onUnmounted(() => {
             @blur="activeValue = null"
             :class="{ 'value-card--active': activeValue === value.id }"
           >
-            <i :class="['fa-solid', value.icon, 'value-card__icon']"></i>
+            <div class="value-card__icon">
+              <i :class="['fa-solid', value.icon]"></i>
+            </div>
             <h3 class="value-card__title">{{ value.title }}</h3>
             <p class="value-card__desc">{{ value.desc }}</p>
           </article>
@@ -194,16 +213,19 @@ onUnmounted(() => {
   &__content {
     position: relative;
     z-index: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1.5rem;
     width: 100%;
     max-width: 900px;
-    margin: 0 auto;
     padding: 8rem 1.5rem 5rem;
     box-sizing: border-box;
   }
 
   &__label {
     @include label-pill;
-    margin-bottom: 1.5rem;
   }
 
   &__title {
@@ -212,7 +234,7 @@ onUnmounted(() => {
     font-weight: 500;
     letter-spacing: -0.05em;
     line-height: 1.05;
-    margin: 0 0 1.5rem;
+    margin: 0;
   }
 
   &__desc {
@@ -220,7 +242,7 @@ onUnmounted(() => {
     font-size: 1.1rem;
     color: $foreground-muted;
     max-width: 550px;
-    margin: 0 auto;
+    margin: 0;
     line-height: 1.7;
   }
 }
@@ -228,37 +250,161 @@ onUnmounted(() => {
 .story {
   background: $background-soft;
 
-  &__grid {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 4rem;
+  .container {
+    display: flex;
+    flex-direction: column;
     align-items: center;
+    justify-content: center;
+    gap: 3rem;
+    width: 100%;
+    max-width: 1280px;
+  }
+
+  &__inner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4rem;
+    width: 100%;
 
     @media (min-width: 1024px) {
-      grid-template-columns: 1fr 1fr;
+      flex-direction: row;
       gap: 6rem;
     }
   }
 
-  &__image-wrapper {
+  &__visual {
     position: relative;
-    border-radius: 24px;
-    overflow: hidden;
-    aspect-ratio: 4 / 3;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    max-width: 520px;
+    padding: 2rem;
+  }
+
+  &__frame {
+    position: relative;
+    width: 100%;
+    padding: 1rem;
+    background: $white;
     border: 1px solid $border;
+    border-radius: 36px;
+    box-shadow:
+      0 40px 80px -20px rgba($black, 0.08),
+      0 24px 40px -24px rgba($black, 0.04);
+    z-index: 1;
   }
 
   &__image {
     width: 100%;
-    height: 100%;
+    border-radius: 24px;
+    aspect-ratio: 4 / 5;
     object-fit: cover;
-    filter: grayscale(20%);
+    display: block;
+  }
+
+  &__ring {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 70%;
+    height: 70%;
+    border: 1px dashed $border;
+    border-radius: 50%;
+    transform: translate(15%, -10%);
+    z-index: 0;
+    pointer-events: none;
+    animation: storyRingRotate 60s linear infinite;
+  }
+
+  &__badge {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    background: $white;
+    border: 1px solid $border;
+    border-radius: 100px;
+    box-shadow: 0 20px 50px rgba($black, 0.1);
+    z-index: 2;
+
+    &--top {
+      top: 0;
+      right: -1rem;
+      padding: 0.6rem 1rem;
+    }
+
+    &--bottom {
+      bottom: 0;
+      left: -2.5rem;
+      padding: 0.85rem 1.25rem;
+      border-radius: 20px;
+      gap: 1rem;
+    }
+
+    &-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: $black;
+      box-shadow: 0 0 0 4px rgba($black, 0.08);
+    }
+
+    &-text {
+      font-family: $font-secondary;
+      font-size: 0.8rem;
+      font-weight: 500;
+      color: $black;
+      letter-spacing: 0.02em;
+    }
+
+    &-icon {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 44px;
+      height: 44px;
+      background: $black;
+      border-radius: 14px;
+      color: $white;
+      font-size: 1.1rem;
+      flex-shrink: 0;
+    }
+
+    &-body {
+      display: flex;
+      flex-direction: column;
+      gap: 0.15rem;
+    }
+
+    &-number {
+      font-family: $font-display;
+      font-size: 1.5rem;
+      font-weight: 500;
+      letter-spacing: -0.04em;
+      color: $black;
+      line-height: 1;
+    }
+
+    &-label {
+      font-family: $font-secondary;
+      font-size: 0.7rem;
+      color: $foreground-muted;
+    }
   }
 
   &__text {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     text-align: center;
+    gap: 1rem;
+    max-width: 520px;
 
     @media (min-width: 1024px) {
+      align-items: flex-start;
       text-align: left;
     }
 
@@ -267,7 +413,7 @@ onUnmounted(() => {
       font-size: 1.05rem;
       color: $foreground-muted;
       line-height: 1.8;
-      margin: 0 0 1.25rem;
+      margin: 0;
     }
   }
 
@@ -295,32 +441,45 @@ onUnmounted(() => {
   background: $white;
   border-top: 1px solid $border;
 
+  .container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3rem;
+    width: 100%;
+    max-width: 1280px;
+  }
+
   .section-header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     text-align: center;
-    margin-bottom: 4rem;
+    gap: 0.75rem;
   }
 
   &__grid {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 1.5rem;
-
-    @media (min-width: 640px) {
-      grid-template-columns: repeat(2, 1fr);
-    }
-
-    @media (min-width: 1024px) {
-      grid-template-columns: repeat(4, 1fr);
-    }
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 1.25rem;
+    width: 100%;
   }
 }
 
 .value-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 1rem;
+  flex: 1 1 220px;
+  max-width: 280px;
   background: $background-soft;
   border: 1px solid $border;
-  border-radius: 20px;
+  border-radius: 24px;
   padding: 2rem;
-  text-align: center;
   transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
   cursor: default;
 
@@ -333,9 +492,15 @@ onUnmounted(() => {
   }
 
   &__icon {
-    font-size: 2rem;
-    color: $black;
-    margin-bottom: 1.5rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 56px;
+    height: 56px;
+    background: $black;
+    border-radius: 16px;
+    color: $white;
+    font-size: 1.35rem;
   }
 
   &__title {
@@ -343,7 +508,7 @@ onUnmounted(() => {
     font-size: 1.15rem;
     font-weight: 500;
     color: $black;
-    margin: 0 0 0.5rem;
+    margin: 0;
   }
 
   &__desc {
@@ -358,15 +523,28 @@ onUnmounted(() => {
 .timeline {
   background: $background-soft;
 
+  .container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3rem;
+    width: 100%;
+    max-width: 1280px;
+  }
+
   .section-header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     text-align: center;
-    margin-bottom: 4rem;
+    gap: 0.75rem;
   }
 
   &__wrapper {
     position: relative;
+    width: 100%;
     max-width: 900px;
-    margin: 0 auto;
   }
 
   &__items {
@@ -425,8 +603,15 @@ onUnmounted(() => {
   &__content {
     background: $white;
     border: 1px solid $border;
-    border-radius: 16px;
+    border-radius: 20px;
     padding: 1.5rem 2rem;
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+
+    &:hover {
+      border-color: $black;
+      transform: translateY(-4px);
+      box-shadow: 0 20px 40px rgba($black, 0.06);
+    }
 
     @media (min-width: 768px) {
       &--right {
@@ -459,5 +644,10 @@ onUnmounted(() => {
     line-height: 1.6;
     margin: 0;
   }
+}
+
+@keyframes storyRingRotate {
+  from { transform: translate(15%, -10%) rotate(0deg); }
+  to { transform: translate(15%, -10%) rotate(360deg); }
 }
 </style>

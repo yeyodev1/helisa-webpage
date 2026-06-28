@@ -260,6 +260,7 @@ onMounted(() => {
     .from('.projects-header__title', { y: 80, opacity: 0, duration: 1.2, ease: 'power4.out' }, '-=0.5')
     .from('.projects-header__desc', { y: 30, opacity: 0, duration: 0.8, ease: 'power3.out' }, '-=0.7')
     .from('.projects-header__filters', { y: 30, opacity: 0, duration: 0.8, ease: 'power3.out' }, '-=0.5')
+    .from('.projects-header__visual', { scale: 1.05, opacity: 0, duration: 1.2, ease: 'power3.out' }, '-=1')
 
   document.querySelectorAll('.project-card').forEach((card, i) => {
     const tween = gsap.fromTo(card, {
@@ -303,39 +304,65 @@ onUnmounted(() => {
       <div class="projects-header__bg">
         <div class="projects-header__grid" />
       </div>
-      <div class="container projects-header__content">
-        <span class="projects-header__label">Portafolio</span>
-        <h1 class="projects-header__title">
-          <span class="split-line">Proyectos que</span>
-          <span class="split-line text-gradient">transforman vidas</span>
-        </h1>
-        <p class="projects-header__desc">
-          Más de 15 años instalando sistemas de tratamiento de agua y aire en los sectores más exigentes del Ecuador.
-        </p>
 
-        <div class="projects-header__filters">
-          <div class="category-tabs" role="tablist" aria-label="Filtrar proyectos por categoría">
-            <button
-              v-for="cat in categories"
-              :key="cat"
-              type="button"
-              role="tab"
-              :aria-selected="activeCategory === cat"
-              :class="['category-tab', { 'category-tab--active': activeCategory === cat }]"
-              @click="setCategory(cat)"
-            >
-              {{ cat }}
-            </button>
+      <div class="container projects-header__content">
+        <div class="projects-header__copy">
+          <span class="projects-header__label">Portafolio</span>
+          <h1 class="projects-header__title">
+            <span class="split-line">Proyectos que</span>
+            <span class="split-line text-gradient">transforman vidas</span>
+          </h1>
+          <p class="projects-header__desc">
+            Más de 15 años instalando sistemas de tratamiento de agua y aire en los sectores más exigentes del Ecuador.
+          </p>
+
+          <div class="projects-header__filters">
+            <div class="category-tabs" role="tablist" aria-label="Filtrar proyectos por categoría">
+              <button
+                v-for="cat in categories"
+                :key="cat"
+                type="button"
+                role="tab"
+                :aria-selected="activeCategory === cat"
+                :class="['category-tab', { 'category-tab--active': activeCategory === cat }]"
+                @click="setCategory(cat)"
+              >
+                {{ cat }}
+              </button>
+            </div>
+            <div class="search-field">
+              <i class="fa-solid fa-magnifying-glass search-field__icon"></i>
+              <input
+                v-model="searchQuery"
+                type="text"
+                placeholder="Buscar proyecto..."
+                class="search-field__input"
+              />
+            </div>
           </div>
-          <div class="search-field">
-            <i class="fa-solid fa-magnifying-glass search-field__icon"></i>
-            <input
-              v-model="searchQuery"
-              type="text"
-              placeholder="Buscar proyecto..."
-              class="search-field__input"
-            />
+        </div>
+
+        <div class="projects-header__visual">
+          <div class="projects-header__frame">
+            <img src="/images/proyectos/petro-ecuador.png" alt="Proyecto destacado HELISA" class="projects-header__image" />
+
+            <div class="projects-header__badge projects-header__badge--top">
+              <span class="projects-header__badge-dot"></span>
+              <span class="projects-header__badge-text">En operación</span>
+            </div>
+
+            <div class="projects-header__badge projects-header__badge--bottom">
+              <div class="projects-header__badge-icon">
+                <i class="fa-solid fa-industry"></i>
+              </div>
+              <div class="projects-header__badge-body">
+                <span class="projects-header__badge-number">500+</span>
+                <span class="projects-header__badge-label">Proyectos ejecutados</span>
+              </div>
+            </div>
           </div>
+
+          <div class="projects-header__ring" aria-hidden="true"></div>
         </div>
       </div>
     </section>
@@ -351,18 +378,20 @@ onUnmounted(() => {
             :key="project.id"
             :class="['project-card', { 'project-card--large': index % 5 === 0 }]"
           >
-            <div class="project-card__visual">
-              <img :src="project.image" :alt="project.title" class="project-card__image" loading="lazy" />
-              <div class="project-card__overlay" />
-              <span class="project-card__category">{{ project.category }}</span>
-            </div>
-            <div class="project-card__content">
-              <h3 class="project-card__title">{{ project.title }}</h3>
-              <p v-if="project.location" class="project-card__location">
-                <i class="fa-solid fa-location-dot"></i>
-                {{ project.location }}
-              </p>
-              <p class="project-card__desc">{{ project.description }}</p>
+            <div class="project-card__frame">
+              <div class="project-card__visual">
+                <img :src="project.image" :alt="project.title" class="project-card__image" loading="lazy" />
+                <div class="project-card__overlay" />
+                <span class="project-card__category">{{ project.category }}</span>
+              </div>
+              <div class="project-card__content">
+                <h3 class="project-card__title">{{ project.title }}</h3>
+                <p v-if="project.location" class="project-card__location">
+                  <i class="fa-solid fa-location-dot"></i>
+                  {{ project.location }}
+                </p>
+                <p class="project-card__desc">{{ project.description }}</p>
+              </div>
             </div>
           </article>
         </div>
@@ -373,18 +402,30 @@ onUnmounted(() => {
       <div class="container">
         <div class="projects-stats__grid">
           <div class="projects-stat">
+            <div class="projects-stat__icon">
+              <i class="fa-solid fa-calendar-check"></i>
+            </div>
             <span class="projects-stat__value">15+</span>
             <span class="projects-stat__label">Años de experiencia</span>
           </div>
           <div class="projects-stat">
+            <div class="projects-stat__icon">
+              <i class="fa-solid fa-clipboard-check"></i>
+            </div>
             <span class="projects-stat__value">500+</span>
             <span class="projects-stat__label">Proyectos ejecutados</span>
           </div>
           <div class="projects-stat">
+            <div class="projects-stat__icon">
+              <i class="fa-solid fa-layer-group"></i>
+            </div>
             <span class="projects-stat__value">10</span>
             <span class="projects-stat__label">Sectores atendidos</span>
           </div>
           <div class="projects-stat">
+            <div class="projects-stat__icon">
+              <i class="fa-solid fa-headset"></i>
+            </div>
             <span class="projects-stat__value">24/7</span>
             <span class="projects-stat__label">Soporte técnico</span>
           </div>
@@ -404,9 +445,10 @@ onUnmounted(() => {
 
 .projects-header {
   position: relative;
-  min-height: 85vh;
+  min-height: 90vh;
   display: flex;
   align-items: center;
+  justify-content: center;
   overflow: hidden;
   background: $white;
   border-bottom: 1px solid $border;
@@ -425,34 +467,57 @@ onUnmounted(() => {
       linear-gradient(90deg, $gray-100 1px, transparent 1px);
     background-size: 80px 80px;
     opacity: 0.6;
-    mask-image: radial-gradient(ellipse 80% 70% at 50% 0%, $black 0%, transparent 70%);
+    mask-image: radial-gradient(ellipse 80% 70% at 20% 0%, $black 0%, transparent 70%);
   }
 
   &__content {
     position: relative;
     z-index: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4rem;
     width: 100%;
+    max-width: 1280px;
     padding: 8rem 1.5rem 5rem;
     box-sizing: border-box;
 
-    @media (min-width: 768px) {
+    @media (min-width: 1024px) {
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-between;
+      text-align: left;
       padding: 10rem 3rem 6rem;
+      gap: 5rem;
+    }
+  }
+
+  &__copy {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 1.5rem;
+    max-width: 640px;
+
+    @media (min-width: 1024px) {
+      align-items: flex-start;
+      text-align: left;
     }
   }
 
   &__label {
     @include label-pill;
-    margin-bottom: 2rem;
   }
 
   &__title {
     font-family: $font-display;
-    font-size: clamp(2.75rem, 9vw, 6rem);
+    font-size: clamp(2.75rem, 9vw, 5.5rem);
     font-weight: 500;
     letter-spacing: -0.05em;
-    line-height: 1;
-    margin: 0 0 1.75rem;
-    max-width: 900px;
+    line-height: 1.05;
+    margin: 0;
 
     .split-line {
       display: block;
@@ -463,28 +528,170 @@ onUnmounted(() => {
     font-family: $font-secondary;
     font-size: clamp(1rem, 1.5vw, 1.25rem);
     color: $foreground-muted;
-    max-width: 580px;
-    margin: 0 0 3rem;
+    max-width: 520px;
+    margin: 0;
     line-height: 1.7;
   }
 
   &__filters {
     display: flex;
     flex-direction: column;
-    gap: 1.5rem;
+    gap: 1.25rem;
+    width: 100%;
 
     @media (min-width: 1024px) {
       flex-direction: row;
       align-items: center;
-      justify-content: space-between;
+      justify-content: flex-start;
     }
+  }
+
+  &__visual {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    max-width: 480px;
+    padding: 2rem;
+  }
+
+  &__frame {
+    position: relative;
+    width: 100%;
+    padding: 1rem;
+    background: $white;
+    border: 1px solid $border;
+    border-radius: 36px;
+    box-shadow:
+      0 40px 80px -20px rgba($black, 0.08),
+      0 24px 40px -24px rgba($black, 0.04);
+    z-index: 1;
+  }
+
+  &__image {
+    width: 100%;
+    border-radius: 24px;
+    aspect-ratio: 4 / 5;
+    object-fit: cover;
+    display: block;
+  }
+
+  &__ring {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 70%;
+    height: 70%;
+    border: 1px dashed $border;
+    border-radius: 50%;
+    transform: translate(15%, -10%);
+    z-index: 0;
+    pointer-events: none;
+    animation: projectsRingRotate 60s linear infinite;
+  }
+
+  &__badge {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    background: $white;
+    border: 1px solid $border;
+    border-radius: 100px;
+    box-shadow: 0 20px 50px rgba($black, 0.1);
+    z-index: 2;
+
+    &--top {
+      top: 0.5rem;
+      right: 0.5rem;
+      padding: 0.6rem 1rem;
+
+      @media (min-width: 1024px) {
+        top: 0;
+        right: -1rem;
+      }
+    }
+
+    &--bottom {
+      bottom: 0.5rem;
+      left: 0.5rem;
+      padding: 0.85rem 1.25rem;
+      border-radius: 20px;
+      gap: 1rem;
+
+      @media (min-width: 1024px) {
+        bottom: 0;
+        left: -2.5rem;
+      }
+    }
+
+    &-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: $black;
+      box-shadow: 0 0 0 4px rgba($black, 0.08);
+    }
+
+    &-text {
+      font-family: $font-secondary;
+      font-size: 0.8rem;
+      font-weight: 500;
+      color: $black;
+      letter-spacing: 0.02em;
+    }
+
+    &-icon {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 44px;
+      height: 44px;
+      background: $black;
+      border-radius: 14px;
+      color: $white;
+      font-size: 1.1rem;
+      flex-shrink: 0;
+    }
+
+    &-body {
+      display: flex;
+      flex-direction: column;
+      gap: 0.15rem;
+    }
+
+    &-number {
+      font-family: $font-display;
+      font-size: 1.5rem;
+      font-weight: 500;
+      letter-spacing: -0.04em;
+      color: $black;
+      line-height: 1;
+    }
+
+    &-label {
+      font-family: $font-secondary;
+      font-size: 0.7rem;
+      color: $foreground-muted;
+    }
+  }
+
+  @keyframes projectsRingRotate {
+    from { transform: translate(15%, -10%) rotate(0deg); }
+    to { transform: translate(15%, -10%) rotate(360deg); }
   }
 }
 
 .category-tabs {
   display: flex;
   flex-wrap: wrap;
+  justify-content: center;
   gap: 0.5rem;
+
+  @media (min-width: 1024px) {
+    justify-content: flex-start;
+  }
 }
 
 .category-tab {
@@ -552,10 +759,20 @@ onUnmounted(() => {
 .projects-grid {
   background: $background-soft;
 
+  .container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    max-width: 1280px;
+  }
+
   &__layout {
     display: grid;
     grid-template-columns: 1fr;
     gap: 1.5rem;
+    width: 100%;
 
     @media (min-width: 640px) {
       grid-template-columns: repeat(2, 1fr);
@@ -576,13 +793,14 @@ onUnmounted(() => {
 
 .project-card {
   position: relative;
+  padding: 0.75rem;
   background: $white;
   border: 1px solid $border;
-  border-radius: 20px;
-  overflow: hidden;
+  border-radius: 28px;
   transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
 
   &:hover {
+    border-color: $gray-300;
     transform: translateY(-6px);
     box-shadow: 0 30px 60px rgba($black, 0.08);
 
@@ -599,6 +817,11 @@ onUnmounted(() => {
         aspect-ratio: 21 / 9;
       }
     }
+  }
+
+  &__frame {
+    overflow: hidden;
+    border-radius: 20px;
   }
 
   &__visual {
@@ -676,10 +899,20 @@ onUnmounted(() => {
   background: $white;
   border-top: 1px solid $border;
 
+  .container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    max-width: 1280px;
+  }
+
   &__grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     gap: 1.5rem;
+    width: 100%;
 
     @media (min-width: 768px) {
       grid-template-columns: repeat(4, 1fr);
@@ -688,10 +921,34 @@ onUnmounted(() => {
 }
 
 .projects-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
   text-align: center;
   padding: 2rem 1rem;
   border: 1px solid $border;
-  border-radius: 16px;
+  border-radius: 20px;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+
+  &:hover {
+    border-color: $black;
+    transform: translateY(-4px);
+    box-shadow: 0 20px 40px rgba($black, 0.06);
+  }
+
+  &__icon {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 48px;
+    height: 48px;
+    background: $black;
+    border-radius: 14px;
+    color: $white;
+    font-size: 1.1rem;
+  }
 
   &__value {
     display: block;
@@ -700,7 +957,6 @@ onUnmounted(() => {
     font-weight: 500;
     letter-spacing: -0.04em;
     color: $black;
-    margin-bottom: 0.35rem;
   }
 
   &__label {

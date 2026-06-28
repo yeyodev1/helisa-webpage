@@ -204,7 +204,7 @@ onUnmounted(() => {
     </section>
 
     <section class="rating-body section-padding">
-      <div class="container rating-body__grid">
+      <div class="container rating-body__inner">
         <form class="rating-form" @submit.prevent="submitForm">
           <div class="rating-form__section">
             <h2 class="rating-form__title">¿Cómo fue tu experiencia?</h2>
@@ -278,11 +278,18 @@ onUnmounted(() => {
 
         <aside class="rating-info">
           <div class="rating-info__card">
-            <h3 class="rating-info__title">CRM Mock</h3>
-            <p class="rating-info__desc">
-              Esta vista simula la integración con un CRM. Cada calificación se guarda en el
-              almacenamiento local del navegador como un lead con estado, tags y fecha.
-            </p>
+            <div class="rating-info__header">
+              <div class="rating-info__icon">
+                <i class="fa-solid fa-database"></i>
+              </div>
+              <div>
+                <h3 class="rating-info__title">CRM Mock</h3>
+                <p class="rating-info__desc">
+                  Esta vista simula la integración con un CRM. Cada calificación se guarda en el
+                  almacenamiento local del navegador como un lead con estado, tags y fecha.
+                </p>
+              </div>
+            </div>
             <div class="rating-info__stats">
               <div class="rating-info__stat">
                 <span class="rating-info__stat-value">{{ leads.length }}</span>
@@ -384,16 +391,19 @@ onUnmounted(() => {
   &__content {
     position: relative;
     z-index: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1.5rem;
     width: 100%;
     max-width: 800px;
-    margin: 0 auto;
     padding: 8rem 1.5rem 5rem;
     box-sizing: border-box;
   }
 
   &__label {
     @include label-pill;
-    margin-bottom: 1.5rem;
   }
 
   &__title {
@@ -402,7 +412,7 @@ onUnmounted(() => {
     font-weight: 500;
     letter-spacing: -0.05em;
     line-height: 1.05;
-    margin: 0 0 1.5rem;
+    margin: 0;
   }
 
   &__desc {
@@ -410,7 +420,7 @@ onUnmounted(() => {
     font-size: 1.1rem;
     color: $foreground-muted;
     max-width: 550px;
-    margin: 0 auto;
+    margin: 0;
     line-height: 1.7;
   }
 }
@@ -418,18 +428,28 @@ onUnmounted(() => {
 .rating-body {
   background: $background-soft;
 
-  &__grid {
-    display: grid;
-    grid-template-columns: 1fr;
+  .container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    max-width: 1280px;
+  }
+
+  &__inner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
     gap: 3rem;
-    align-items: start;
-    justify-items: center;
-    max-width: 1100px;
-    margin: 0 auto;
+    width: 100%;
 
     @media (min-width: 1024px) {
-      grid-template-columns: 1.2fr 1fr;
-      justify-items: stretch;
+      flex-direction: row;
+      align-items: flex-start;
+      justify-content: center;
+      gap: 3rem;
     }
   }
 }
@@ -440,7 +460,7 @@ onUnmounted(() => {
   box-sizing: border-box;
   background: $white;
   border: 1px solid $border;
-  border-radius: 24px;
+  border-radius: 28px;
   padding: 2.5rem;
 
   @media (min-width: 768px) {
@@ -449,6 +469,7 @@ onUnmounted(() => {
 
   @media (min-width: 1024px) {
     max-width: none;
+    flex: 1.2;
   }
 
   &__title {
@@ -535,11 +556,12 @@ onUnmounted(() => {
 
 .rating-stars {
   display: flex;
-  gap: 0.5rem;
+  justify-content: center;
+  gap: 0.75rem;
   margin-bottom: 0.75rem;
 
   &__star {
-    font-size: 2.25rem;
+    font-size: 2.5rem;
     background: none;
     border: none;
     color: $gray-300;
@@ -558,6 +580,7 @@ onUnmounted(() => {
 
   &__label {
     display: block;
+    text-align: center;
     font-family: $font-secondary;
     font-size: 0.85rem;
     color: $foreground-muted;
@@ -568,10 +591,11 @@ onUnmounted(() => {
 .rating-tags {
   display: flex;
   flex-wrap: wrap;
+  justify-content: center;
   gap: 0.5rem;
 
   &__tag {
-    padding: 0.5rem 1rem;
+    padding: 0.55rem 1.1rem;
     background: $background-soft;
     border: 1px solid $border;
     border-radius: 100px;
@@ -607,7 +631,7 @@ onUnmounted(() => {
     padding: 1rem 1.25rem;
     background: $white;
     border: 1px solid $border;
-    border-radius: 12px;
+    border-radius: 14px;
     color: $black;
     font-family: $font-secondary;
     font-size: 0.95rem;
@@ -632,14 +656,48 @@ onUnmounted(() => {
 }
 
 .rating-info {
-  position: sticky;
-  top: 100px;
+  width: 100%;
+  max-width: 420px;
+
+  @media (min-width: 1024px) {
+    position: sticky;
+    top: 100px;
+    flex: 1;
+  }
 
   &__card {
     background: $white;
     border: 1px solid $border;
-    border-radius: 24px;
+    border-radius: 28px;
     padding: 2rem;
+  }
+
+  &__header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+
+    @media (min-width: 640px) {
+      flex-direction: row;
+      text-align: left;
+      align-items: flex-start;
+    }
+  }
+
+  &__icon {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 56px;
+    height: 56px;
+    background: $black;
+    border-radius: 16px;
+    color: $white;
+    font-size: 1.35rem;
+    flex-shrink: 0;
   }
 
   &__title {
@@ -647,7 +705,7 @@ onUnmounted(() => {
     font-size: 1.25rem;
     font-weight: 500;
     color: $black;
-    margin: 0 0 1rem;
+    margin: 0 0 0.5rem;
   }
 
   &__desc {
@@ -655,7 +713,7 @@ onUnmounted(() => {
     font-size: 0.9rem;
     color: $foreground-muted;
     line-height: 1.6;
-    margin: 0 0 1.5rem;
+    margin: 0;
   }
 
   &__stats {
@@ -666,10 +724,15 @@ onUnmounted(() => {
   }
 
   &__stat {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
     text-align: center;
+    gap: 0.25rem;
     padding: 1.25rem 1rem;
     background: $background-soft;
-    border-radius: 12px;
+    border-radius: 16px;
   }
 
   &__stat-value {
@@ -707,9 +770,17 @@ onUnmounted(() => {
 }
 
 .leads-panel {
+  width: 100%;
   margin-top: 4rem;
   padding-top: 4rem;
   border-top: 1px solid $border;
+
+  .container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
 
   &__title {
     font-family: $font-display;
@@ -717,6 +788,7 @@ onUnmounted(() => {
     font-weight: 500;
     color: $black;
     margin: 0 0 1.5rem;
+    text-align: center;
   }
 
   &__empty {
@@ -726,7 +798,8 @@ onUnmounted(() => {
     text-align: center;
     background: $white;
     border: 1px solid $border;
-    border-radius: 16px;
+    border-radius: 20px;
+    width: 100%;
   }
 }
 
@@ -734,6 +807,7 @@ onUnmounted(() => {
   display: grid;
   grid-template-columns: 1fr;
   gap: 1rem;
+  width: 100%;
 
   @media (min-width: 640px) {
     grid-template-columns: repeat(2, 1fr);
@@ -747,8 +821,15 @@ onUnmounted(() => {
 .lead-card {
   background: $white;
   border: 1px solid $border;
-  border-radius: 16px;
+  border-radius: 20px;
   padding: 1.5rem;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+
+  &:hover {
+    border-color: $gray-300;
+    transform: translateY(-4px);
+    box-shadow: 0 20px 40px rgba($black, 0.06);
+  }
 
   &__header {
     display: flex;
@@ -827,8 +908,8 @@ onUnmounted(() => {
     font-size: 0.7rem;
     color: $foreground-muted;
     background: $background-soft;
-    padding: 0.2rem 0.5rem;
-    border-radius: 4px;
+    padding: 0.25rem 0.6rem;
+    border-radius: 100px;
   }
 
   &__message {
@@ -873,7 +954,7 @@ onUnmounted(() => {
   right: 2rem;
   z-index: 2000;
   padding: 1rem 1.5rem;
-  border-radius: 12px;
+  border-radius: 14px;
   font-family: $font-secondary;
   font-size: 0.9rem;
   font-weight: 500;

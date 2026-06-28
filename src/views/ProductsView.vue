@@ -50,6 +50,12 @@ const products = [
   },
 ]
 
+const whyUs = [
+  { icon: 'fa-circle-check', title: 'Calidad certificada', desc: 'Equipos e insumos seleccionados bajo estrictos estándares.' },
+  { icon: 'fa-clock', title: 'Respuesta rápida', desc: 'Soporte técnico ágil en todo el territorio nacional.' },
+  { icon: 'fa-handshake', title: 'Asesoría personalizada', desc: 'Diseñamos la solución ideal para tu hogar o industria.' },
+]
+
 onMounted(() => {
   const headerTl = gsap.timeline()
   headerTl
@@ -72,7 +78,7 @@ onMounted(() => {
     if (tween.scrollTrigger) triggers.push(tween.scrollTrigger)
   })
 
-  document.querySelectorAll('.feature-card').forEach((card, i) => {
+  document.querySelectorAll('.why-card').forEach((card, i) => {
     const tween = gsap.fromTo(card, {
       y: 30,
       opacity: 1,
@@ -82,7 +88,7 @@ onMounted(() => {
       duration: 0.7,
       delay: i * 0.1,
       ease: 'power3.out',
-      scrollTrigger: { trigger: card.parentElement, start: 'top 80%', toggleActions: 'play none none none' },
+      scrollTrigger: { trigger: '.why__grid', start: 'top 80%', toggleActions: 'play none none none' },
     })
     if (tween.scrollTrigger) triggers.push(tween.scrollTrigger)
   })
@@ -118,12 +124,15 @@ onUnmounted(() => {
             :class="{ 'product-row--reverse': index % 2 !== 0 }"
           >
             <div class="product-row__visual">
-              <div class="product-row__image-wrapper">
-                <img :src="product.image" :alt="product.title" class="product-row__image" />
+              <div class="product-row__frame">
+                <div class="product-row__image-wrapper">
+                  <img :src="product.image" :alt="product.title" class="product-row__image" />
+                </div>
+                <div class="product-row__badge">
+                  <i :class="['fa-solid', product.icon]"></i>
+                </div>
               </div>
-              <div class="product-row__badge">
-                <i :class="['fa-solid', product.icon]"></i>
-              </div>
+              <div class="product-row__ring" aria-hidden="true"></div>
             </div>
             <div class="product-row__content">
               <span class="product-row__subtitle">{{ product.subtitle }}</span>
@@ -150,27 +159,19 @@ onUnmounted(() => {
       </div>
     </section>
 
-    <section class="features section-padding">
+    <section class="why section-padding">
       <div class="container">
         <div class="section-header">
           <span class="section-label">¿Por qué elegirnos?</span>
           <h2 class="section-title">Compromiso de <span class="text-gradient">principio a fin</span></h2>
         </div>
-        <div class="features__grid">
-          <div class="feature-card">
-            <i class="fa-solid fa-circle-check feature-card__icon"></i>
-            <h3 class="feature-card__title">Calidad certificada</h3>
-            <p class="feature-card__desc">Equipos e insumos seleccionados bajo estrictos estándares.</p>
-          </div>
-          <div class="feature-card">
-            <i class="fa-solid fa-clock feature-card__icon"></i>
-            <h3 class="feature-card__title">Respuesta rápida</h3>
-            <p class="feature-card__desc">Soporte técnico ágil en todo el territorio nacional.</p>
-          </div>
-          <div class="feature-card">
-            <i class="fa-solid fa-handshake feature-card__icon"></i>
-            <h3 class="feature-card__title">Asesoría personalizada</h3>
-            <p class="feature-card__desc">Diseñamos la solución ideal para tu hogar o industria.</p>
+        <div class="why__grid">
+          <div v-for="item in whyUs" :key="item.title" class="why-card">
+            <div class="why-card__icon">
+              <i :class="['fa-solid', item.icon]"></i>
+            </div>
+            <h3 class="why-card__title">{{ item.title }}</h3>
+            <p class="why-card__desc">{{ item.desc }}</p>
           </div>
         </div>
       </div>
@@ -217,16 +218,19 @@ onUnmounted(() => {
   &__content {
     position: relative;
     z-index: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1.5rem;
     width: 100%;
     max-width: 900px;
-    margin: 0 auto;
     padding: 8rem 1.5rem 5rem;
     box-sizing: border-box;
   }
 
   &__label {
     @include label-pill;
-    margin-bottom: 1.5rem;
   }
 
   &__title {
@@ -235,7 +239,7 @@ onUnmounted(() => {
     font-weight: 500;
     letter-spacing: -0.05em;
     line-height: 1.05;
-    margin: 0 0 1.5rem;
+    margin: 0;
   }
 
   &__desc {
@@ -243,7 +247,7 @@ onUnmounted(() => {
     font-size: 1.1rem;
     color: $foreground-muted;
     max-width: 550px;
-    margin: 0 auto;
+    margin: 0;
     line-height: 1.7;
   }
 }
@@ -251,10 +255,22 @@ onUnmounted(() => {
 .products-list {
   background: $background-soft;
 
+  .container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    max-width: 1280px;
+  }
+
   &__items {
     display: flex;
     flex-direction: column;
-    gap: 5rem;
+    align-items: center;
+    justify-content: center;
+    gap: 6rem;
+    width: 100%;
 
     @media (min-width: 1024px) {
       gap: 8rem;
@@ -263,45 +279,52 @@ onUnmounted(() => {
 }
 
 .product-row {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 2.5rem;
+  display: flex;
+  flex-direction: column;
   align-items: center;
+  justify-content: center;
+  gap: 3rem;
+  width: 100%;
 
   @media (min-width: 1024px) {
-    grid-template-columns: 1fr 1fr;
+    flex-direction: row;
     gap: 6rem;
-  }
-
-  @media (min-width: 1600px) {
-    gap: 8rem;
   }
 
   &--reverse {
     @media (min-width: 1024px) {
-      .product-row__visual {
-        order: 2;
-      }
-      .product-row__content {
-        order: 1;
-        text-align: right;
-      }
-      .product-row__features {
-        justify-content: flex-end;
-      }
+      flex-direction: row-reverse;
     }
   }
 
   &__visual {
     position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    max-width: 520px;
+    padding: 2rem;
+  }
+
+  &__frame {
+    position: relative;
+    width: 100%;
+    padding: 1rem;
+    background: $white;
+    border: 1px solid $border;
+    border-radius: 32px;
+    box-shadow:
+      0 40px 80px -20px rgba($black, 0.08),
+      0 24px 40px -24px rgba($black, 0.04);
+    z-index: 1;
   }
 
   &__image-wrapper {
     position: relative;
-    border-radius: 24px;
+    border-radius: 20px;
     overflow: hidden;
     aspect-ratio: 4 / 3;
-    border: 1px solid $border;
   }
 
   &__image {
@@ -312,17 +335,17 @@ onUnmounted(() => {
     transition: transform 0.8s ease;
 
     &:hover {
-      transform: scale(1.03);
+      transform: scale(1.05);
     }
   }
 
   &__badge {
     position: absolute;
-    bottom: -20px;
-    right: 2rem;
+    bottom: -0.75rem;
+    right: -0.75rem;
     width: 64px;
     height: 64px;
-    border-radius: 50%;
+    border-radius: 20px;
     background: $black;
     border: 4px solid $white;
     display: flex;
@@ -330,17 +353,34 @@ onUnmounted(() => {
     justify-content: center;
     font-size: 1.5rem;
     color: $white;
-    box-shadow: 0 10px 30px rgba($black, 0.08);
+    box-shadow: 0 20px 50px rgba($black, 0.1);
+    z-index: 2;
+  }
 
-    @media (min-width: 1024px) {
-      right: -30px;
-    }
+  &__ring {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 70%;
+    height: 70%;
+    border: 1px dashed $border;
+    border-radius: 50%;
+    transform: translate(15%, -10%);
+    z-index: 0;
+    pointer-events: none;
+    animation: productRingRotate 60s linear infinite;
   }
 
   &__content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     text-align: center;
+    gap: 1rem;
+    max-width: 520px;
 
     @media (min-width: 1024px) {
+      align-items: flex-start;
       text-align: left;
     }
   }
@@ -352,8 +392,6 @@ onUnmounted(() => {
     letter-spacing: 0.25em;
     text-transform: uppercase;
     color: $foreground-muted;
-    margin-bottom: 0.75rem;
-    display: block;
   }
 
   &__title {
@@ -362,7 +400,7 @@ onUnmounted(() => {
     font-weight: 500;
     color: $black;
     letter-spacing: -0.03em;
-    margin: 0 0 1rem;
+    margin: 0;
   }
 
   &__desc {
@@ -370,17 +408,17 @@ onUnmounted(() => {
     font-size: 1rem;
     color: $foreground-muted;
     line-height: 1.8;
-    margin: 0 0 1.5rem;
+    margin: 0;
   }
 
   &__features {
     list-style: none;
     padding: 0;
-    margin: 0;
+    margin: 0.5rem 0 0;
     display: flex;
     flex-wrap: wrap;
-    gap: 0.75rem;
     justify-content: center;
+    gap: 0.75rem;
 
     @media (min-width: 1024px) {
       justify-content: flex-start;
@@ -404,34 +442,55 @@ onUnmounted(() => {
     color: $black;
     font-size: 0.75rem;
   }
+
+  &__cta {
+    margin-top: 0.75rem;
+  }
 }
 
-.features {
+.why {
   background: $white;
   border-top: 1px solid $border;
 
+  .container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3rem;
+    width: 100%;
+    max-width: 1280px;
+  }
+
   .section-header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     text-align: center;
-    margin-bottom: 4rem;
+    gap: 0.75rem;
   }
 
   &__grid {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 1.5rem;
-
-    @media (min-width: 640px) {
-      grid-template-columns: repeat(3, 1fr);
-    }
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 1.25rem;
+    width: 100%;
   }
 }
 
-.feature-card {
+.why-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 1rem;
+  flex: 1 1 260px;
+  max-width: 360px;
   background: $background-soft;
   border: 1px solid $border;
-  border-radius: 20px;
+  border-radius: 24px;
   padding: 2.5rem 2rem;
-  text-align: center;
   transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 
   &:hover {
@@ -442,9 +501,15 @@ onUnmounted(() => {
   }
 
   &__icon {
-    font-size: 2rem;
-    margin: 0 auto 1.5rem;
-    color: $black;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 56px;
+    height: 56px;
+    background: $black;
+    border-radius: 16px;
+    color: $white;
+    font-size: 1.35rem;
   }
 
   &__title {
@@ -452,7 +517,7 @@ onUnmounted(() => {
     font-size: 1.15rem;
     font-weight: 500;
     color: $black;
-    margin: 0 0 0.75rem;
+    margin: 0;
   }
 
   &__desc {
@@ -462,10 +527,6 @@ onUnmounted(() => {
     line-height: 1.6;
     margin: 0;
   }
-}
-
-.product-row__cta {
-  margin-top: 1.5rem;
 }
 
 .btn {
@@ -492,5 +553,10 @@ onUnmounted(() => {
       transform: translateY(-2px);
     }
   }
+}
+
+@keyframes productRingRotate {
+  from { transform: translate(15%, -10%) rotate(0deg); }
+  to { transform: translate(15%, -10%) rotate(360deg); }
 }
 </style>

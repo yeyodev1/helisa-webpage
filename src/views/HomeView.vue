@@ -19,90 +19,39 @@ const stats = [
 ]
 
 const services = [
-  {
-    number: '01',
-    title: 'Diagnóstico gratuito',
-    desc: 'Analizamos tu agua y entorno para recomendar la solución ideal.',
-  },
-  {
-    number: '02',
-    title: 'Servicio técnico',
-    desc: 'Personal especializado en instalación y mantenimiento a nivel nacional.',
-  },
-  {
-    number: '03',
-    title: 'Asesoría personalizada',
-    desc: 'Te orientamos según tus necesidades específicas de hogar o industria.',
-  },
-  {
-    number: '04',
-    title: 'Laboratorio',
-    desc: 'Análisis técnicos que respaldan cada recomendación.',
-  },
-  {
-    number: '05',
-    title: 'Envíos a domicilio',
-    desc: 'Llegamos a todo el Ecuador con repuestos y equipos.',
-  },
-  {
-    number: '06',
-    title: 'Capacitaciones',
-    desc: 'Formación en uso y mantenimiento de nuestros productos.',
-  },
+  { number: '01', title: 'Diagnóstico gratuito', desc: 'Analizamos tu agua y entorno para recomendar la solución ideal.' },
+  { number: '02', title: 'Servicio técnico', desc: 'Personal especializado en instalación y mantenimiento a nivel nacional.' },
+  { number: '03', title: 'Asesoría personalizada', desc: 'Te orientamos según tus necesidades específicas de hogar o industria.' },
+  { number: '04', title: 'Laboratorio', desc: 'Análisis técnicos que respaldan cada recomendación.' },
+  { number: '05', title: 'Envíos a domicilio', desc: 'Llegamos a todo el Ecuador con repuestos y equipos.' },
+  { number: '06', title: 'Capacitaciones', desc: 'Formación en uso y mantenimiento de nuestros productos.' },
 ]
 
 const featuredProjects = [
-  {
-    title: 'Petro Ecuador',
-    category: 'Industria Petrolera',
-    image: '/images/proyectos/petro-ecuador.png',
-  },
-  {
-    title: 'Hospital Miguel H. Alcívar',
-    category: 'Sector de Salud',
-    image: '/images/proyectos/hospital-alcivar.jpg',
-  },
-  {
-    title: 'Sonesta',
-    category: 'Sector de Turismo',
-    image: '/images/proyectos/sonesta.jpg',
-  },
+  { title: 'Petro Ecuador', category: 'Industria Petrolera', image: '/images/proyectos/petro-ecuador.png' },
+  { title: 'Hospital Miguel H. Alcívar', category: 'Sector de Salud', image: '/images/proyectos/hospital-alcivar.jpg' },
+  { title: 'Sonesta', category: 'Sector de Turismo', image: '/images/proyectos/sonesta.jpg' },
 ]
 
 onMounted(() => {
-  // Hero entrance
   gsap.timeline({ delay: 0.2 })
     .from('.hero__label', { y: 30, opacity: 0, duration: 0.8, ease: 'power3.out' })
-    .from('.hero__title-line', { y: 100, opacity: 0, duration: 1.2, stagger: 0.1, ease: 'power4.out' }, '-=0.4')
+    .from('.hero__title-line', { y: 80, opacity: 0, duration: 1.2, stagger: 0.1, ease: 'power4.out' }, '-=0.4')
     .from('.hero__subtitle', { y: 30, opacity: 0, duration: 0.8, ease: 'power3.out' }, '-=0.6')
     .from('.hero__actions', { y: 30, opacity: 0, duration: 0.8, ease: 'power3.out' }, '-=0.5')
-    .from('.hero__visual', { scale: 1.05, opacity: 0, duration: 1.4, ease: 'power3.out' }, '-=1')
+    .from('.hero__image', { scale: 1.05, opacity: 0, duration: 1.2, ease: 'power3.out' }, '-=1')
 
-  // Marquee
   gsap.to('.marquee__track', { xPercent: -50, duration: 30, repeat: -1, ease: 'none' })
 
-  // Reveal sections
   document.querySelectorAll('[data-reveal]').forEach((section) => {
     const items = section.querySelectorAll('.reveal-item')
-    const tween = gsap.fromTo(items, {
-      y: 32,
-      opacity: 1,
-    }, {
-      y: 0,
-      opacity: 1,
-      duration: 0.8,
-      stagger: 0.08,
-      ease: 'power3.out',
-      scrollTrigger: {
-        trigger: section,
-        start: 'top 80%',
-        toggleActions: 'play none none none',
-      },
+    const tween = gsap.fromTo(items, { y: 24, opacity: 1 }, {
+      y: 0, opacity: 1, duration: 0.7, stagger: 0.08, ease: 'power3.out',
+      scrollTrigger: { trigger: section, start: 'top 85%', toggleActions: 'play none none none' },
     })
     if (tween.scrollTrigger) triggers.push(tween.scrollTrigger)
   })
 
-  // Stats counter
   document.querySelectorAll('.stat__value').forEach((stat) => {
     const targetText = stat.getAttribute('data-value') || '0'
     const numericTarget = parseInt(targetText.replace(/\D/g, ''), 10) || 0
@@ -113,10 +62,7 @@ onMounted(() => {
       ease: 'power2.out',
       snap: { innerText: 1 },
       scrollTrigger: { trigger: stat, start: 'top 85%', toggleActions: 'play none none none' },
-      onUpdate: () => {
-        const current = Math.ceil(parseFloat(stat.textContent || '0'))
-        stat.textContent = current + suffix
-      },
+      onUpdate: () => { stat.textContent = Math.ceil(parseFloat(stat.textContent || '0')) + suffix },
     })
     if (counter.scrollTrigger) triggers.push(counter.scrollTrigger)
   })
@@ -130,44 +76,48 @@ onUnmounted(() => {
 <template>
   <main class="home">
     <section class="hero">
-      <div class="hero__grid-bg" />
-      <div class="container hero__layout">
-        <div class="hero__content">
-          <span class="hero__label">Health &amp; Life S.A.</span>
-          <h1 class="hero__title">
-            <span class="hero__title-line">Agua Pura.</span>
-            <span class="hero__title-line">Aire Limpio.</span>
-            <span class="hero__title-line text-gradient">Vida Sana.</span>
-          </h1>
-          <p class="hero__subtitle">
-            Sistemas de tratamiento y purificación con respaldo técnico
-            y atención personalizada en todo el Ecuador.
-          </p>
-          <div class="hero__actions">
-            <button class="btn btn--primary" @click="navigate('/productos')">
-              Explorar productos
-              <i class="fa-solid fa-arrow-right"></i>
-            </button>
-            <button class="btn btn--ghost" @click="navigate('/proyectos')">
-              Ver proyectos
-            </button>
-          </div>
-        </div>
-
-        <div class="hero__visual">
-          <div class="hero__image-frame">
-            <img src="/images/nave-supersacos.jpg" alt="Instalaciones de tratamiento de agua" class="hero__image" />
-          </div>
-          <div class="hero__floating-card">
-            <span class="hero__floating-number">15+</span>
-            <span class="hero__floating-label">Años de experiencia</span>
-          </div>
+      <div class="hero__content">
+        <span class="hero__label">Health &amp; Life S.A.</span>
+        <h1 class="hero__title">
+          <span class="hero__title-line">Agua Pura.</span>
+          <span class="hero__title-line">Aire Limpio.</span>
+          <span class="hero__title-line text-gradient">Vida Sana.</span>
+        </h1>
+        <p class="hero__subtitle">
+          Sistemas de tratamiento y purificación con respaldo técnico y atención personalizada en todo el Ecuador.
+        </p>
+        <div class="hero__actions">
+          <button class="btn btn--primary" @click="navigate('/productos')">
+            Explorar productos
+            <i class="fa-solid fa-arrow-right"></i>
+          </button>
+          <button class="btn btn--ghost" @click="navigate('/proyectos')">
+            Ver proyectos
+          </button>
         </div>
       </div>
 
-      <div class="hero__scroll">
-        <span class="hero__scroll-text">Scroll</span>
-        <div class="hero__scroll-line" />
+      <div class="hero__visual">
+        <div class="hero__frame">
+          <img src="/images/nave-supersacos.jpg" alt="Instalaciones HELISA" class="hero__image" />
+
+          <div class="hero__badge hero__badge--top">
+            <span class="hero__badge-dot"></span>
+            <span class="hero__badge-text">Ecuador</span>
+          </div>
+
+          <div class="hero__badge hero__badge--bottom">
+            <div class="hero__badge-icon">
+              <i class="fa-solid fa-award"></i>
+            </div>
+            <div class="hero__badge-body">
+              <span class="hero__badge-number">15+</span>
+              <span class="hero__badge-label">Años de experiencia</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="hero__ring" aria-hidden="true"></div>
       </div>
     </section>
 
@@ -179,38 +129,33 @@ onUnmounted(() => {
       </div>
     </section>
 
-    <section class="services section-padding" data-reveal>
+    <section class="services" data-reveal>
       <div class="container">
         <div class="section-header">
           <span class="section-label">Servicios</span>
-          <h2 class="section-title">Soluciones pensadas<br><span class="text-gradient">en tu bienestar</span></h2>
+          <h2 class="section-title">Soluciones pensadas en tu bienestar</h2>
         </div>
-        <div class="services__grid">
-          <article v-for="service in services" :key="service.number" class="service-card reveal-item">
-            <span class="service-card__number">{{ service.number }}</span>
-            <h3 class="service-card__title">{{ service.title }}</h3>
-            <p class="service-card__desc">{{ service.desc }}</p>
+        <div class="cards">
+          <article v-for="service in services" :key="service.number" class="card reveal-item">
+            <span class="card__number">{{ service.number }}</span>
+            <h3 class="card__title">{{ service.title }}</h3>
+            <p class="card__desc">{{ service.desc }}</p>
           </article>
         </div>
       </div>
     </section>
 
-    <section class="about-teaser section-padding" data-reveal>
-      <div class="container about-teaser__grid">
-        <div class="about-teaser__image-wrapper reveal-item">
-          <img src="/images/nave-tarimas.jpg" alt="Almacén de insumos HELISA" class="about-teaser__image" />
-        </div>
-        <div class="about-teaser__text">
+    <section class="about" data-reveal>
+      <div class="container about__inner">
+        <img src="/images/nave-tarimas.jpg" alt="Almacén HELISA" class="about__image reveal-item" />
+        <div class="about__text">
           <span class="section-label reveal-item">Nosotros</span>
           <h2 class="section-title reveal-item">Pensando en <span class="text-gradient">su bienestar</span></h2>
-          <p class="about-teaser__paragraph reveal-item">
-            HELISA — Health &amp; Life S.A. — ofrece los mejores sistemas de tratamiento y
-            purificación de agua y aire con respaldo de repuestos y atención
-            personalizada en todo el Ecuador.
+          <p class="reveal-item">
+            HELISA — Health &amp; Life S.A. — ofrece los mejores sistemas de tratamiento y purificación de agua y aire con respaldo de repuestos y atención personalizada en todo el Ecuador.
           </p>
-          <p class="about-teaser__paragraph reveal-item">
-            Cada gota cuenta. Combinamos tecnología de punta con un equipo humano
-            comprometido para transformar la calidad del agua y el aire de hogares e industrias.
+          <p class="reveal-item">
+            Cada gota cuenta. Combinamos tecnología de punta con un equipo humano comprometido para transformar la calidad del agua y el aire de hogares e industrias.
           </p>
           <button class="btn btn--outline reveal-item" @click="navigate('/nosotros')">
             Conocer nuestra historia
@@ -220,8 +165,8 @@ onUnmounted(() => {
       </div>
     </section>
 
-    <section class="stats section-padding" data-reveal>
-      <div class="container stats__grid">
+    <section class="stats" data-reveal>
+      <div class="container stats__inner">
         <div v-for="stat in stats" :key="stat.label" class="stat reveal-item">
           <span class="stat__value" :data-value="stat.value">0</span>
           <span class="stat__label">{{ stat.label }}</span>
@@ -229,27 +174,22 @@ onUnmounted(() => {
       </div>
     </section>
 
-    <section class="featured-projects section-padding" data-reveal>
+    <section class="featured" data-reveal>
       <div class="container">
         <div class="section-header section-header--row">
           <div>
             <span class="section-label">Proyectos</span>
-            <h2 class="section-title">Experiencia en<br><span class="text-gradient">todo el Ecuador</span></h2>
+            <h2 class="section-title">Experiencia en <span class="text-gradient">todo el Ecuador</span></h2>
           </div>
           <button class="btn btn--outline" @click="navigate('/proyectos')">
             Ver todos
             <i class="fa-solid fa-arrow-right"></i>
           </button>
         </div>
-        <div class="featured-projects__grid">
-          <article
-            v-for="(project, i) in featuredProjects"
-            :key="project.title"
-            :class="['featured-card', 'reveal-item', { 'featured-card--large': i === 0 }]"
-          >
+        <div class="featured__grid">
+          <article v-for="(project, i) in featuredProjects" :key="project.title" :class="['featured-card', 'reveal-item', { 'featured-card--large': i === 0 }]">
             <div class="featured-card__visual">
               <img :src="project.image" :alt="project.title" class="featured-card__image" />
-              <div class="featured-card__overlay" />
             </div>
             <div class="featured-card__content">
               <span class="featured-card__category">{{ project.category }}</span>
@@ -260,22 +200,14 @@ onUnmounted(() => {
       </div>
     </section>
 
-    <section class="cta section-padding" data-reveal>
-      <div class="container">
-        <div class="cta__inner">
-          <div class="cta__content">
-            <h2 class="cta__title reveal-item">
-              Listo para respirar y beber mejor?
-            </h2>
-            <p class="cta__desc reveal-item">
-              Agenda una asesoría gratuita y descubre la solución perfecta para ti.
-            </p>
-            <button class="btn btn--primary reveal-item" @click="navigate('/calificar')">
-              Calificar y contactar
-              <i class="fa-solid fa-arrow-right"></i>
-            </button>
-          </div>
-        </div>
+    <section class="cta" data-reveal>
+      <div class="container cta__inner">
+        <h2 class="cta__title reveal-item">Listo para respirar y beber mejor?</h2>
+        <p class="cta__desc reveal-item">Agenda una asesoría gratuita y descubre la solución perfecta para ti.</p>
+        <button class="btn btn--primary reveal-item" @click="navigate('/calificar')">
+          Calificar y contactar
+          <i class="fa-solid fa-arrow-right"></i>
+        </button>
       </div>
     </section>
   </main>
@@ -285,73 +217,98 @@ onUnmounted(() => {
 @use '@/styles/colorVariables.module.scss' as *;
 @use '@/styles/fonts.module.scss' as *;
 
-.hero {
-  position: relative;
-  min-height: 100vh;
+.home {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  padding: 8rem 1.5rem 5rem;
-  box-sizing: border-box;
-  overflow: hidden;
-  background: $white;
-  border-bottom: 1px solid $border;
+  gap: 6rem;
+  width: 100%;
+}
+
+section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  max-width: 1280px;
+  gap: 3rem;
+}
+
+.section-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 0.75rem;
+  max-width: 700px;
+}
+
+.section-header--row {
+  flex-direction: column;
+  gap: 1.5rem;
 
   @media (min-width: 768px) {
-    padding: 10rem 3rem 6rem;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: flex-end;
+    width: 100%;
+    max-width: none;
+    text-align: left;
   }
+}
+
+.hero {
+  min-height: 100vh;
+  padding: 8rem 1.5rem 4rem;
+  gap: 3rem;
+  background: $white;
+  border-bottom: 1px solid $border;
+  text-align: center;
 
   @media (min-width: 1024px) {
-    padding: 10rem 4rem 6rem;
-  }
-
-  &__grid-bg {
-    position: absolute;
-    inset: 0;
-    z-index: 0;
-    background-image:
-      linear-gradient($gray-100 1px, transparent 1px),
-      linear-gradient(90deg, $gray-100 1px, transparent 1px);
-    background-size: 80px 80px;
-    opacity: 0.5;
-    mask-image: radial-gradient(ellipse 80% 70% at 70% 30%, $black 0%, transparent 70%);
-  }
-
-  &__layout {
-    position: relative;
-    z-index: 1;
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 4rem;
+    flex-direction: row;
+    justify-content: center;
     align-items: center;
-    width: 100%;
-
-    @media (min-width: 1024px) {
-      grid-template-columns: 1fr 1fr;
-      gap: 6rem;
-    }
+    text-align: left;
+    padding: 8rem 4rem;
+    gap: 5rem;
   }
 
   &__content {
-    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
+    max-width: 600px;
 
     @media (min-width: 1024px) {
-      text-align: left;
+      align-items: flex-start;
     }
   }
 
   &__label {
     @include label-pill;
-    margin-bottom: 1.75rem;
   }
 
   &__title {
-    margin: 0 0 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    margin: 0;
   }
 
   &__title-line {
-    display: block;
     font-family: $font-display;
-    font-size: clamp(2.75rem, 8vw, 5.5rem);
+    font-size: clamp(2.5rem, 8vw, 5rem);
     font-weight: 500;
     line-height: 1.05;
     letter-spacing: -0.05em;
@@ -362,120 +319,151 @@ onUnmounted(() => {
     font-size: clamp(1rem, 1.4vw, 1.25rem);
     color: $foreground-muted;
     line-height: 1.7;
-    max-width: 520px;
-    margin: 0 auto 2rem;
-
-    @media (min-width: 1024px) {
-      margin: 0 0 2rem;
-    }
+    margin: 0;
   }
 
   &__actions {
     display: flex;
-    gap: 1rem;
-    justify-content: center;
     flex-wrap: wrap;
-
-    @media (min-width: 1024px) {
-      justify-content: flex-start;
-    }
+    justify-content: center;
+    gap: 1rem;
   }
 
   &__visual {
     position: relative;
     display: flex;
     justify-content: center;
-
-    @media (min-width: 1024px) {
-      justify-content: flex-end;
-    }
+    align-items: center;
+    width: 100%;
+    max-width: 520px;
+    padding: 2rem;
   }
 
-  &__image-frame {
+  &__frame {
     position: relative;
     width: 100%;
-    max-width: 560px;
-    border-radius: 24px;
-    overflow: hidden;
-    aspect-ratio: 4 / 3;
+    padding: 1rem;
+    background: $white;
     border: 1px solid $border;
-
-    @media (min-width: 1440px) {
-      max-width: 640px;
-    }
+    border-radius: 36px;
+    box-shadow:
+      0 40px 80px -20px rgba($black, 0.08),
+      0 24px 40px -24px rgba($black, 0.04);
+    z-index: 1;
   }
 
   &__image {
     width: 100%;
-    height: 100%;
+    border-radius: 24px;
+    aspect-ratio: 4 / 5;
     object-fit: cover;
-    filter: grayscale(20%);
+    display: block;
   }
 
-  &__floating-card {
+  &__ring {
     position: absolute;
-    bottom: -20px;
-    left: 0;
+    top: 0;
+    right: 0;
+    width: 70%;
+    height: 70%;
+    border: 1px dashed $border;
+    border-radius: 50%;
+    transform: translate(15%, -10%);
+    z-index: 0;
+    pointer-events: none;
+    animation: heroRingRotate 60s linear infinite;
+  }
+
+  &__badge {
+    position: absolute;
     display: flex;
-    flex-direction: column;
+    align-items: center;
+    gap: 0.65rem;
     background: $white;
     border: 1px solid $border;
-    border-radius: 16px;
-    padding: 1.25rem 1.75rem;
-    box-shadow: 0 20px 40px rgba($black, 0.06);
+    border-radius: 100px;
+    box-shadow: 0 20px 50px rgba($black, 0.1);
+    z-index: 2;
 
-    @media (min-width: 1024px) {
-      left: -40px;
+    &--top {
+      top: 0.5rem;
+      right: 0.5rem;
+      padding: 0.6rem 1rem;
+
+      @media (min-width: 1024px) {
+        top: 0;
+        right: -1rem;
+      }
     }
-  }
 
-  &__floating-number {
-    font-family: $font-display;
-    font-size: 2rem;
-    font-weight: 500;
-    letter-spacing: -0.04em;
-    color: $black;
-    line-height: 1;
-  }
+    &--bottom {
+      bottom: 0.5rem;
+      left: 0.5rem;
+      padding: 0.85rem 1.25rem;
+      border-radius: 20px;
+      gap: 1rem;
 
-  &__floating-label {
-    font-family: $font-secondary;
-    font-size: 0.75rem;
-    color: $foreground-muted;
-    margin-top: 0.25rem;
-  }
+      @media (min-width: 1024px) {
+        bottom: 0;
+        left: -2.5rem;
+      }
+    }
 
-  &__scroll {
-    position: absolute;
-    bottom: 2rem;
-    left: 50%;
-    transform: translateX(-50%);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 0.5rem;
-    z-index: 1;
+    &-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: $black;
+      box-shadow: 0 0 0 4px rgba($black, 0.08);
+    }
 
     &-text {
       font-family: $font-secondary;
-      font-size: 0.65rem;
-      text-transform: uppercase;
-      letter-spacing: 0.2em;
-      color: $gray-400;
+      font-size: 0.8rem;
+      font-weight: 500;
+      color: $black;
+      letter-spacing: 0.02em;
     }
 
-    &-line {
-      width: 1px;
-      height: 50px;
-      background: linear-gradient(to bottom, $gray-400, transparent);
-      animation: scrollPulse 2s ease-in-out infinite;
+    &-icon {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 44px;
+      height: 44px;
+      background: $black;
+      border-radius: 14px;
+      color: $white;
+      font-size: 1.1rem;
+      flex-shrink: 0;
+    }
+
+    &-body {
+      display: flex;
+      flex-direction: column;
+      gap: 0.15rem;
+    }
+
+    &-number {
+      font-family: $font-display;
+      font-size: 1.5rem;
+      font-weight: 500;
+      letter-spacing: -0.04em;
+      color: $black;
+      line-height: 1;
+    }
+
+    &-label {
+      font-family: $font-secondary;
+      font-size: 0.7rem;
+      color: $foreground-muted;
     }
   }
-}
 
-@keyframes scrollPulse {
-  0%, 100% { transform: scaleY(1); opacity: 1; }
-  50% { transform: scaleY(0.6); opacity: 0.3; }
+  @keyframes heroRingRotate {
+    from { transform: translate(15%, -10%) rotate(0deg); }
+    to { transform: translate(15%, -10%) rotate(360deg); }
+  }
 }
 
 .marquee {
@@ -510,29 +498,24 @@ onUnmounted(() => {
 
 .services {
   background: $background-soft;
-
-  .section-header {
-    text-align: center;
-    margin-bottom: 4rem;
-  }
-
-  &__grid {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 1.25rem;
-
-    @media (min-width: 640px) {
-      grid-template-columns: repeat(2, 1fr);
-    }
-
-    @media (min-width: 1024px) {
-      grid-template-columns: repeat(3, 1fr);
-    }
-  }
+  padding: 5rem 1.5rem;
 }
 
-.service-card {
+.cards {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1.25rem;
+  width: 100%;
+}
+
+.card {
   position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  flex: 1 1 280px;
+  max-width: 380px;
   background: $white;
   border: 1px solid $border;
   border-radius: 20px;
@@ -551,17 +534,15 @@ onUnmounted(() => {
     right: 1.25rem;
     font-family: $font-display;
     font-size: 0.85rem;
-    font-weight: 500;
     color: $gray-300;
   }
 
   &__title {
     font-family: $font-display;
-    font-size: 1.25rem;
+    font-size: 1.2rem;
     font-weight: 500;
-    letter-spacing: -0.02em;
     color: $black;
-    margin: 0 0 0.75rem;
+    margin: 0;
     padding-right: 2rem;
   }
 
@@ -574,126 +555,117 @@ onUnmounted(() => {
   }
 }
 
-.about-teaser {
+.about {
   background: $white;
+  padding: 5rem 1.5rem;
 
-  &__grid {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 4rem;
+  &__inner {
+    display: flex;
+    flex-direction: column;
     align-items: center;
+    gap: 3rem;
 
     @media (min-width: 1024px) {
-      grid-template-columns: 1fr 1fr;
-      gap: 6rem;
+      flex-direction: row;
+      align-items: center;
+      justify-content: center;
+      gap: 5rem;
     }
-  }
-
-  &__image-wrapper {
-    position: relative;
-    border-radius: 24px;
-    overflow: hidden;
-    aspect-ratio: 4 / 3;
-    border: 1px solid $border;
   }
 
   &__image {
     width: 100%;
-    height: 100%;
+    max-width: 520px;
+    border-radius: 24px;
+    border: 1px solid $border;
+    aspect-ratio: 4 / 3;
     object-fit: cover;
-    filter: grayscale(20%);
   }
 
   &__text {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    max-width: 520px;
     text-align: center;
 
     @media (min-width: 1024px) {
+      align-items: flex-start;
       text-align: left;
     }
-  }
 
-  &__paragraph {
-    font-family: $font-secondary;
-    font-size: 1.05rem;
-    color: $foreground-muted;
-    line-height: 1.8;
-    margin: 0 0 1.25rem;
+    p {
+      font-family: $font-secondary;
+      font-size: 1rem;
+      color: $foreground-muted;
+      line-height: 1.8;
+      margin: 0;
+    }
   }
 }
 
 .stats {
   background: $black;
+  padding: 5rem 1.5rem;
 
-  &__grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 1px;
-    background: rgba($white, 0.1);
-    border-radius: 20px;
-    overflow: hidden;
-
-    @media (min-width: 768px) {
-      grid-template-columns: repeat(4, 1fr);
-    }
+  &__inner {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 1rem;
   }
 }
 
 .stat {
-  text-align: center;
-  padding: 3rem 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  flex: 1 1 200px;
+  max-width: 280px;
+  padding: 2.5rem 1.5rem;
   background: $black;
+  border: 1px solid rgba($white, 0.1);
+  border-radius: 16px;
 
   &__value {
-    display: block;
     font-family: $font-display;
-    font-size: clamp(2.25rem, 4vw, 3.5rem);
+    font-size: clamp(2rem, 4vw, 3rem);
     font-weight: 500;
     letter-spacing: -0.04em;
     color: $white;
-    margin-bottom: 0.5rem;
   }
 
   &__label {
     font-family: $font-secondary;
-    font-size: 0.8rem;
+    font-size: 0.85rem;
     color: rgba($white, 0.5);
   }
 }
 
-.featured-projects {
+.featured {
   background: $background-soft;
-
-  .section-header--row {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    justify-content: space-between;
-    gap: 1.5rem;
-    margin-bottom: 4rem;
-
-    @media (min-width: 768px) {
-      flex-direction: row;
-      align-items: flex-end;
-    }
-  }
+  padding: 5rem 1.5rem;
 
   &__grid {
-    display: grid;
-    grid-template-columns: 1fr;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
     gap: 1.5rem;
-
-    @media (min-width: 640px) {
-      grid-template-columns: repeat(2, 1fr);
-    }
-
-    @media (min-width: 1024px) {
-      grid-template-columns: 1.2fr 1fr;
-    }
+    width: 100%;
   }
 }
 
 .featured-card {
   position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  flex: 1 1 300px;
+  max-width: 100%;
+  min-height: 320px;
   border-radius: 20px;
   overflow: hidden;
   border: 1px solid $border;
@@ -711,15 +683,14 @@ onUnmounted(() => {
 
   &--large {
     @media (min-width: 1024px) {
-      grid-row: span 2;
+      flex: 2 1 540px;
+      min-height: 500px;
     }
   }
 
   &__visual {
-    position: relative;
-    aspect-ratio: 4 / 3;
-    overflow: hidden;
-    background: $gray-100;
+    position: absolute;
+    inset: 0;
   }
 
   &__image {
@@ -729,22 +700,18 @@ onUnmounted(() => {
     transition: transform 0.8s ease;
   }
 
-  &__overlay {
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(to top, rgba($black, 0.6) 0%, transparent 50%);
-  }
-
   &__content {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
     padding: 1.5rem;
+    background: linear-gradient(to top, rgba($black, 0.7), transparent);
   }
 
   &__category {
-    display: inline-block;
+    align-self: flex-start;
     padding: 0.35rem 0.7rem;
     background: $white;
     border-radius: 100px;
@@ -754,7 +721,6 @@ onUnmounted(() => {
     letter-spacing: 0.05em;
     text-transform: uppercase;
     color: $black;
-    margin-bottom: 0.75rem;
   }
 
   &__title {
@@ -769,25 +735,21 @@ onUnmounted(() => {
 
 .cta {
   background: $white;
+  padding: 0 1.5rem 5rem;
 
   &__inner {
-    position: relative;
-    border-radius: 28px;
-    overflow: hidden;
-    min-height: 420px;
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
+    gap: 1.5rem;
     text-align: center;
-    padding: 4rem 1.5rem;
+    width: 100%;
+    max-width: 900px;
+    padding: 5rem 2rem;
     background: $black;
+    border-radius: 28px;
     border: 1px solid $border;
-  }
-
-  &__content {
-    position: relative;
-    z-index: 1;
-    max-width: 700px;
   }
 
   &__title {
@@ -797,7 +759,7 @@ onUnmounted(() => {
     color: $white;
     letter-spacing: -0.04em;
     line-height: 1.1;
-    margin: 0 0 1.25rem;
+    margin: 0;
   }
 
   &__desc {
@@ -805,13 +767,9 @@ onUnmounted(() => {
     font-size: 1.1rem;
     color: rgba($white, 0.6);
     line-height: 1.7;
-    margin: 0 0 2rem;
+    margin: 0;
+    max-width: 600px;
   }
-}
-
-.reveal-item {
-  opacity: 1;
-  transform: translateY(0);
 }
 
 .btn {
@@ -861,5 +819,10 @@ onUnmounted(() => {
       transform: translateY(-2px);
     }
   }
+}
+
+.reveal-item {
+  opacity: 1;
+  transform: translateY(0);
 }
 </style>
