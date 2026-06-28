@@ -23,27 +23,26 @@ const timeline = [
 ]
 
 onMounted(() => {
-  const headerTl = gsap.timeline()
-  headerTl
-    .from('.about-header__label', { y: 30, opacity: 0, duration: 0.8, ease: 'power3.out' })
-    .from('.about-header__title', { y: 80, opacity: 0, duration: 1, ease: 'power4.out' }, '-=0.5')
-    .from('.about-header__desc', { y: 30, opacity: 0, duration: 0.8, ease: 'power3.out' }, '-=0.6')
+  const tl = gsap.timeline()
+  tl.from('.hero-badge', { y: 20, opacity: 0, duration: 0.8, ease: 'power3.out' })
+    .from('.hero-title span > span', { y: 100, opacity: 0, duration: 1, stagger: 0.1, ease: 'power4.out', clipPath: 'inset(0% 0% 100% 0%)' }, '-=0.5')
+    .from('.hero-desc', { y: 20, opacity: 0, duration: 0.8, ease: 'power3.out' }, '-=0.6')
 
   const storyTl = gsap.timeline({
     scrollTrigger: { trigger: '.story', start: 'top 75%', toggleActions: 'play none none none' },
   })
   storyTl
-    .fromTo('.story__label', { y: 20, opacity: 1 }, { y: 0, opacity: 1, duration: 0.6 })
-    .fromTo('.story__title', { y: 40, opacity: 1 }, { y: 0, opacity: 1, duration: 0.8 }, '-=0.3')
-    .fromTo('.story__text p', { y: 24, opacity: 1 }, { y: 0, opacity: 1, duration: 0.8, stagger: 0.15 }, '-=0.4')
-    .fromTo('.story__visual', { scale: 1.03, opacity: 1 }, { scale: 1, opacity: 1, duration: 1 }, '-=0.6')
+    .fromTo('.story__label', { y: 20, opacity: 0 }, { y: 0, opacity: 1, duration: 0.6 })
+    .fromTo('.story__title', { y: 40, opacity: 0 }, { y: 0, opacity: 1, duration: 0.8 }, '-=0.3')
+    .fromTo('.story__text p', { y: 24, opacity: 0 }, { y: 0, opacity: 1, duration: 0.8, stagger: 0.15 }, '-=0.4')
+    .fromTo('.story__visual', { scale: 1.05, opacity: 0, y: 40 }, { scale: 1, opacity: 1, y: 0, duration: 1, ease: 'power3.out' }, '-=0.6')
   if (storyTl.scrollTrigger) triggers.push(storyTl.scrollTrigger)
 
   document.querySelectorAll('.value-card').forEach((card, i) => {
     const tween = gsap.fromTo(card, {
-      y: 30, opacity: 1,
+      y: 40, opacity: 0, scale: 0.95
     }, {
-      y: 0, opacity: 1, duration: 0.7, delay: i * 0.1, ease: 'power3.out',
+      y: 0, opacity: 1, scale: 1, duration: 0.8, delay: i * 0.1, ease: 'power3.out',
       scrollTrigger: { trigger: '.values__grid', start: 'top 80%', toggleActions: 'play none none none' },
     })
     if (tween.scrollTrigger) triggers.push(tween.scrollTrigger)
@@ -51,7 +50,7 @@ onMounted(() => {
 
   document.querySelectorAll('.timeline__item').forEach((item) => {
     const tween = gsap.fromTo(item, {
-      y: 30, opacity: 1,
+      y: 40, opacity: 0,
     }, {
       y: 0, opacity: 1, duration: 0.8, ease: 'power3.out',
       scrollTrigger: { trigger: item, start: 'top 85%', toggleActions: 'play none none none' },
@@ -67,14 +66,19 @@ onUnmounted(() => {
 
 <template>
   <main class="about-page">
-    <section class="about-header">
-      <div class="about-header__bg">
-        <div class="about-header__grid" />
+    <section class="about-hero">
+      <div class="about-hero__bg">
+        <div class="about-hero__grid"></div>
+        <div class="about-hero__glow"></div>
       </div>
-      <div class="container about-header__content">
-        <span class="about-header__label">Nosotros</span>
-        <h1 class="about-header__title">Health &amp; <span class="text-gradient">Life S.A.</span></h1>
-        <p class="about-header__desc">
+      
+      <div class="container about-hero__content">
+        <div class="hero-badge">Nosotros</div>
+        <h1 class="hero-title">
+          <span class="line-wrap"><span>Health &</span></span>
+          <span class="line-wrap"><span class="text-gradient">Life S.A.</span></span>
+        </h1>
+        <p class="hero-desc">
           Humanizamos la tecnología para cuidar lo más valioso: tu salud y la de tu familia.
         </p>
       </div>
@@ -82,6 +86,22 @@ onUnmounted(() => {
 
     <section class="story section-padding">
       <div class="container story__inner">
+        <div class="story__text">
+          <span class="section-label story__label">Nuestra esencia</span>
+          <h2 class="section-title story__title">Pensando en <span class="text-gradient">su bienestar</span></h2>
+          <div class="story__paragraphs">
+            <p>
+              HELISA representa el nacimiento de una vida más saludable. Nuestro propósito es
+              ofrecer los mejores sistemas de tratamiento y purificación de agua y aire con
+              respaldo de repuestos y atención personalizada en todo el Ecuador.
+            </p>
+            <p>
+              Para nosotros el agua es movimiento, dinamismo, salud y energía. Cada sistema que
+              instalamos lleva esa filosofía: transformar espacios para que respires y bebas con confianza.
+            </p>
+          </div>
+        </div>
+
         <div class="story__visual">
           <div class="story__frame">
             <img src="/images/nave-supersacos.jpg" alt="Instalaciones HELISA" class="story__image" />
@@ -98,25 +118,6 @@ onUnmounted(() => {
                 <span class="story__badge-label">Desde</span>
               </div>
             </div>
-          </div>
-          <div class="story__ring" aria-hidden="true"></div>
-        </div>
-
-        <div class="story__text">
-          <span class="section-label reveal-item">Nuestra esencia</span>
-          <h2 class="section-title reveal-item">Pensando en <span class="text-gradient">su bienestar</span></h2>
-          <p class="reveal-item">
-            HELISA representa el nacimiento de una vida más saludable. Nuestro propósito es
-            ofrecer los mejores sistemas de tratamiento y purificación de agua y aire con
-            respaldo de repuestos y atención personalizada en todo el Ecuador.
-          </p>
-          <p class="reveal-item">
-            Para nosotros el agua es movimiento, dinamismo, salud y energía. Cada sistema que
-            instalamos lleva esa filosofía: transformar espacios para que respires y bebas con confianza.
-          </p>
-          <div class="story__slogan reveal-item">
-            <i class="fa-solid fa-quote-left"></i>
-            <span>Pensando en su bienestar</span>
           </div>
         </div>
       </div>
@@ -158,10 +159,11 @@ onUnmounted(() => {
           <h2 class="section-title">Nuestro <span class="text-gradient">camino</span></h2>
         </div>
         <div class="timeline__wrapper">
+          <div class="timeline__line"></div>
           <div class="timeline__items">
-            <div v-for="(item, index) in timeline" :key="item.year" class="timeline__item">
-              <div class="timeline__dot" />
-              <div class="timeline__content" :class="{ 'timeline__content--right': index % 2 !== 0 }">
+            <div v-for="(item, index) in timeline" :key="item.year" class="timeline__item" :class="{ 'timeline__item--right': index % 2 !== 0 }">
+              <div class="timeline__dot"></div>
+              <div class="timeline__content">
                 <span class="timeline__year">{{ item.year }}</span>
                 <h3 class="timeline__title">{{ item.title }}</h3>
                 <p class="timeline__desc">{{ item.desc }}</p>
@@ -175,39 +177,53 @@ onUnmounted(() => {
 </template>
 
 <style lang="scss" scoped>
-@use '@/styles/colorVariables.module.scss' as *;
-@use '@/styles/fonts.module.scss' as *;
-
 .about-page {
   padding-top: 80px;
+  background-color: $background;
+  overflow: hidden;
 }
 
-.about-header {
+/* HERO SECTION */
+.about-hero {
   position: relative;
-  min-height: 60vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
+  padding: 8rem 0 4rem;
   text-align: center;
-  background: $white;
-  border-bottom: 1px solid $border;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 
   &__bg {
     position: absolute;
     inset: 0;
     z-index: 0;
+    pointer-events: none;
+    overflow: hidden;
   }
 
   &__grid {
     position: absolute;
-    inset: 0;
-    background-image:
-      linear-gradient($gray-100 1px, transparent 1px),
-      linear-gradient(90deg, $gray-100 1px, transparent 1px);
-    background-size: 80px 80px;
-    opacity: 0.5;
-    mask-image: radial-gradient(ellipse 80% 70% at 50% 0%, $black 0%, transparent 70%);
+    inset: -50%;
+    width: 200%;
+    height: 200%;
+    background-image: 
+      linear-gradient($border 1px, transparent 1px),
+      linear-gradient(90deg, $border 1px, transparent 1px);
+    background-size: 100px 100px;
+    opacity: 0.4;
+    transform: perspective(500px) rotateX(60deg) translateY(-100px) translateZ(-200px);
+    animation: gridMove 20s linear infinite;
+  }
+  
+  &__glow {
+    position: absolute;
+    top: -20%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60vw;
+    height: 60vw;
+    background: radial-gradient(circle, rgba($black, 0.03) 0%, transparent 70%);
+    border-radius: 50%;
+    filter: blur(60px);
   }
 
   &__content {
@@ -216,145 +232,167 @@ onUnmounted(() => {
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
-    gap: 1.5rem;
-    width: 100%;
     max-width: 900px;
-    padding: 8rem 1.5rem 5rem;
-    box-sizing: border-box;
-  }
-
-  &__label {
-    @include label-pill;
-  }
-
-  &__title {
-    font-family: $font-display;
-    font-size: clamp(2.5rem, 8vw, 5rem);
-    font-weight: 500;
-    letter-spacing: -0.05em;
-    line-height: 1.05;
-    margin: 0;
-  }
-
-  &__desc {
-    font-family: $font-secondary;
-    font-size: 1.1rem;
-    color: $foreground-muted;
-    max-width: 550px;
-    margin: 0;
-    line-height: 1.7;
   }
 }
 
-.story {
-  background: $background-soft;
+@keyframes gridMove {
+  0% { transform: perspective(500px) rotateX(60deg) translateY(0) translateZ(-200px); }
+  100% { transform: perspective(500px) rotateX(60deg) translateY(100px) translateZ(-200px); }
+}
 
-  .container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 3rem;
-    width: 100%;
-    max-width: 1280px;
+.hero-badge {
+  @include label-pill;
+  margin-bottom: 2rem;
+  background: $white;
+  border: 1px solid $border;
+  box-shadow: 0 4px 20px rgba($black, 0.03);
+}
+
+.hero-title {
+  font-family: $font-display;
+  font-size: clamp(3.5rem, 10vw, 7.5rem);
+  font-weight: 500;
+  line-height: 1.05;
+  letter-spacing: -0.04em;
+  color: $black;
+  margin: 0 0 1.5rem;
+  
+  .line-wrap {
+    display: block;
+    overflow: hidden;
+    padding-bottom: 0.1em;
+    
+    > span {
+      display: inline-block;
+      transform-origin: left bottom;
+    }
   }
+}
+
+.hero-desc {
+  font-family: $font-secondary;
+  font-size: clamp(1.1rem, 2vw, 1.35rem);
+  color: $foreground-muted;
+  max-width: 650px;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
+/* STORY SECTION */
+.story {
+  position: relative;
+  z-index: 2;
 
   &__inner {
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
     gap: 4rem;
-    width: 100%;
+  }
 
-    @media (min-width: 1024px) {
-      flex-direction: row;
-      gap: 6rem;
+  &__text {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    max-width: 800px;
+    gap: 1.5rem;
+  }
+  
+  &__paragraphs {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    
+    p {
+      font-family: $font-secondary;
+      font-size: 1.15rem;
+      color: $foreground-muted;
+      line-height: 1.7;
+      margin: 0;
+      
+      @media (min-width: 768px) {
+        font-size: 1.25rem;
+      }
     }
   }
 
   &__visual {
-    position: relative;
-    display: flex;
-    justify-content: center;
-    align-items: center;
     width: 100%;
-    max-width: 520px;
-    padding: 2rem;
+    max-width: 1000px;
+    position: relative;
   }
 
   &__frame {
     position: relative;
     width: 100%;
-    padding: 1rem;
-    background: $white;
-    border: 1px solid $border;
-    border-radius: 36px;
-    box-shadow:
-      0 40px 80px -20px rgba($black, 0.08),
-      0 24px 40px -24px rgba($black, 0.04);
-    z-index: 1;
+    padding: 1.5rem;
+    background: rgba($white, 0.7);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba($white, 0.8);
+    border-radius: 2rem;
+    box-shadow: 
+      0 30px 60px rgba($black, 0.05),
+      inset 0 0 0 1px rgba($white, 0.9);
+      
+    @media (min-width: 768px) {
+      padding: 2rem;
+      border-radius: 3rem;
+    }
   }
 
   &__image {
     width: 100%;
-    border-radius: 24px;
-    aspect-ratio: 4 / 5;
+    border-radius: 1.5rem;
+    aspect-ratio: 16 / 9;
     object-fit: cover;
     display: block;
-  }
-
-  &__ring {
-    position: absolute;
-    top: 0;
-    right: 0;
-    width: 70%;
-    height: 70%;
-    border: 1px dashed $border;
-    border-radius: 50%;
-    transform: translate(15%, -10%);
-    z-index: 0;
-    pointer-events: none;
-    animation: storyRingRotate 60s linear infinite;
+    
+    @media (min-width: 768px) {
+      border-radius: 2rem;
+    }
   }
 
   &__badge {
     position: absolute;
     display: flex;
     align-items: center;
-    gap: 0.65rem;
     background: $white;
     border: 1px solid $border;
-    border-radius: 100px;
-    box-shadow: 0 20px 50px rgba($black, 0.1);
+    box-shadow: 0 20px 40px rgba($black, 0.1);
     z-index: 2;
 
     &--top {
       top: 0;
-      right: -1rem;
-      padding: 0.6rem 1rem;
+      right: 5%;
+      padding: 0.75rem 1.25rem;
+      border-radius: 100px;
+      gap: 0.75rem;
+      transform: translateY(-50%);
     }
 
     &--bottom {
       bottom: 0;
-      left: -2.5rem;
-      padding: 0.85rem 1.25rem;
-      border-radius: 20px;
+      left: 5%;
+      padding: 1rem 1.5rem;
+      border-radius: 24px;
       gap: 1rem;
+      transform: translateY(30%);
     }
 
     &-dot {
-      width: 8px;
-      height: 8px;
+      width: 10px;
+      height: 10px;
       border-radius: 50%;
       background: $black;
-      box-shadow: 0 0 0 4px rgba($black, 0.08);
+      box-shadow: 0 0 0 4px rgba($black, 0.1);
     }
 
     &-text {
       font-family: $font-secondary;
-      font-size: 0.8rem;
+      font-size: 0.9rem;
       font-weight: 500;
       color: $black;
       letter-spacing: 0.02em;
@@ -364,19 +402,19 @@ onUnmounted(() => {
       display: flex;
       justify-content: center;
       align-items: center;
-      width: 44px;
-      height: 44px;
+      width: 48px;
+      height: 48px;
       background: $black;
       border-radius: 14px;
       color: $white;
-      font-size: 1.1rem;
+      font-size: 1.25rem;
       flex-shrink: 0;
     }
 
     &-body {
       display: flex;
       flex-direction: column;
-      gap: 0.15rem;
+      gap: 0.2rem;
     }
 
     &-number {
@@ -390,81 +428,47 @@ onUnmounted(() => {
 
     &-label {
       font-family: $font-secondary;
-      font-size: 0.7rem;
+      font-size: 0.75rem;
       color: $foreground-muted;
-    }
-  }
-
-  &__text {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-    gap: 1rem;
-    max-width: 520px;
-
-    @media (min-width: 1024px) {
-      align-items: flex-start;
-      text-align: left;
-    }
-
-    p {
-      font-family: $font-secondary;
-      font-size: 1.05rem;
-      color: $foreground-muted;
-      line-height: 1.8;
-      margin: 0;
-    }
-  }
-
-  &__slogan {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.75rem;
-    margin-top: 1rem;
-    padding: 1rem 1.5rem;
-    background: $white;
-    border: 1px solid $border;
-    border-radius: 12px;
-    font-family: $font-secondary;
-    font-style: italic;
-    color: $foreground-muted;
-
-    i {
-      color: $black;
-      font-size: 1.25rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
     }
   }
 }
 
+.section-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 1rem;
+  margin-bottom: 4rem;
+}
+
+.section-title {
+  font-family: $font-display;
+  font-size: clamp(2rem, 5vw, 3.5rem);
+  font-weight: 500;
+  color: $black;
+  margin: 0;
+  letter-spacing: -0.03em;
+}
+
+/* VALUES SECTION */
 .values {
-  background: $white;
-  border-top: 1px solid $border;
-
-  .container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 3rem;
-    width: 100%;
-    max-width: 1280px;
-  }
-
-  .section-header {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-    gap: 0.75rem;
-  }
-
   &__grid {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 1.25rem;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
     width: 100%;
+    
+    @media (min-width: 640px) {
+      grid-template-columns: repeat(2, 1fr);
+    }
+    
+    @media (min-width: 1024px) {
+      grid-template-columns: repeat(4, 1fr);
+    }
   }
 }
 
@@ -473,39 +477,44 @@ onUnmounted(() => {
   flex-direction: column;
   align-items: center;
   text-align: center;
-  gap: 1rem;
-  flex: 1 1 220px;
-  max-width: 280px;
-  background: $background-soft;
-  border: 1px solid $border;
-  border-radius: 24px;
-  padding: 2rem;
-  transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  gap: 1.25rem;
+  background: rgba($white, 0.6);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba($border, 0.8);
+  border-radius: 28px;
+  padding: 2.5rem 1.5rem;
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
   cursor: default;
+  outline: none;
 
   &:hover,
   &--active {
     background: $white;
-    border-color: $black;
-    transform: translateY(-6px);
-    box-shadow: 0 20px 40px rgba($black, 0.06);
+    border-color: $white;
+    transform: translateY(-8px);
+    box-shadow: 0 20px 40px rgba($black, 0.05);
   }
 
   &__icon {
     display: flex;
     justify-content: center;
     align-items: center;
-    width: 56px;
-    height: 56px;
+    width: 64px;
+    height: 64px;
     background: $black;
-    border-radius: 16px;
+    border-radius: 20px;
     color: $white;
-    font-size: 1.35rem;
+    font-size: 1.5rem;
+    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  
+  &:hover &__icon, &--active &__icon {
+    transform: scale(1.1) rotate(5deg);
   }
 
   &__title {
     font-family: $font-display;
-    font-size: 1.15rem;
+    font-size: 1.25rem;
     font-weight: 500;
     color: $black;
     margin: 0;
@@ -513,141 +522,128 @@ onUnmounted(() => {
 
   &__desc {
     font-family: $font-secondary;
-    font-size: 0.9rem;
+    font-size: 0.95rem;
     color: $foreground-muted;
     line-height: 1.6;
     margin: 0;
   }
 }
 
+/* TIMELINE SECTION */
 .timeline {
-  background: $background-soft;
-
-  .container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 3rem;
-    width: 100%;
-    max-width: 1280px;
-  }
-
-  .section-header {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-    gap: 0.75rem;
-  }
-
   &__wrapper {
     position: relative;
     width: 100%;
-    max-width: 900px;
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 2rem 0;
   }
 
-  &__items {
-    position: relative;
-
-    &::before {
-      content: '';
-      position: absolute;
-      left: 20px;
-      top: 0;
-      bottom: 0;
-      width: 1px;
-      background: $border;
-
-      @media (min-width: 768px) {
-        left: 50%;
-        transform: translateX(-50%);
-      }
-    }
-  }
-
-  &__item {
-    position: relative;
-    padding-left: 60px;
-    margin-bottom: 3rem;
-
-    @media (min-width: 768px) {
-      padding-left: 0;
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 4rem;
-      margin-bottom: 4rem;
-    }
-
-    &:last-child {
-      margin-bottom: 0;
-    }
-  }
-
-  &__dot {
+  &__line {
     position: absolute;
-    left: 14px;
+    left: 24px;
     top: 0;
-    width: 14px;
-    height: 14px;
-    border-radius: 50%;
-    background: $black;
-    border: 3px solid $white;
+    bottom: 0;
+    width: 2px;
+    background: linear-gradient(to bottom, transparent, $border 10%, $border 90%, transparent);
 
     @media (min-width: 768px) {
       left: 50%;
       transform: translateX(-50%);
     }
   }
-
-  &__content {
-    background: $white;
-    border: 1px solid $border;
-    border-radius: 20px;
-    padding: 1.5rem 2rem;
-    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-
-    &:hover {
-      border-color: $black;
-      transform: translateY(-4px);
-      box-shadow: 0 20px 40px rgba($black, 0.06);
+  
+  &__items {
+    display: flex;
+    flex-direction: column;
+    gap: 2.5rem;
+    
+    @media (min-width: 768px) {
+      gap: 0;
     }
+  }
+
+  &__item {
+    position: relative;
+    padding-left: 60px;
+    width: 100%;
+    box-sizing: border-box;
 
     @media (min-width: 768px) {
+      padding-left: 0;
+      width: 50%;
+      padding-right: 3rem;
+      
       &--right {
-        grid-column: 2;
+        align-self: flex-end;
+        padding-right: 0;
+        padding-left: 3rem;
+        
+        .timeline__dot {
+          right: auto;
+          left: -8px;
+        }
       }
+    }
+  }
+
+  &__dot {
+    position: absolute;
+    left: 17px;
+    top: 24px;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: $black;
+    border: 4px solid $background;
+    box-shadow: 0 0 0 2px $border;
+    z-index: 2;
+
+    @media (min-width: 768px) {
+      left: auto;
+      right: -8px;
+    }
+  }
+
+  &__content {
+    background: rgba($white, 0.7);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba($border, 0.8);
+    border-radius: 24px;
+    padding: 2rem;
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+
+    &:hover {
+      background: $white;
+      transform: translateY(-4px) scale(1.02);
+      box-shadow: 0 20px 40px rgba($black, 0.05);
     }
   }
 
   &__year {
     display: block;
     font-family: $font-display;
-    font-size: 1.75rem;
+    font-size: 2rem;
     font-weight: 500;
     color: $black;
-    margin-bottom: 0.25rem;
+    margin-bottom: 0.5rem;
+    letter-spacing: -0.04em;
   }
 
   &__title {
     font-family: $font-display;
-    font-size: 1.15rem;
+    font-size: 1.25rem;
     font-weight: 500;
     color: $black;
-    margin: 0 0 0.5rem;
+    margin: 0 0 0.75rem;
   }
 
   &__desc {
     font-family: $font-secondary;
-    font-size: 0.9rem;
+    font-size: 1rem;
     color: $foreground-muted;
     line-height: 1.6;
     margin: 0;
   }
-}
-
-@keyframes storyRingRotate {
-  from { transform: translate(15%, -10%) rotate(0deg); }
-  to { transform: translate(15%, -10%) rotate(360deg); }
 }
 </style>
