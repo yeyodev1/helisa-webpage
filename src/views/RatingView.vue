@@ -5,21 +5,6 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger'
 
 gsap.registerPlugin(ScrollTrigger)
 
-interface Lead {
-  id: string
-  name: string
-  email: string
-  phone: string
-  company: string
-  rating: number
-  tags: string[]
-  message: string
-  createdAt: string
-  status: 'nuevo' | 'contactado' | 'calificado'
-}
-
-const STORAGE_KEY = 'helisa_crm_leads'
-
 const form = ref({
   name: '',
   email: '',
@@ -35,8 +20,6 @@ const isSubmitting = ref(false)
 const showToast = ref(false)
 const toastMessage = ref('')
 const toastType = ref<'success' | 'error'>('success')
-const leads = ref<Lead[]>([])
-const showSavedLeads = ref(false)
 
 const tags = [
   'Atención personalizada',
@@ -52,25 +35,6 @@ const triggers: ScrollTrigger[] = []
 const isFormValid = computed(() => {
   return form.value.name && form.value.email && rating.value > 0
 })
-
-const loadLeads = () => {
-  try {
-    const stored = localStorage.getItem(STORAGE_KEY)
-    if (stored) {
-      leads.value = JSON.parse(stored)
-    }
-  } catch {
-    leads.value = []
-  }
-}
-
-const saveLeads = () => {
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(leads.value))
-  } catch {
-    // ignore
-  }
-}
 
 const toggleTag = (tag: string) => {
   const index = selectedTags.value.indexOf(tag)
@@ -100,7 +64,7 @@ const submitForm = async () => {
 
   await new Promise((resolve) => setTimeout(resolve, 1200))
 
-  const newLead: Lead = {
+  const newLead = {
     id: crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(),
     name: form.value.name,
     email: form.value.email,
@@ -113,8 +77,9 @@ const submitForm = async () => {
     status: 'nuevo',
   }
 
-  leads.value.unshift(newLead)
-  saveLeads()
+  const stored = JSON.parse(localStorage.getItem('helisa_crm_leads') || '[]')
+  stored.unshift(newLead)
+  localStorage.setItem('helisa_crm_leads', JSON.stringify(stored))
 
   form.value = { name: '', email: '', phone: '', company: '', message: '' }
   rating.value = 0
@@ -122,13 +87,7 @@ const submitForm = async () => {
   selectedTags.value = []
   isSubmitting.value = false
 
-  showNotification('¡Calificación guardada en el CRM mock!')
-}
-
-const deleteLead = (id: string) => {
-  leads.value = leads.value.filter((lead) => lead.id !== id)
-  saveLeads()
-  showNotification('Registro eliminado.', 'success')
+  showNotification('¡Gracias! Hemos recibido tu mensaje. Te contactaremos pronto.')
 }
 
 const getRatingLabel = (stars: number) => {
@@ -142,45 +101,24 @@ const getRatingLabel = (stars: number) => {
   return labels[stars] || ''
 }
 
-const getStatusClass = (status: Lead['status']) => {
-  return `lead-card__status--${status}`
-}
-
 onMounted(() => {
-  loadLeads()
-
   const headerTl = gsap.timeline()
   headerTl
     .from('.rating-header__label', { y: 30, opacity: 0, duration: 0.8, ease: 'power3.out' })
     .from('.rating-header__title', { y: 80, opacity: 0, duration: 1, ease: 'power4.out' }, '-=0.5')
     .from('.rating-header__desc', { y: 30, opacity: 0, duration: 0.8, ease: 'power3.out' }, '-=0.6')
 
-  const formTween = gsap.from('.rating-form', {
-    y: 60,
-    opacity: 0,
-    duration: 1,
-    ease: 'power3.out',
+  const bodyTl = gsap.timeline({
     scrollTrigger: {
-      trigger: '.rating-form',
+      trigger: '.rating-body',
       start: 'top 80%',
       toggleActions: 'play none none none',
     },
   })
-  if (formTween.scrollTrigger) triggers.push(formTween.scrollTrigger)
-
-  const infoTween = gsap.from('.rating-info', {
-    y: 60,
-    opacity: 0,
-    duration: 1,
-    delay: 0.2,
-    ease: 'power3.out',
-    scrollTrigger: {
-      trigger: '.rating-info',
-      start: 'top 80%',
-      toggleActions: 'play none none none',
-    },
-  })
-  if (infoTween.scrollTrigger) triggers.push(infoTween.scrollTrigger)
+  bodyTl
+    .from('.rating-context', { y: 40, opacity: 0, duration: 0.8, ease: 'power3.out' })
+    .from('.rating-form', { y: 40, opacity: 0, duration: 0.8, ease: 'power3.out' }, '-=0.4')
+  if (bodyTl.scrollTrigger) triggers.push(bodyTl.scrollTrigger)
 })
 
 onUnmounted(() => {
@@ -196,15 +134,75 @@ onUnmounted(() => {
       </div>
       <div class="container rating-header__content">
         <span class="rating-header__label">Contacto</span>
-        <h1 class="rating-header__title">Califica y <span class="text-gradient">contacta</span></h1>
+        <h1 class="rating-header__title">Contáctanos y <span class="text-gradient">califica</span></h1>
         <p class="rating-header__desc">
-          Tu opinión nos ayuda a mejorar. Califica tu experiencia y déjanos tus datos para asesorarte.
+          Estamos listos para ayudarte. Cuéntanos tu experiencia o solicita asesoría especializada en
+          tratamiento de agua y aire para tu hogar o industria.
         </p>
       </div>
     </section>
 
     <section class="rating-body section-padding">
       <div class="container rating-body__inner">
+        <aside class="rating-context">
+          <div class="rating-context__card">
+            <div class="rating-context__header">
+              <div class="rating-context__icon">
+                <i class="fa-solid fa-water"></i>
+              </div>
+              <h2 class="rating-context__title">HELISA</h2>
+              <p class="rating-context__subtitle">Health &amp; Life S.A.</p>
+            </div>
+            <p class="rating-context__text">
+              Más de 15 años purificando agua y aire en Ecuador. Soluciones para hogares,
+              industrias, laboratorios, hospitales y más.
+            </p>
+            <p class="rating-context__text">
+              Cada solicitud que recibes se registra en nuestro sistema CRM y un asesor
+              especializado te contactará en las próximas 24 horas.
+            </p>
+          </div>
+
+          <div class="rating-context__contact">
+            <div class="contact-item">
+              <div class="contact-item__icon">
+                <i class="fa-solid fa-phone"></i>
+              </div>
+              <div>
+                <span class="contact-item__label">Teléfono</span>
+                <span class="contact-item__value">+593 4 123 4567</span>
+              </div>
+            </div>
+            <div class="contact-item">
+              <div class="contact-item__icon">
+                <i class="fa-solid fa-envelope"></i>
+              </div>
+              <div>
+                <span class="contact-item__label">Correo</span>
+                <span class="contact-item__value">contacto@helisa.ec</span>
+              </div>
+            </div>
+            <div class="contact-item">
+              <div class="contact-item__icon">
+                <i class="fa-solid fa-location-dot"></i>
+              </div>
+              <div>
+                <span class="contact-item__label">Dirección</span>
+                <span class="contact-item__value">Guayaquil, Ecuador</span>
+              </div>
+            </div>
+            <div class="contact-item">
+              <div class="contact-item__icon">
+                <i class="fa-solid fa-clock"></i>
+              </div>
+              <div>
+                <span class="contact-item__label">Horario</span>
+                <span class="contact-item__value">Lun – Vie, 08:00 – 17:00</span>
+              </div>
+            </div>
+          </div>
+        </aside>
+
         <form class="rating-form" @submit.prevent="submitForm">
           <div class="rating-form__section">
             <h2 class="rating-form__title">¿Cómo fue tu experiencia?</h2>
@@ -264,83 +262,18 @@ onUnmounted(() => {
 
           <div class="form-field">
             <label class="form-field__label">Comentarios</label>
-            <textarea v-model="form.message" class="form-field__input form-field__textarea" rows="4" placeholder="Cuéntanos más sobre tu experiencia..."></textarea>
+            <textarea v-model="form.message" class="form-field__input form-field__textarea" rows="4" placeholder="Cuéntanos sobre tu proyecto o consulta..."></textarea>
           </div>
 
           <button type="submit" class="rating-form__submit" :disabled="isSubmitting || !isFormValid">
             <span v-if="isSubmitting" class="rating-form__spinner" />
             <template v-else>
-              Guardar y contactar
+              Enviar a CRM
               <i class="fa-solid fa-arrow-right"></i>
             </template>
           </button>
         </form>
-
-        <aside class="rating-info">
-          <div class="rating-info__card">
-            <div class="rating-info__header">
-              <div class="rating-info__icon">
-                <i class="fa-solid fa-database"></i>
-              </div>
-              <div>
-                <h3 class="rating-info__title">CRM Mock</h3>
-                <p class="rating-info__desc">
-                  Esta vista simula la integración con un CRM. Cada calificación se guarda en el
-                  almacenamiento local del navegador como un lead con estado, tags y fecha.
-                </p>
-              </div>
-            </div>
-            <div class="rating-info__stats">
-              <div class="rating-info__stat">
-                <span class="rating-info__stat-value">{{ leads.length }}</span>
-                <span class="rating-info__stat-label">Leads guardados</span>
-              </div>
-              <div class="rating-info__stat">
-                <span class="rating-info__stat-value">{{ leads.length > 0 ? (leads.reduce((acc, l) => acc + l.rating, 0) / leads.length).toFixed(1) : '0.0' }}</span>
-                <span class="rating-info__stat-label">Calificación promedio</span>
-              </div>
-            </div>
-            <button type="button" class="rating-info__toggle" @click="showSavedLeads = !showSavedLeads">
-              {{ showSavedLeads ? 'Ocultar leads' : 'Ver leads guardados' }}
-            </button>
-          </div>
-        </aside>
       </div>
-
-      <Transition name="leads-panel">
-        <div v-if="showSavedLeads" class="leads-panel">
-          <div class="container">
-            <h2 class="leads-panel__title">Leads guardados</h2>
-            <div v-if="leads.length === 0" class="leads-panel__empty">
-              Aún no hay calificaciones guardadas.
-            </div>
-            <div v-else class="leads-grid">
-              <article v-for="lead in leads" :key="lead.id" class="lead-card">
-                <div class="lead-card__header">
-                  <div>
-                    <h4 class="lead-card__name">{{ lead.name }}</h4>
-                    <span class="lead-card__date">{{ lead.createdAt }}</span>
-                  </div>
-                  <span class="lead-card__status" :class="getStatusClass(lead.status)">{{ lead.status }}</span>
-                </div>
-                <div class="lead-card__rating">
-                  <i v-for="n in 5" :key="n" :class="['lead-card__star', n <= lead.rating ? 'fa-solid fa-star' : 'fa-regular fa-star', { 'lead-card__star--active': n <= lead.rating }]"></i>
-                </div>
-                <div v-if="lead.tags.length" class="lead-card__tags">
-                  <span v-for="tag in lead.tags" :key="tag" class="lead-card__tag">{{ tag }}</span>
-                </div>
-                <p v-if="lead.message" class="lead-card__message">{{ lead.message }}</p>
-                <div class="lead-card__contact">
-                  <span v-if="lead.email">{{ lead.email }}</span>
-                  <span v-if="lead.phone">{{ lead.phone }}</span>
-                  <span v-if="lead.company">{{ lead.company }}</span>
-                </div>
-                <button type="button" class="lead-card__delete" @click="deleteLead(lead.id)">Eliminar</button>
-              </article>
-            </div>
-          </div>
-        </div>
-      </Transition>
     </section>
 
     <Transition name="toast">
@@ -358,6 +291,18 @@ onUnmounted(() => {
 .rating-page {
   padding-top: 80px;
   min-height: 100vh;
+
+  section {
+    margin-top: 3rem;
+
+    @media (min-width: 768px) {
+      margin-top: 4rem;
+    }
+
+    @media (min-width: 1024px) {
+      margin-top: 5rem;
+    }
+  }
 }
 
 .rating-header {
@@ -419,7 +364,7 @@ onUnmounted(() => {
     font-family: $font-secondary;
     font-size: 1.1rem;
     color: $foreground-muted;
-    max-width: 550px;
+    max-width: 600px;
     margin: 0;
     line-height: 1.7;
   }
@@ -427,15 +372,6 @@ onUnmounted(() => {
 
 .rating-body {
   background: $background-soft;
-
-  .container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-    max-width: 1280px;
-  }
 
   &__inner {
     display: flex;
@@ -454,6 +390,133 @@ onUnmounted(() => {
   }
 }
 
+.rating-context {
+  width: 100%;
+  max-width: 420px;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+
+  @media (min-width: 1024px) {
+    position: sticky;
+    top: 100px;
+    flex: 1;
+  }
+
+  &__card {
+    background: $white;
+    border: 1px solid $border;
+    border-radius: 28px;
+    padding: 2rem;
+  }
+
+  &__header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid $border;
+  }
+
+  &__icon {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 64px;
+    height: 64px;
+    background: $black;
+    border-radius: 18px;
+    color: $white;
+    font-size: 1.5rem;
+    flex-shrink: 0;
+  }
+
+  &__title {
+    font-family: $font-display;
+    font-size: 1.35rem;
+    font-weight: 500;
+    color: $black;
+    margin: 0;
+  }
+
+  &__subtitle {
+    font-family: $font-secondary;
+    font-size: 0.85rem;
+    color: $foreground-muted;
+    margin: 0;
+  }
+
+  &__text {
+    font-family: $font-secondary;
+    font-size: 0.9rem;
+    color: $foreground-muted;
+    line-height: 1.7;
+    margin: 0 0 0.75rem;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+
+  &__contact {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+}
+
+.contact-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 1.25rem;
+  background: $white;
+  border: 1px solid $border;
+  border-radius: 16px;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+
+  &:hover {
+    border-color: $gray-300;
+    transform: translateY(-2px);
+    box-shadow: 0 10px 30px rgba($black, 0.04);
+  }
+
+  &__icon {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 44px;
+    height: 44px;
+    background: $black;
+    border-radius: 12px;
+    color: $white;
+    font-size: 1.1rem;
+    flex-shrink: 0;
+  }
+
+  &__label {
+    display: block;
+    font-family: $font-secondary;
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: $foreground-muted;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.15rem;
+  }
+
+  &__value {
+    display: block;
+    font-family: $font-secondary;
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: $black;
+  }
+}
+
 .rating-form {
   width: 100%;
   max-width: 700px;
@@ -469,7 +532,7 @@ onUnmounted(() => {
 
   @media (min-width: 1024px) {
     max-width: none;
-    flex: 1.2;
+    flex: 1.3;
   }
 
   &__title {
@@ -655,299 +718,6 @@ onUnmounted(() => {
   }
 }
 
-.rating-info {
-  width: 100%;
-  max-width: 420px;
-
-  @media (min-width: 1024px) {
-    position: sticky;
-    top: 100px;
-    flex: 1;
-  }
-
-  &__card {
-    background: $white;
-    border: 1px solid $border;
-    border-radius: 28px;
-    padding: 2rem;
-  }
-
-  &__header {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-    gap: 1rem;
-    margin-bottom: 1.5rem;
-
-    @media (min-width: 640px) {
-      flex-direction: row;
-      text-align: left;
-      align-items: flex-start;
-    }
-  }
-
-  &__icon {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 56px;
-    height: 56px;
-    background: $black;
-    border-radius: 16px;
-    color: $white;
-    font-size: 1.35rem;
-    flex-shrink: 0;
-  }
-
-  &__title {
-    font-family: $font-display;
-    font-size: 1.25rem;
-    font-weight: 500;
-    color: $black;
-    margin: 0 0 0.5rem;
-  }
-
-  &__desc {
-    font-family: $font-secondary;
-    font-size: 0.9rem;
-    color: $foreground-muted;
-    line-height: 1.6;
-    margin: 0;
-  }
-
-  &__stats {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 1rem;
-    margin-bottom: 1.5rem;
-  }
-
-  &__stat {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    gap: 0.25rem;
-    padding: 1.25rem 1rem;
-    background: $background-soft;
-    border-radius: 16px;
-  }
-
-  &__stat-value {
-    display: block;
-    font-family: $font-display;
-    font-size: 1.5rem;
-    font-weight: 500;
-    color: $black;
-  }
-
-  &__stat-label {
-    font-family: $font-secondary;
-    font-size: 0.7rem;
-    color: $foreground-muted;
-  }
-
-  &__toggle {
-    width: 100%;
-    padding: 0.9rem;
-    background: transparent;
-    border: 1px solid $border;
-    border-radius: 100px;
-    color: $black;
-    font-family: $font-secondary;
-    font-size: 0.85rem;
-    font-weight: 500;
-    cursor: pointer;
-    transition: all 0.3s;
-
-    &:hover {
-      border-color: $black;
-      background: rgba($black, 0.03);
-    }
-  }
-}
-
-.leads-panel {
-  width: 100%;
-  margin-top: 4rem;
-  padding-top: 4rem;
-  border-top: 1px solid $border;
-
-  .container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-  }
-
-  &__title {
-    font-family: $font-display;
-    font-size: 1.5rem;
-    font-weight: 500;
-    color: $black;
-    margin: 0 0 1.5rem;
-    text-align: center;
-  }
-
-  &__empty {
-    font-family: $font-secondary;
-    color: $foreground-muted;
-    padding: 3rem;
-    text-align: center;
-    background: $white;
-    border: 1px solid $border;
-    border-radius: 20px;
-    width: 100%;
-  }
-}
-
-.leads-grid {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 1rem;
-  width: 100%;
-
-  @media (min-width: 640px) {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  @media (min-width: 1024px) {
-    grid-template-columns: repeat(3, 1fr);
-  }
-}
-
-.lead-card {
-  background: $white;
-  border: 1px solid $border;
-  border-radius: 20px;
-  padding: 1.5rem;
-  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-
-  &:hover {
-    border-color: $gray-300;
-    transform: translateY(-4px);
-    box-shadow: 0 20px 40px rgba($black, 0.06);
-  }
-
-  &__header {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    margin-bottom: 0.75rem;
-  }
-
-  &__name {
-    font-family: $font-display;
-    font-size: 1.05rem;
-    font-weight: 500;
-    color: $black;
-    margin: 0;
-  }
-
-  &__date {
-    display: block;
-    font-family: $font-secondary;
-    font-size: 0.7rem;
-    color: $foreground-muted;
-    margin-top: 0.25rem;
-  }
-
-  &__status {
-    font-family: $font-secondary;
-    font-size: 0.65rem;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    padding: 0.25rem 0.6rem;
-    border-radius: 100px;
-    background: $background-soft;
-    color: $foreground-muted;
-
-    &--nuevo {
-      background: $black;
-      color: $white;
-    }
-
-    &--contactado {
-      background: $gray-200;
-      color: $black;
-    }
-
-    &--calificado {
-      background: $gray-700;
-      color: $white;
-    }
-  }
-
-  &__rating {
-    display: flex;
-    gap: 0.25rem;
-    margin-bottom: 0.75rem;
-  }
-
-  &__star {
-    font-size: 0.85rem;
-    color: $gray-300;
-
-    &--active {
-      color: $black;
-    }
-  }
-
-  &__tags {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.35rem;
-    margin-bottom: 0.75rem;
-  }
-
-  &__tag {
-    font-family: $font-secondary;
-    font-size: 0.7rem;
-    color: $foreground-muted;
-    background: $background-soft;
-    padding: 0.25rem 0.6rem;
-    border-radius: 100px;
-  }
-
-  &__message {
-    font-family: $font-secondary;
-    font-size: 0.85rem;
-    color: $foreground-muted;
-    line-height: 1.5;
-    margin: 0 0 0.75rem;
-  }
-
-  &__contact {
-    display: flex;
-    flex-direction: column;
-    gap: 0.25rem;
-    font-family: $font-secondary;
-    font-size: 0.75rem;
-    color: $foreground-muted;
-    margin-bottom: 1rem;
-  }
-
-  &__delete {
-    background: none;
-    border: 1px solid $border;
-    color: $foreground-muted;
-    padding: 0.5rem 1rem;
-    border-radius: 100px;
-    font-family: $font-secondary;
-    font-size: 0.75rem;
-    cursor: pointer;
-    transition: all 0.3s;
-
-    &:hover {
-      border-color: $black;
-      color: $black;
-    }
-  }
-}
-
 .toast {
   position: fixed;
   bottom: 2rem;
@@ -985,16 +755,5 @@ onUnmounted(() => {
 .toast-leave-to {
   opacity: 0;
   transform: translateX(20px);
-}
-
-.leads-panel-enter-active,
-.leads-panel-leave-active {
-  transition: all 0.5s ease;
-}
-
-.leads-panel-enter-from,
-.leads-panel-leave-to {
-  opacity: 0;
-  transform: translateY(-20px);
 }
 </style>
