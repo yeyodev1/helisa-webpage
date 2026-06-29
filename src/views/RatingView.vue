@@ -238,7 +238,7 @@ onMounted(() => {
   font-weight: 500;
   line-height: 1;
   letter-spacing: -0.04em;
-  color: $black;
+  color: $primary;
   margin: 0 0 1.5rem;
 
   .line-wrap {
@@ -334,7 +334,7 @@ onMounted(() => {
     padding: 0.5rem 0;
     font-family: $font-secondary;
     font-size: 1.1rem;
-    color: $black;
+    color: $primary;
     outline: none;
 
     &:focus,
@@ -381,7 +381,7 @@ onMounted(() => {
       content: '';
       position: absolute;
       inset: 0;
-      background: $black;
+      background: $primary;
       transform: scaleX(0);
       transform-origin: center;
       transition: transform 0.6s cubic-bezier(0.19, 1, 0.22, 1);
@@ -420,7 +420,7 @@ onMounted(() => {
   justify-content: center;
   gap: 1rem;
   padding: 1.25rem 2.5rem;
-  background: $black;
+  background: $primary;
   color: $white;
   border: none;
   border-radius: 100px;
@@ -488,7 +488,7 @@ onMounted(() => {
     .submit-btn__icon {
       transform: translateX(5px);
       background: $white;
-      color: $black;
+      color: $primary;
     }
   }
 
@@ -539,7 +539,7 @@ onMounted(() => {
 
   &--error {
     background: rgba($white, 0.9);
-    color: $black;
+    color: $primary;
     border: 1px solid rgba($black, 0.1);
   }
 }

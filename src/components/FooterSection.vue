@@ -97,7 +97,7 @@ const socials = [
 @use '@/styles/fonts.module.scss' as *;
 
 .footer {
-  background: $black;
+  background: $primary;
   color: $white;
   padding: 4rem 2rem 2rem;
 
@@ -222,7 +222,7 @@ const socials = [
 
     &:hover {
       background: $white;
-      color: $black;
+      color: $primary;
       border-color: $white;
     }
   }

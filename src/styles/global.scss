@@ -17,7 +17,7 @@ body {
 }
 
 ::selection {
-  background: $black;
+  background: $primary;
   color: $white;
 }
 
@@ -34,7 +34,7 @@ body {
   border-radius: 3px;
 
   &:hover {
-    background: $black;
+    background: $primary;
   }
 }
 
@@ -54,7 +54,7 @@ button {
 }
 
 :focus-visible {
-  outline: 2px solid $black;
+  outline: 2px solid $primary;
   outline-offset: 3px;
 }
 

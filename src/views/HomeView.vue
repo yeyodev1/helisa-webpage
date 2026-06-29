@@ -414,7 +414,7 @@ section {
       width: 8px;
       height: 8px;
       border-radius: 50%;
-      background: $black;
+      background: $primary;
       box-shadow: 0 0 0 4px rgba($black, 0.08);
     }
 
@@ -422,7 +422,7 @@ section {
       font-family: $font-secondary;
       font-size: 0.8rem;
       font-weight: 500;
-      color: $black;
+      color: $primary;
       letter-spacing: 0.02em;
     }
 
@@ -432,7 +432,7 @@ section {
       align-items: center;
       width: 44px;
       height: 44px;
-      background: $black;
+      background: $primary;
       border-radius: 14px;
       color: $white;
       font-size: 1.1rem;
@@ -450,7 +450,7 @@ section {
       font-size: 1.5rem;
       font-weight: 500;
       letter-spacing: -0.04em;
-      color: $black;
+      color: $primary;
       line-height: 1;
     }
 
@@ -473,7 +473,7 @@ section {
 }
 
 .marquee {
-  background: $black;
+  background: $primary;
   padding: 1.5rem 0;
   overflow: hidden;
 
@@ -529,7 +529,7 @@ section {
   transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 
   &:hover {
-    border-color: $black;
+    border-color: $primary;
     transform: translateY(-4px);
     box-shadow: 0 20px 40px rgba($black, 0.06);
   }
@@ -547,7 +547,7 @@ section {
     font-family: $font-display;
     font-size: 1.2rem;
     font-weight: 500;
-    color: $black;
+    color: $primary;
     margin: 0;
     padding-right: 2rem;
   }
@@ -613,7 +613,7 @@ section {
 
 .stats {
   position: relative;
-  background: $black;
+  background: $primary;
   padding: 8rem 1.5rem;
   overflow: hidden;
 
@@ -791,7 +791,7 @@ section {
     font-weight: 600;
     letter-spacing: 0.05em;
     text-transform: uppercase;
-    color: $black;
+    color: $primary;
   }
 
   &__title {
@@ -818,7 +818,7 @@ section {
     width: 100%;
     max-width: 900px;
     padding: 5rem 2rem;
-    background: $black;
+    background: $primary;
     border-radius: 28px;
     border: 1px solid $border;
   }
@@ -857,11 +857,11 @@ section {
   transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 
   &--primary {
-    background: $black;
+    background: $primary;
     color: $white;
 
     &:hover {
-      background: $gray-800;
+      background: $primary-dark;
       transform: translateY(-2px);
       box-shadow: 0 10px 30px rgba($black, 0.15);
     }
@@ -869,11 +869,11 @@ section {
 
   &--ghost {
     background: transparent;
-    color: $black;
+    color: $primary;
     border: 1px solid $border;
 
     &:hover {
-      border-color: $black;
+      border-color: $primary;
       background: rgba($black, 0.03);
       transform: translateY(-2px);
     }
@@ -881,11 +881,11 @@ section {
 
   &--outline {
     background: transparent;
-    color: $black;
+    color: $primary;
     border: 1px solid $border;
 
     &:hover {
-      border-color: $black;
+      border-color: $primary;
       background: rgba($black, 0.03);
       transform: translateY(-2px);
     }

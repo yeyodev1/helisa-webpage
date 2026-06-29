@@ -47,7 +47,7 @@ onUnmounted(() => {
   width: 48px;
   height: 48px;
   border-radius: 50%;
-  background: $black;
+  background: $primary;
   border: 1px solid rgba($white, 0.15);
   color: $white;
   font-size: 1rem;
@@ -60,8 +60,8 @@ onUnmounted(() => {
 
   &:hover {
     background: $white;
-    color: $black;
-    border-color: $black;
+    color: $primary;
+    border-color: $primary;
     transform: translateY(-3px);
   }
 }

@@ -1,9 +1,14 @@
-// HELISA — Monochrome Design System
-// Awwwards-inspired black & white palette
+// HELISA — Brand Colors Design System
 
+// Core Brand Colors
+$azul-medio: #004894;
+$azul-oscuro: #002C77;
+$celeste-claro: #C6E5EB;
+$rojo: #E2352C;
+
+// Base Grayscale
 $black: #0a0a0a;
 $white: #ffffff;
-
 $gray-50: #fafafa;
 $gray-100: #f5f5f5;
 $gray-200: #e5e5e5;
@@ -25,14 +30,17 @@ $foreground-subtle: $gray-400;
 
 $border: $gray-200;
 $border-strong: $gray-300;
-$ring: rgba($black, 0.08);
+$ring: rgba($azul-medio, 0.2);
 
-// Legacy aliases (kept for partial compatibility during refactor)
-$azul-medio: $black;
-$azul-oscuro: $black;
-$celeste-claro: $gray-600;
-$rojo: $black;
-$verde: $black;
+// Theme Roles
+$primary: $azul-medio;
+$primary-dark: $azul-oscuro;
+$primary-light: $celeste-claro;
+$accent: $rojo;
+$secondary: $gray-600;
+
+// Legacy variables mapping for compatibility
+$verde: #00b86b;
 $gris-fondo: $gray-50;
 $gris-border: $gray-200;
 $gris-oscuro: $gray-700;
@@ -40,18 +48,12 @@ $gris-medio: $gray-500;
 $text-secondary: $gray-600;
 $text-light: $white;
 
-$primary: $black;
-$primary-dark: $gray-900;
-$primary-light: $gray-600;
-$accent: $black;
-$secondary: $gray-600;
-
-// Alert colors (muted, monochrome-friendly)
-$alert-warning: $gray-700;
-$alert-info: $gray-600;
-$alert-success: $gray-700;
-$alert-error: $gray-800;
-$alert-warning-bg: rgba($gray-700, 0.08);
-$alert-info-bg: rgba($gray-600, 0.08);
-$alert-success-bg: rgba($gray-700, 0.08);
-$alert-error-bg: rgba($gray-800, 0.08);
+// Alert colors
+$alert-warning: #f59e0b;
+$alert-info: $azul-medio;
+$alert-success: #10b981;
+$alert-error: $rojo;
+$alert-warning-bg: rgba(#f59e0b, 0.08);
+$alert-info-bg: rgba($azul-medio, 0.08);
+$alert-success-bg: rgba(#10b981, 0.08);
+$alert-error-bg: rgba($rojo, 0.08);

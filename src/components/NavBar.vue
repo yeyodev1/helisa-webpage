@@ -156,7 +156,7 @@ const isActive = (path: string) => route.path === path
     font-weight: 600;
     font-size: 1.25rem;
     letter-spacing: -0.02em;
-    color: $black;
+    color: $primary;
   }
 
   &__links {
@@ -185,13 +185,13 @@ const isActive = (path: string) => route.path === path
       left: 0;
       width: 0;
       height: 1px;
-      background: $black;
+      background: $primary;
       transition: width 0.4s cubic-bezier(0.16, 1, 0.3, 1);
     }
 
     &:hover,
     &--active {
-      color: $black;
+      color: $primary;
 
       &::after {
         width: 100%;
@@ -202,7 +202,7 @@ const isActive = (path: string) => route.path === path
   &__cta {
     display: none;
     padding: 0.7rem 1.25rem;
-    background: $black;
+    background: $primary;
     color: $white;
     border-radius: 100px;
     font-family: $font-secondary;
@@ -211,7 +211,7 @@ const isActive = (path: string) => route.path === path
     transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 
     &:hover {
-      background: $gray-800;
+      background: $primary-dark;
       transform: translateY(-1px);
     }
 
@@ -247,7 +247,7 @@ const isActive = (path: string) => route.path === path
     }
 
     &-link {
-      color: $black;
+      color: $primary;
       font-family: $font-display;
       font-size: 1.5rem;
       font-weight: 500;
@@ -263,7 +263,7 @@ const isActive = (path: string) => route.path === path
     &-cta {
       margin-top: 1rem;
       padding: 0.9rem 1.5rem;
-      background: $black;
+      background: $primary;
       color: $white;
       border-radius: 100px;
       font-family: $font-secondary;
@@ -277,7 +277,7 @@ const isActive = (path: string) => route.path === path
   display: block;
   width: 22px;
   height: 1.5px;
-  background: $black;
+  background: $primary;
   position: relative;
   transition: all 0.3s;
 
@@ -288,7 +288,7 @@ const isActive = (path: string) => route.path === path
     left: 0;
     width: 100%;
     height: 1.5px;
-    background: $black;
+    background: $primary;
     transition: all 0.3s;
   }
 

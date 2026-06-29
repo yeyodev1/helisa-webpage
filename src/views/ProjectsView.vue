@@ -451,7 +451,7 @@ onUnmounted(() => {
   font-weight: 500;
   line-height: 1.05;
   letter-spacing: -0.04em;
-  color: $black;
+  color: $primary;
   margin: 0 0 1.5rem;
 
   .line-wrap {
@@ -506,14 +506,14 @@ onUnmounted(() => {
   white-space: nowrap;
 
   &:hover {
-    border-color: $black;
-    color: $black;
+    border-color: $primary;
+    color: $primary;
     transform: translateY(-2px);
   }
 
   &--active {
-    background: $black;
-    border-color: $black;
+    background: $primary;
+    border-color: $primary;
     color: $white;
     box-shadow: 0 10px 20px rgba($black, 0.15);
   }
@@ -541,7 +541,7 @@ onUnmounted(() => {
     border-radius: 100px;
     font-family: $font-secondary;
     font-size: 1rem;
-    color: $black;
+    color: $primary;
     outline: none;
     transition: all 0.4s;
     box-shadow: 0 10px 30px rgba($black, 0.03);
@@ -551,7 +551,7 @@ onUnmounted(() => {
     }
 
     &:focus {
-      border-color: $black;
+      border-color: $primary;
       box-shadow: 0 10px 40px rgba($black, 0.1);
       transform: translateY(-2px);
     }
@@ -701,7 +701,7 @@ onUnmounted(() => {
     font-family: $font-secondary;
     font-size: 0.75rem;
     font-weight: 600;
-    color: $black;
+    color: $primary;
     box-shadow: 0 10px 20px rgba($black, 0.1);
     transform: translateY(20px);
     opacity: 0;
@@ -724,7 +724,7 @@ onUnmounted(() => {
     font-family: $font-display;
     font-size: 1.5rem;
     font-weight: 500;
-    color: $black;
+    color: $primary;
     margin: 0 0 0.5rem;
     letter-spacing: -0.02em;
   }
@@ -757,7 +757,7 @@ onUnmounted(() => {
   width: 100%;
   padding: 1rem;
   background: transparent;
-  color: $black;
+  color: $primary;
   font-family: $font-secondary;
   font-size: 0.95rem;
   font-weight: 600;
@@ -767,9 +767,9 @@ onUnmounted(() => {
   transition: all 0.3s ease;
 
   &:hover {
-    background: $black;
+    background: $primary;
     color: $white;
-    border-color: $black;
+    border-color: $primary;
     transform: translateY(-2px);
     box-shadow: 0 10px 20px rgba($black, 0.1);
   }
@@ -869,7 +869,7 @@ onUnmounted(() => {
 
   &:hover {
     background: $white;
-    border-color: $black;
+    border-color: $primary;
     transform: translateY(-8px);
     box-shadow: 0 20px 40px rgba($black, 0.05);
   }
@@ -880,7 +880,7 @@ onUnmounted(() => {
     align-items: center;
     width: 72px;
     height: 72px;
-    background: $black;
+    background: $primary;
     color: $white;
     border-radius: 24px;
     font-size: 1.75rem;
@@ -901,7 +901,7 @@ onUnmounted(() => {
     font-family: $font-display;
     font-size: 2.5rem;
     font-weight: 500;
-    color: $black;
+    color: $primary;
     line-height: 1;
     letter-spacing: -0.04em;
   }

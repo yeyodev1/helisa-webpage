@@ -3,10 +3,12 @@ import { RouterView } from 'vue-router'
 import NavBar from '@/components/NavBar.vue'
 import FooterSection from '@/components/FooterSection.vue'
 import ScrollToTop from '@/components/ScrollToTop.vue'
+import AppPreloader from '@/components/AppPreloader.vue'
 </script>
 
 <template>
   <div class="app-container">
+    <AppPreloader />
     <NavBar />
     <main class="app-main">
       <RouterView v-slot="{ Component }">

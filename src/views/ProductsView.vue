@@ -269,7 +269,7 @@ onUnmounted(() => {
   font-weight: 500;
   line-height: 1.05;
   letter-spacing: -0.04em;
-  color: $black;
+  color: $primary;
   margin: 0 0 1.5rem;
 
   .line-wrap {
@@ -315,7 +315,7 @@ onUnmounted(() => {
   width: 100%;
   border-radius: 40px;
   overflow: hidden;
-  background: $black;
+  background: $primary;
   box-shadow: 0 30px 60px rgba($black, 0.15);
   display: flex;
   flex-direction: column;
@@ -460,7 +460,7 @@ onUnmounted(() => {
 
   &:hover {
     background: $white;
-    color: $black;
+    color: $primary;
     transform: translateY(-2px);
     box-shadow: 0 10px 30px rgba($black, 0.3);
   }
@@ -551,7 +551,7 @@ onUnmounted(() => {
     align-items: center;
     width: 80px;
     height: 80px;
-    background: $black;
+    background: $primary;
     border-radius: 24px;
     color: $white;
     font-size: 1.75rem;
@@ -567,7 +567,7 @@ onUnmounted(() => {
     font-family: $font-display;
     font-size: 1.5rem;
     font-weight: 500;
-    color: $black;
+    color: $primary;
     margin: 0 0 1rem;
     letter-spacing: -0.02em;
   }

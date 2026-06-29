@@ -257,7 +257,7 @@ onUnmounted(() => {
   font-weight: 500;
   line-height: 1.05;
   letter-spacing: -0.04em;
-  color: $black;
+  color: $primary;
   margin: 0 0 1.5rem;
   
   .line-wrap {
@@ -390,7 +390,7 @@ onUnmounted(() => {
       width: 10px;
       height: 10px;
       border-radius: 50%;
-      background: $black;
+      background: $primary;
       box-shadow: 0 0 0 4px rgba($black, 0.1);
     }
 
@@ -398,7 +398,7 @@ onUnmounted(() => {
       font-family: $font-secondary;
       font-size: 0.9rem;
       font-weight: 500;
-      color: $black;
+      color: $primary;
       letter-spacing: 0.02em;
     }
 
@@ -408,7 +408,7 @@ onUnmounted(() => {
       align-items: center;
       width: 48px;
       height: 48px;
-      background: $black;
+      background: $primary;
       border-radius: 14px;
       color: $white;
       font-size: 1.25rem;
@@ -426,7 +426,7 @@ onUnmounted(() => {
       font-size: 1.5rem;
       font-weight: 500;
       letter-spacing: -0.04em;
-      color: $black;
+      color: $primary;
       line-height: 1;
     }
 
@@ -453,7 +453,7 @@ onUnmounted(() => {
   font-family: $font-display;
   font-size: clamp(2rem, 5vw, 3.5rem);
   font-weight: 500;
-  color: $black;
+  color: $primary;
   margin: 0;
   letter-spacing: -0.03em;
 }
@@ -477,6 +477,7 @@ onUnmounted(() => {
       flex-direction: row;
       flex-wrap: wrap;
       align-items: stretch;
+      justify-content: center;
     }
   }
 }
@@ -512,7 +513,7 @@ onUnmounted(() => {
     align-items: center;
     width: 64px;
     height: 64px;
-    background: $black;
+    background: $primary;
     border-radius: 20px;
     color: $white;
     font-size: 1.5rem;
@@ -527,7 +528,7 @@ onUnmounted(() => {
     font-family: $font-display;
     font-size: 1.25rem;
     font-weight: 500;
-    color: $black;
+    color: $primary;
     margin: 0;
   }
 
@@ -605,7 +606,7 @@ onUnmounted(() => {
     width: 16px;
     height: 16px;
     border-radius: 50%;
-    background: $black;
+    background: $primary;
     border: 4px solid $background;
     box-shadow: 0 0 0 2px $border;
     z-index: 2;
@@ -636,7 +637,7 @@ onUnmounted(() => {
     font-family: $font-display;
     font-size: 2rem;
     font-weight: 500;
-    color: $black;
+    color: $primary;
     margin-bottom: 0.5rem;
     letter-spacing: -0.04em;
   }
@@ -645,7 +646,7 @@ onUnmounted(() => {
     font-family: $font-display;
     font-size: 1.25rem;
     font-weight: 500;
-    color: $black;
+    color: $primary;
     margin: 0 0 0.75rem;
   }
 
