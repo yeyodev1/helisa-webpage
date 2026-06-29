@@ -62,7 +62,7 @@ onMounted(() => {
     .from('.hero-title span > span', { y: 100, opacity: 0, duration: 1, stagger: 0.1, ease: 'power4.out', clipPath: 'inset(0% 0% 100% 0%)' }, '-=0.5')
     .from('.hero-desc', { y: 20, opacity: 0, duration: 0.8, ease: 'power3.out' }, '-=0.6')
 
-  document.querySelectorAll('.product-card').forEach((card, i) => {
+  document.querySelectorAll('.product-card').forEach((card) => {
     const tween = gsap.fromTo(card, {
       y: 60,
       opacity: 0,

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { gsap } from 'gsap'
 
 const form = ref({
@@ -209,6 +209,8 @@ onMounted(() => {
     flex-direction: column;
     align-items: center;
     max-width: 900px;
+    width: 100%;
+    margin: 0 auto;
   }
 }
 
@@ -273,6 +275,7 @@ onMounted(() => {
 .lead-form-wrapper {
   width: 100%;
   max-width: 800px;
+  margin: 0 auto;
   background: rgba($white, 0.7);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
@@ -536,4 +539,3 @@ onMounted(() => {
   transform: translateY(20px) scale(0.95);
 }
 </style>
-
