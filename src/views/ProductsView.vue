@@ -301,6 +301,8 @@ onUnmounted(() => {
   &__items {
     display: flex;
     flex-direction: column;
+    align-items: center;
+    justify-content: center;
     gap: 4rem;
     width: 100%;
     max-width: 1000px;
@@ -506,14 +508,19 @@ onUnmounted(() => {
 }
 
 .why-grid {
-  display: grid;
-  grid-template-columns: 1fr;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
   gap: 2rem;
   width: 100%;
   max-width: 1100px;
+  margin: 0 auto;
 
   @media (min-width: 768px) {
-    grid-template-columns: repeat(3, 1fr);
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: stretch;
   }
 }
 
@@ -521,12 +528,14 @@ onUnmounted(() => {
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: flex-start;
   text-align: center;
   padding: 3rem 2rem;
   background: rgba($white, 0.8);
   backdrop-filter: blur(20px);
   border: 1px solid $border;
   border-radius: 32px;
+  flex: 1 1 300px;
   transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
 
   &:hover {

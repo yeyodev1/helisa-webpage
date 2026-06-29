@@ -134,7 +134,7 @@ onMounted(() => {
             <div class="form-footer">
               <p class="privacy-text">Tus datos están seguros con nosotros. No enviamos spam.</p>
               <button type="submit" class="submit-btn" :class="{'submit-btn--loading': isSubmitting}" :disabled="isSubmitting || !isFormValid">
-                <span class="submit-btn__text">Solicitar Asesoría</span>
+                <span class="submit-btn__text">Enviar Solicitud</span>
                 <span class="submit-btn__icon"><i class="fa-solid fa-arrow-right"></i></span>
                 <span class="submit-btn__spinner"></span>
               </button>
@@ -290,13 +290,15 @@ onMounted(() => {
 }
 
 .form-grid {
-  display: grid;
-  grid-template-columns: 1fr;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   gap: 2.5rem;
   margin-bottom: 2.5rem;
   
   @media (min-width: 640px) {
-    grid-template-columns: 1fr 1fr;
+    flex-direction: row;
+    flex-wrap: wrap;
     column-gap: 3rem;
     row-gap: 3.5rem;
   }
@@ -304,6 +306,8 @@ onMounted(() => {
 
 .input-group {
   position: relative;
+  width: 100%;
+  flex: 1 1 250px;
   
   &--full {
     margin-bottom: 3rem;

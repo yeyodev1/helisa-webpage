@@ -233,6 +233,8 @@ onUnmounted(() => {
     flex-direction: column;
     align-items: center;
     max-width: 900px;
+    width: 100%;
+    margin: 0 auto;
   }
 }
 
@@ -289,6 +291,8 @@ onUnmounted(() => {
     flex-direction: column;
     align-items: center;
     gap: 4rem;
+    width: 100%;
+    margin: 0 auto;
   }
 
   &__text {
@@ -456,18 +460,23 @@ onUnmounted(() => {
 
 /* VALUES SECTION */
 .values {
+  margin-top: 4rem;
+  margin-bottom: 4rem;
+  width: 100%;
+
   &__grid {
-    display: grid;
-    grid-template-columns: 1fr;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
     gap: 1.5rem;
     width: 100%;
+    margin: 0 auto;
     
     @media (min-width: 640px) {
-      grid-template-columns: repeat(2, 1fr);
-    }
-    
-    @media (min-width: 1024px) {
-      grid-template-columns: repeat(4, 1fr);
+      flex-direction: row;
+      flex-wrap: wrap;
+      align-items: stretch;
     }
   }
 }
@@ -483,6 +492,8 @@ onUnmounted(() => {
   border: 1px solid rgba($border, 0.8);
   border-radius: 28px;
   padding: 2.5rem 1.5rem;
+  flex: 1 1 220px;
+  max-width: 300px;
   transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
   cursor: default;
   outline: none;

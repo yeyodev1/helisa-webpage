@@ -1,9 +1,13 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted, computed } from 'vue'
+import { useRouter } from 'vue-router'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 
 gsap.registerPlugin(ScrollTrigger)
+
+const router = useRouter()
+const selectedImage = ref<string | null>(null)
 
 interface Project {
   id: number
@@ -275,9 +279,11 @@ onUnmounted(() => {
             class="project-card"
           >
             <div class="project-card__frame">
-              <div class="project-card__visual">
+              <div class="project-card__visual" @click="selectedImage = project.image">
                 <img :src="project.image" :alt="project.title" class="project-card__image" loading="lazy" />
-                <div class="project-card__overlay" />
+                <div class="project-card__overlay">
+                  <i class="fa-solid fa-magnifying-glass-plus overlay-icon"></i>
+                </div>
                 <div class="project-card__category-badge">
                   <i class="fa-solid fa-tag"></i>
                   <span>{{ project.category }}</span>
@@ -290,6 +296,10 @@ onUnmounted(() => {
                   {{ project.location }}
                 </p>
                 <p class="project-card__desc">{{ project.description }}</p>
+                <button type="button" class="btn-contact-project" @click="router.push('/calificar')">
+                  Contactar Ahora
+                  <i class="fa-solid fa-arrow-right"></i>
+                </button>
               </div>
             </div>
           </article>
@@ -339,6 +349,18 @@ onUnmounted(() => {
         </div>
       </div>
     </section>
+
+    <!-- LIGHTBOX MODAL -->
+    <Transition name="fade">
+      <div v-if="selectedImage" class="lightbox" @click="selectedImage = null" role="dialog" aria-modal="true" aria-label="Visualización de proyecto ampliada">
+        <button type="button" class="lightbox__close" aria-label="Cerrar imagen" @click="selectedImage = null">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+        <div class="lightbox__content">
+          <img :src="selectedImage" alt="Proyecto ampliado" class="lightbox__image" @click.stop />
+        </div>
+      </div>
+    </Transition>
   </main>
 </template>
 
@@ -565,20 +587,24 @@ onUnmounted(() => {
   width: 100%;
 
   &__layout {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 2rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3.5rem;
     width: 100%;
     margin: 0 auto;
 
     @media (min-width: 640px) {
-      grid-template-columns: repeat(2, 1fr);
+      flex-direction: row;
+      flex-wrap: wrap;
+      align-items: stretch;
+      gap: 3.5rem;
     }
 
     @media (min-width: 1024px) {
       margin: 0 auto;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 3rem;
+      gap: 4.5rem;
     }
   }
 }
@@ -588,6 +614,8 @@ onUnmounted(() => {
   flex-direction: column;
   width: 100%;
   cursor: default;
+  flex: 1 1 300px;
+  max-width: 450px;
 
   &__frame {
     display: flex;
@@ -617,6 +645,7 @@ onUnmounted(() => {
     overflow: hidden;
     aspect-ratio: 4 / 3;
     margin-bottom: 1.5rem;
+    cursor: pointer;
   }
 
   &__image {
@@ -633,13 +662,29 @@ onUnmounted(() => {
   &__overlay {
     position: absolute;
     inset: 0;
-    background: linear-gradient(to top, rgba($black, 0.4), transparent 50%);
+    background: linear-gradient(to top, rgba($black, 0.6), rgba($black, 0.2) 50%);
     opacity: 0;
     transition: opacity 0.5s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    .overlay-icon {
+      color: $white;
+      font-size: 3rem;
+      opacity: 0;
+      transform: scale(0.5);
+      transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    }
   }
 
   &:hover &__overlay {
     opacity: 1;
+
+    .overlay-icon {
+      opacity: 1;
+      transform: scale(1);
+    }
   }
 
   &__category-badge {
@@ -699,8 +744,88 @@ onUnmounted(() => {
     font-size: 0.95rem;
     color: $foreground-muted;
     line-height: 1.6;
-    margin: 0;
+    margin: 0 0 2rem;
+    flex: 1;
   }
+}
+
+.btn-contact-project {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  width: 100%;
+  padding: 1rem;
+  background: transparent;
+  color: $black;
+  font-family: $font-secondary;
+  font-size: 0.95rem;
+  font-weight: 600;
+  border: 1px solid $border;
+  border-radius: 100px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+
+  &:hover {
+    background: $black;
+    color: $white;
+    border-color: $black;
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba($black, 0.1);
+  }
+}
+
+.lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba($black, 0.9);
+  backdrop-filter: blur(10px);
+  padding: 2rem;
+
+  &__close {
+    position: absolute;
+    top: 2rem;
+    right: 2rem;
+    background: transparent;
+    border: none;
+    color: $white;
+    font-size: 2rem;
+    cursor: pointer;
+    transition: transform 0.3s;
+    z-index: 10;
+
+    &:hover {
+      transform: scale(1.1) rotate(90deg);
+    }
+  }
+
+  &__content {
+    position: relative;
+    max-width: 90vw;
+    max-height: 90vh;
+  }
+
+  &__image {
+    max-width: 100%;
+    max-height: 90vh;
+    border-radius: 12px;
+    object-fit: contain;
+    box-shadow: 0 30px 60px rgba($black, 0.5);
+  }
+}
+
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.4s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
 }
 
 .projects-stats {
@@ -708,16 +833,23 @@ onUnmounted(() => {
   background: $white;
 
   &__grid {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 2rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3rem;
+    width: 100%;
+    margin: 0 auto;
 
     @media (min-width: 640px) {
-      grid-template-columns: repeat(2, 1fr);
+      flex-direction: row;
+      flex-wrap: wrap;
+      align-items: stretch;
+      gap: 3rem;
     }
 
     @media (min-width: 1024px) {
-      grid-template-columns: repeat(4, 1fr);
+      gap: 4rem;
     }
   }
 }
@@ -732,6 +864,7 @@ onUnmounted(() => {
   background: $background-soft;
   border-radius: 28px;
   border: 1px solid $border;
+  flex: 1 1 200px;
   transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 
   &:hover {
