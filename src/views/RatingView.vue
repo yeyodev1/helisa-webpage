@@ -67,7 +67,7 @@ const autoResize = (event: Event) => {
 
 onMounted(() => {
   const tl = gsap.timeline()
-  
+
   tl.from('.hero-badge', { y: 20, opacity: 0, duration: 0.8, ease: 'power3.out' })
     .from('.hero-title span > span', { y: 100, opacity: 0, duration: 1, stagger: 0.1, ease: 'power4.out', clipPath: 'inset(0% 0% 100% 0%)' }, '-=0.5')
     .from('.hero-desc', { y: 20, opacity: 0, duration: 0.8, ease: 'power3.out' }, '-=0.6')
@@ -133,7 +133,7 @@ onMounted(() => {
 
             <div class="form-footer">
               <p class="privacy-text">Tus datos están seguros con nosotros. No enviamos spam.</p>
-              <button type="submit" class="submit-btn" :class="{'submit-btn--loading': isSubmitting}" :disabled="isSubmitting || !isFormValid">
+              <button type="submit" class="submit-btn" :class="{ 'submit-btn--loading': isSubmitting }" :disabled="isSubmitting || !isFormValid">
                 <span class="submit-btn__text">Enviar Solicitud</span>
                 <span class="submit-btn__icon"><i class="fa-solid fa-arrow-right"></i></span>
                 <span class="submit-btn__spinner"></span>
@@ -181,7 +181,7 @@ onMounted(() => {
     inset: -50%;
     width: 200%;
     height: 200%;
-    background-image: 
+    background-image:
       linear-gradient($border 1px, transparent 1px),
       linear-gradient(90deg, $border 1px, transparent 1px);
     background-size: 100px 100px;
@@ -189,7 +189,7 @@ onMounted(() => {
     transform: perspective(500px) rotateX(60deg) translateY(-100px) translateZ(-200px);
     animation: gridMove 20s linear infinite;
   }
-  
+
   &__glow {
     position: absolute;
     top: -20%;
@@ -218,6 +218,7 @@ onMounted(() => {
   0% {
     transform: perspective(500px) rotateX(60deg) translateY(0) translateZ(-200px);
   }
+
   100% {
     transform: perspective(500px) rotateX(60deg) translateY(100px) translateZ(-200px);
   }
@@ -239,13 +240,13 @@ onMounted(() => {
   letter-spacing: -0.04em;
   color: $black;
   margin: 0 0 1.5rem;
-  
+
   .line-wrap {
     display: block;
     overflow: hidden;
     padding-bottom: 0.1em;
-    
-    > span {
+
+    >span {
       display: inline-block;
       transform-origin: left bottom;
     }
@@ -265,27 +266,34 @@ onMounted(() => {
   position: relative;
   z-index: 2;
   padding-bottom: 6rem;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .lead-form-container {
+  width: 100%;
   display: flex;
   justify-content: center;
+  align-items: center;
 }
 
 .lead-form-wrapper {
   width: 100%;
   max-width: 800px;
   margin: 0 auto;
+  box-sizing: border-box;
   background: rgba($white, 0.7);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   border: 1px solid rgba($white, 0.5);
-  box-shadow: 
+  box-shadow:
     0 20px 40px rgba($black, 0.04),
     inset 0 0 0 1px rgba($white, 0.8);
   border-radius: 2rem;
   padding: 3rem;
-  
+
   @media (min-width: 768px) {
     padding: 4rem;
     border-radius: 3rem;
@@ -298,10 +306,11 @@ onMounted(() => {
   align-items: center;
   gap: 2.5rem;
   margin-bottom: 2.5rem;
-  
+
   @media (min-width: 640px) {
     flex-direction: row;
     flex-wrap: wrap;
+    justify-content: center;
     column-gap: 3rem;
     row-gap: 3.5rem;
   }
@@ -311,13 +320,15 @@ onMounted(() => {
   position: relative;
   width: 100%;
   flex: 1 1 250px;
-  
+
   &--full {
     margin-bottom: 3rem;
   }
 
-  input, textarea {
+  input,
+  textarea {
     width: 100%;
+    box-sizing: border-box;
     background: transparent;
     border: none;
     padding: 0.5rem 0;
@@ -325,13 +336,15 @@ onMounted(() => {
     font-size: 1.1rem;
     color: $black;
     outline: none;
-    
-    &:focus, &:not(:placeholder-shown) {
-      ~ label {
+
+    &:focus,
+    &:not(:placeholder-shown) {
+      ~label {
         transform: translateY(-1.8rem) scale(0.85);
         color: $foreground-muted;
       }
-      ~ .input-line {
+
+      ~.input-line {
         transform: scaleX(1);
         opacity: 1;
       }
@@ -363,7 +376,7 @@ onMounted(() => {
     width: 100%;
     height: 1px;
     background: $border;
-    
+
     &::after {
       content: '';
       position: absolute;
@@ -374,9 +387,9 @@ onMounted(() => {
       transition: transform 0.6s cubic-bezier(0.19, 1, 0.22, 1);
     }
   }
-  
-  input:focus ~ .input-line::after,
-  textarea:focus ~ .input-line::after {
+
+  input:focus~.input-line::after,
+  textarea:focus~.input-line::after {
     transform: scaleX(1);
   }
 }
@@ -386,7 +399,7 @@ onMounted(() => {
   flex-direction: column;
   align-items: center;
   gap: 2rem;
-  
+
   @media (min-width: 640px) {
     flex-direction: row;
     justify-content: space-between;
@@ -417,13 +430,13 @@ onMounted(() => {
   cursor: pointer;
   overflow: hidden;
   transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
-  
+
   &__text {
     position: relative;
     z-index: 1;
     transition: transform 0.4s;
   }
-  
+
   &__icon {
     position: relative;
     z-index: 1;
@@ -437,7 +450,7 @@ onMounted(() => {
     transition: transform 0.4s;
     font-size: 0.9rem;
   }
-  
+
   &__spinner {
     position: absolute;
     top: 50%;
@@ -466,12 +479,12 @@ onMounted(() => {
   &:hover:not(:disabled) {
     box-shadow: 0 15px 35px rgba($black, 0.2);
     transform: translateY(-2px);
-    
+
     &::before {
       transform: scaleX(1);
       transform-origin: left;
     }
-    
+
     .submit-btn__icon {
       transform: translateX(5px);
       background: $white;
@@ -483,14 +496,15 @@ onMounted(() => {
     opacity: 0.6;
     cursor: not-allowed;
   }
-  
+
   &--loading {
+
     .submit-btn__text,
     .submit-btn__icon {
       opacity: 0;
       transform: translateY(10px);
     }
-    
+
     .submit-btn__spinner {
       opacity: 1;
       animation: spin 0.8s linear infinite;
@@ -499,7 +513,9 @@ onMounted(() => {
 }
 
 @keyframes spin {
-  to { transform: translate(-50%, -50%) rotate(360deg); }
+  to {
+    transform: translate(-50%, -50%) rotate(360deg);
+  }
 }
 
 .toast {
