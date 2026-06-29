@@ -369,6 +369,19 @@ onUnmounted(() => {
   padding-top: 80px;
   background-color: $background;
   overflow: hidden;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  .container {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
+  }
 }
 
 /* HERO SECTION */
@@ -585,6 +598,8 @@ onUnmounted(() => {
   display: flex;
   justify-content: center;
   width: 100%;
+  padding-top: 4rem;
+  padding-bottom: 6rem;
 
   &__layout {
     display: flex;
@@ -832,6 +847,10 @@ onUnmounted(() => {
 .projects-stats {
   border-top: 1px solid $border;
   background: $white;
+  width: 100%;
+  padding-top: 6rem;
+  padding-bottom: 6rem;
+  margin-top: 2rem;
 
   &__grid {
     display: flex;
