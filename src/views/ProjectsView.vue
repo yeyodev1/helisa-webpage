@@ -560,12 +560,16 @@ onUnmounted(() => {
 .projects-grid {
   position: relative;
   z-index: 2;
+  display: flex;
+  justify-content: center;
+  width: 100%;
 
   &__layout {
     display: grid;
     grid-template-columns: 1fr;
     gap: 2rem;
     width: 100%;
+    margin: 0 auto;
 
     @media (min-width: 640px) {
       grid-template-columns: repeat(2, 1fr);

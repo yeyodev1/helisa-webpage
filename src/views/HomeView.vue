@@ -612,42 +612,107 @@ section {
 }
 
 .stats {
+  position: relative;
   background: $black;
-  padding: 5rem 1.5rem;
+  padding: 8rem 1.5rem;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 60vw;
+    height: 60vw;
+    background: radial-gradient(circle, rgba(255,255,255,0.03) 0%, transparent 60%);
+    border-radius: 50%;
+    pointer-events: none;
+  }
 
   &__inner {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 1rem;
+    position: relative;
+    z-index: 1;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 3rem;
+    
+    @media (min-width: 640px) {
+      grid-template-columns: repeat(2, 1fr);
+    }
+    
+    @media (min-width: 1024px) {
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1.5rem;
+    }
   }
 }
 
 .stat {
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 0.5rem;
-  flex: 1 1 200px;
-  max-width: 280px;
-  padding: 2.5rem 1.5rem;
-  background: $black;
-  border: 1px solid rgba($white, 0.1);
-  border-radius: 16px;
+  padding: 3rem 1rem;
+  border-radius: 24px;
+  transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  width: 100%;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.03);
+    transform: translateY(-10px);
+    
+    .stat__value {
+      color: $white;
+      -webkit-text-stroke: 1px transparent;
+      text-shadow: 0 10px 40px rgba(255, 255, 255, 0.15);
+    }
+    
+    .stat__label {
+      color: $white;
+      letter-spacing: 0.15em;
+    }
+  }
 
   &__value {
     font-family: $font-display;
-    font-size: clamp(2rem, 4vw, 3rem);
+    font-size: clamp(3.5rem, 8vw, 6rem);
     font-weight: 500;
-    letter-spacing: -0.04em;
-    color: $white;
+    letter-spacing: -0.05em;
+    line-height: 1;
+    color: transparent;
+    -webkit-text-stroke: 1px rgba(255, 255, 255, 0.4);
+    margin-bottom: 1.5rem;
+    transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
   }
 
   &__label {
     font-family: $font-secondary;
     font-size: 0.85rem;
-    color: rgba($white, 0.5);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: rgba(255, 255, 255, 0.5);
+    transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+
+    &::before, &::after {
+      content: '';
+      display: block;
+      width: 24px;
+      height: 1px;
+      background: rgba(255, 255, 255, 0.2);
+      transition: all 0.5s;
+    }
+  }
+
+  &:hover &__label::before,
+  &:hover &__label::after {
+    width: 40px;
+    background: rgba(255, 255, 255, 0.6);
   }
 }
 

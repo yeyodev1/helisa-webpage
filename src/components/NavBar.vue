@@ -65,24 +65,26 @@ const isActive = (path: string) => route.path === path
 
     <Transition name="mobile-menu">
       <div v-if="isMobileOpen" class="navbar__mobile">
-        <RouterLink
-          v-for="link in navLinks"
-          :key="link.to"
-          :to="link.to"
-          class="navbar__mobile-link"
-          @click="isMobileOpen = false"
-        >
-          {{ link.label }}
-        </RouterLink>
-        <a
-          href="https://api.whatsapp.com/send/?phone=5930987125598&text=Hola,+quisiera+comunicarme+con+un+asesor"
-          target="_blank"
-          rel="noopener noreferrer"
-          class="navbar__mobile-cta"
-          @click="isMobileOpen = false"
-        >
-          Escríbenos por WhatsApp
-        </a>
+        <div class="navbar__mobile-links">
+          <RouterLink
+            v-for="link in navLinks"
+            :key="link.to"
+            :to="link.to"
+            class="navbar__mobile-link"
+            @click="isMobileOpen = false"
+          >
+            {{ link.label }}
+          </RouterLink>
+          <a
+            href="https://api.whatsapp.com/send/?phone=5930987125598&text=Hola,+quisiera+comunicarme+con+un+asesor"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="navbar__mobile-cta"
+            @click="isMobileOpen = false"
+          >
+            Escríbenos por WhatsApp
+          </a>
+        </div>
       </div>
     </Transition>
   </nav>
@@ -93,12 +95,14 @@ const isActive = (path: string) => route.path === path
 @use '@/styles/fonts.module.scss' as *;
 
 .navbar {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
   z-index: 1000;
+  background: $white;
+  border-bottom: 1px solid $border;
   padding: 1.25rem 1.5rem;
+  box-sizing: border-box;
   transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
 
   @media (min-width: 768px) {
@@ -110,7 +114,7 @@ const isActive = (path: string) => route.path === path
   }
 
   &--scrolled {
-    background: rgba($white, 0.92);
+    background: rgba($white, 0.95);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
     border-bottom: 1px solid $border;
@@ -139,7 +143,6 @@ const isActive = (path: string) => route.path === path
     display: flex;
     align-items: center;
     gap: 0.75rem;
-    z-index: 1001;
   }
 
   &__logo-img {
@@ -226,7 +229,6 @@ const isActive = (path: string) => route.path === path
     cursor: pointer;
     width: 32px;
     height: 32px;
-    z-index: 1001;
 
     @media (min-width: 1024px) {
       display: none;
@@ -234,24 +236,20 @@ const isActive = (path: string) => route.path === path
   }
 
   &__mobile {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba($white, 0.98);
-    backdrop-filter: blur(20px);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 1.5rem;
-    z-index: 1000;
+    width: 100%;
+
+    &-links {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1.5rem;
+      padding: 2rem 1rem 3rem;
+    }
 
     &-link {
       color: $black;
       font-family: $font-display;
-      font-size: 2rem;
+      font-size: 1.5rem;
       font-weight: 500;
       letter-spacing: -0.03em;
       transition: color 0.3s;
@@ -319,11 +317,21 @@ const isActive = (path: string) => route.path === path
 
 .mobile-menu-enter-active,
 .mobile-menu-leave-active {
-  transition: opacity 0.4s ease;
+  transition: all 0.4s ease;
+  overflow: hidden;
 }
 
 .mobile-menu-enter-from,
 .mobile-menu-leave-to {
   opacity: 0;
+  max-height: 0;
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
+.mobile-menu-enter-to,
+.mobile-menu-leave-from {
+  opacity: 1;
+  max-height: 500px;
 }
 </style>
