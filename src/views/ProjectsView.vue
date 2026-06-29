@@ -599,6 +599,7 @@ onUnmounted(() => {
       flex-direction: row;
       flex-wrap: wrap;
       align-items: stretch;
+      justify-content: center;
       gap: 3.5rem;
     }
 
@@ -845,6 +846,7 @@ onUnmounted(() => {
       flex-direction: row;
       flex-wrap: wrap;
       align-items: stretch;
+      justify-content: center;
       gap: 3rem;
     }
 
