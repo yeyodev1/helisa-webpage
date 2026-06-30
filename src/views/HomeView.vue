@@ -12,19 +12,17 @@ const triggers: ScrollTrigger[] = []
 const navigate = (path: string) => router.push(path)
 
 const stats = [
-  { value: '15+', label: 'Años de experiencia' },
+  { value: '20+', label: 'Años de experiencia' },
   { value: '100%', label: 'Atención personalizada' },
   { value: '24/7', label: 'Soporte técnico' },
   { value: '10K+', label: 'Clientes satisfechos' },
 ]
 
 const services = [
-  { number: '01', title: 'Diagnóstico gratuito', desc: 'Analizamos tu agua y entorno para recomendar la solución ideal.' },
+  { number: '01', title: 'Asesoría personalizada', desc: 'Te orientamos según tus necesidades específicas de hogar o industria.' },
   { number: '02', title: 'Servicio técnico', desc: 'Personal especializado en instalación y mantenimiento a nivel nacional.' },
-  { number: '03', title: 'Asesoría personalizada', desc: 'Te orientamos según tus necesidades específicas de hogar o industria.' },
+  { number: '03', title: 'Certificación ISO 9001:2015', desc: 'Tenemos certificaciones para mejorar nuestros procesos y satisfacción del cliente.' },
   { number: '04', title: 'Laboratorio', desc: 'Análisis técnicos que respaldan cada recomendación.' },
-  { number: '05', title: 'Envíos a domicilio', desc: 'Llegamos a todo el Ecuador con repuestos y equipos.' },
-  { number: '06', title: 'Capacitaciones', desc: 'Formación en uso y mantenimiento de nuestros productos.' },
 ]
 
 const featuredProjects = [
@@ -99,7 +97,7 @@ onUnmounted(() => {
 
       <div class="hero__visual">
         <div class="hero__frame">
-          <img src="/images/nave-supersacos.jpg" alt="Instalaciones HELISA" class="hero__image" />
+          <img src="/images/curso-carbon.jpg" alt="Sistema de tratamiento de agua HELISA" class="hero__image" />
 
           <div class="hero__badge hero__badge--top">
             <span class="hero__badge-dot"></span>
@@ -111,8 +109,7 @@ onUnmounted(() => {
               <i class="fa-solid fa-award"></i>
             </div>
             <div class="hero__badge-body">
-              <span class="hero__badge-number">15+</span>
-              <span class="hero__badge-label">Años de experiencia</span>
+              <span class="hero__badge-label">Más de 20 años de experiencia</span>
             </div>
           </div>
         </div>
@@ -147,7 +144,7 @@ onUnmounted(() => {
 
     <section class="about" data-reveal>
       <div class="container about__inner">
-        <img src="/images/nave-tarimas.jpg" alt="Almacén HELISA" class="about__image reveal-item" />
+        <img src="/images/proyectos/edificio-helisa.jpg" alt="Edificio corporativo de HELISA" class="about__image reveal-item" />
         <div class="about__text">
           <span class="section-label reveal-item">Nosotros</span>
           <h2 class="section-title reveal-item">Pensando en <span class="text-gradient">su bienestar</span></h2>
@@ -403,6 +400,8 @@ section {
       padding: 0.85rem 1.25rem;
       border-radius: 20px;
       gap: 1rem;
+      max-width: 260px;
+      align-items: flex-start;
 
       @media (min-width: 1024px) {
         bottom: 0;
@@ -456,8 +455,15 @@ section {
 
     &-label {
       font-family: $font-secondary;
-      font-size: 0.7rem;
+      font-size: 0.85rem;
+      line-height: 1.3;
       color: $foreground-muted;
+    }
+
+    &--bottom &-label {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: $primary;
     }
   }
 

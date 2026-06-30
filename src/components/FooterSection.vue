@@ -35,6 +35,16 @@ const socials = [
           </div>
         </div>
 
+        <div class="footer__certification">
+          <div class="footer__certification-icon">
+            <i class="fa-solid fa-certificate"></i>
+          </div>
+          <div class="footer__certification-body">
+            <span class="footer__certification-title">Compañía con Certificación ISO</span>
+            <span class="footer__certification-text">Procesos orientados a calidad y satisfacción del cliente.</span>
+          </div>
+        </div>
+
         <div class="footer__columns">
           <div class="footer__column">
             <h4 class="footer__heading">Enlaces</h4>
@@ -118,6 +128,47 @@ const socials = [
     display: flex;
     align-items: center;
     gap: 0.75rem;
+  }
+
+  &__certification {
+    display: flex;
+    align-items: center;
+    gap: 0.9rem;
+    padding: 1rem 1.25rem;
+    border: 1px solid rgba($white, 0.12);
+    border-radius: 18px;
+    background: rgba($white, 0.04);
+  }
+
+  &__certification-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    border-radius: 14px;
+    background: rgba($white, 0.12);
+    color: $white;
+    flex-shrink: 0;
+  }
+
+  &__certification-body {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+  }
+
+  &__certification-title {
+    font-family: $font-secondary;
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: $white;
+  }
+
+  &__certification-text {
+    font-family: $font-secondary;
+    font-size: 0.78rem;
+    color: rgba($white, 0.55);
   }
 
   &__logo-img {

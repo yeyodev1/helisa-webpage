@@ -16,10 +16,10 @@ const values = [
 ]
 
 const timeline = [
-  { year: '2009', title: 'Nacimiento', desc: 'HELISA nace como Health & Life S.A. con la misión de purificar agua y aire en Ecuador.' },
-  { year: '2015', title: 'Expansión', desc: 'Ampliamos nuestra cobertura nacional con soporte técnico en todas las regiones.' },
-  { year: '2020', title: 'Innovación', desc: 'Incorporamos tecnologías de ozono, UV y ósmosis inversa de última generación.' },
-  { year: '2025', title: 'Liderazgo', desc: 'Consolidados como referentes en tratamiento de agua y aire del país.' },
+  { year: '2003', title: 'Origen', desc: 'Nacimos con la visión de transformar el acceso a agua tratada y segura en Ecuador.', image: '/images/proyectos/edificio-helisa.jpg' },
+  { year: '2010', title: 'Expansión', desc: 'Ampliamos nuestra cobertura nacional con soporte técnico en todas las regiones.', image: '/images/nave-tarimas.jpg' },
+  { year: '2018', title: 'Innovación', desc: 'Incorporamos tecnologías de ozono, UV y ósmosis inversa de última generación.', image: '/images/patio-naves.webp' },
+  { year: '2025', title: 'Liderazgo', desc: 'Consolidados como referentes en tratamiento de agua y aire del país.', image: '/images/curso-carbon.jpg' },
 ]
 
 onMounted(() => {
@@ -114,7 +114,7 @@ onUnmounted(() => {
                 <i class="fa-solid fa-heart"></i>
               </div>
               <div class="story__badge-body">
-                <span class="story__badge-number">2009</span>
+                <span class="story__badge-number">2003</span>
                 <span class="story__badge-label">Desde</span>
               </div>
             </div>
@@ -124,7 +124,7 @@ onUnmounted(() => {
     </section>
 
     <section class="values section-padding">
-      <div class="container">
+      <div class="centered-wrapper">
         <div class="section-header">
           <span class="section-label">Pilares</span>
           <h2 class="section-title">Lo que nos <span class="text-gradient">mueve</span></h2>
@@ -153,7 +153,7 @@ onUnmounted(() => {
     </section>
 
     <section class="timeline section-padding">
-      <div class="container">
+      <div class="centered-wrapper">
         <div class="section-header">
           <span class="section-label">Historia</span>
           <h2 class="section-title">Nuestro <span class="text-gradient">camino</span></h2>
@@ -161,12 +161,15 @@ onUnmounted(() => {
         <div class="timeline__wrapper">
           <div class="timeline__line"></div>
           <div class="timeline__items">
-            <div v-for="(item, index) in timeline" :key="item.year" class="timeline__item" :class="{ 'timeline__item--right': index % 2 !== 0 }">
+            <div v-for="item in timeline" :key="item.year" class="timeline__item">
               <div class="timeline__dot"></div>
               <div class="timeline__content">
-                <span class="timeline__year">{{ item.year }}</span>
-                <h3 class="timeline__title">{{ item.title }}</h3>
-                <p class="timeline__desc">{{ item.desc }}</p>
+                <img :src="item.image" :alt="item.title" class="timeline__image" />
+                <div class="timeline__text">
+                  <span class="timeline__year">{{ item.year }}</span>
+                  <h3 class="timeline__title">{{ item.title }}</h3>
+                  <p class="timeline__desc">{{ item.desc }}</p>
+                </div>
               </div>
             </div>
           </div>
@@ -181,6 +184,9 @@ onUnmounted(() => {
   padding-top: 80px;
   background-color: $background;
   overflow: hidden;
+  margin: 0 auto;
+  width: 100%;
+  max-width: 1920px;
 }
 
 /* HERO SECTION */
@@ -205,7 +211,7 @@ onUnmounted(() => {
     inset: -50%;
     width: 200%;
     height: 200%;
-    background-image: 
+    background-image:
       linear-gradient($border 1px, transparent 1px),
       linear-gradient(90deg, $border 1px, transparent 1px);
     background-size: 100px 100px;
@@ -213,7 +219,7 @@ onUnmounted(() => {
     transform: perspective(500px) rotateX(60deg) translateY(-100px) translateZ(-200px);
     animation: gridMove 20s linear infinite;
   }
-  
+
   &__glow {
     position: absolute;
     top: -20%;
@@ -239,8 +245,13 @@ onUnmounted(() => {
 }
 
 @keyframes gridMove {
-  0% { transform: perspective(500px) rotateX(60deg) translateY(0) translateZ(-200px); }
-  100% { transform: perspective(500px) rotateX(60deg) translateY(100px) translateZ(-200px); }
+  0% {
+    transform: perspective(500px) rotateX(60deg) translateY(0) translateZ(-200px);
+  }
+
+  100% {
+    transform: perspective(500px) rotateX(60deg) translateY(100px) translateZ(-200px);
+  }
 }
 
 .hero-badge {
@@ -259,13 +270,13 @@ onUnmounted(() => {
   letter-spacing: -0.04em;
   color: $primary;
   margin: 0 0 1.5rem;
-  
+
   .line-wrap {
     display: block;
     overflow: hidden;
     padding-bottom: 0.1em;
-    
-    > span {
+
+    >span {
       display: inline-block;
       transform-origin: left bottom;
     }
@@ -303,19 +314,19 @@ onUnmounted(() => {
     max-width: 800px;
     gap: 1.5rem;
   }
-  
+
   &__paragraphs {
     display: flex;
     flex-direction: column;
     gap: 1.5rem;
-    
+
     p {
       font-family: $font-secondary;
       font-size: 1.15rem;
       color: $foreground-muted;
       line-height: 1.7;
       margin: 0;
-      
+
       @media (min-width: 768px) {
         font-size: 1.25rem;
       }
@@ -337,10 +348,10 @@ onUnmounted(() => {
     -webkit-backdrop-filter: blur(20px);
     border: 1px solid rgba($white, 0.8);
     border-radius: 2rem;
-    box-shadow: 
+    box-shadow:
       0 30px 60px rgba($black, 0.05),
       inset 0 0 0 1px rgba($white, 0.9);
-      
+
     @media (min-width: 768px) {
       padding: 2rem;
       border-radius: 3rem;
@@ -353,7 +364,7 @@ onUnmounted(() => {
     aspect-ratio: 16 / 9;
     object-fit: cover;
     display: block;
-    
+
     @media (min-width: 768px) {
       border-radius: 2rem;
     }
@@ -459,25 +470,38 @@ onUnmounted(() => {
 }
 
 /* VALUES SECTION */
+.centered-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+}
+
 .values {
   margin-top: 4rem;
   margin-bottom: 4rem;
   width: 100%;
 
   &__grid {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
+    display: grid;
+    grid-template-columns: 1fr;
     gap: 1.5rem;
     width: 100%;
+    max-width: 1200px;
     margin: 0 auto;
-    
+    place-items: center;
+    justify-content: center;
+
     @media (min-width: 640px) {
-      flex-direction: row;
-      flex-wrap: wrap;
-      align-items: stretch;
-      justify-content: center;
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    @media (min-width: 1024px) {
+      grid-template-columns: repeat(4, 1fr);
     }
   }
 }
@@ -519,8 +543,9 @@ onUnmounted(() => {
     font-size: 1.5rem;
     transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
   }
-  
-  &:hover &__icon, &--active &__icon {
+
+  &:hover &__icon,
+  &--active &__icon {
     transform: scale(1.1) rotate(5deg);
   }
 
@@ -546,7 +571,7 @@ onUnmounted(() => {
   &__wrapper {
     position: relative;
     width: 100%;
-    max-width: 1000px;
+    max-width: 900px;
     margin: 0 auto;
     padding: 2rem 0;
   }
@@ -564,15 +589,11 @@ onUnmounted(() => {
       transform: translateX(-50%);
     }
   }
-  
+
   &__items {
     display: flex;
     flex-direction: column;
-    gap: 2.5rem;
-    
-    @media (min-width: 768px) {
-      gap: 0;
-    }
+    gap: 1.5rem;
   }
 
   &__item {
@@ -580,23 +601,6 @@ onUnmounted(() => {
     padding-left: 60px;
     width: 100%;
     box-sizing: border-box;
-
-    @media (min-width: 768px) {
-      padding-left: 0;
-      width: 50%;
-      padding-right: 3rem;
-      
-      &--right {
-        align-self: flex-end;
-        padding-right: 0;
-        padding-left: 3rem;
-        
-        .timeline__dot {
-          right: auto;
-          left: -8px;
-        }
-      }
-    }
   }
 
   &__dot {
@@ -623,6 +627,9 @@ onUnmounted(() => {
     border: 1px solid rgba($border, 0.8);
     border-radius: 24px;
     padding: 2rem;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
     transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 
     &:hover {
@@ -630,6 +637,25 @@ onUnmounted(() => {
       transform: translateY(-4px) scale(1.02);
       box-shadow: 0 20px 40px rgba($black, 0.05);
     }
+
+    @media (min-width: 768px) {
+      grid-template-columns: minmax(180px, 240px) 1fr;
+      align-items: center;
+    }
+  }
+
+  &__image {
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    object-fit: cover;
+    border-radius: 18px;
+    border: 1px solid rgba($border, 0.8);
+  }
+
+  &__text {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
   }
 
   &__year {

@@ -20,7 +20,7 @@ onMounted(() => {
 })
 
 const stats = [
-  { value: '15+', label: 'A&ntilde;os de experiencia' },
+  { value: '20+', label: 'A&ntilde;os de experiencia' },
   { value: '100%', label: 'Atenci&oacute;n personalizada' },
   { value: '24/7', label: 'Soporte t&eacute;cnico' },
   { value: '10K+', label: 'Clientes satisfechos' },

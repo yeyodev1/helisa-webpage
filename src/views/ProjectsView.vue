@@ -16,6 +16,7 @@ interface Project {
   location?: string
   description: string
   image: string
+  relatedProducts: Array<{ label: string; to: string }>
 }
 
 const categories = [
@@ -40,6 +41,10 @@ const projects: Project[] = [
     location: 'Ecuador',
     description: 'Sistema de tratamiento de agua para operaciones petroleras con altos estándares de calidad.',
     image: '/images/proyectos/petro-ecuador.png',
+    relatedProducts: [
+      { label: 'Ósmosis Inversa', to: '/productos#osmosis-inversa' },
+      { label: 'Ozono', to: '/productos#ozono' },
+    ],
   },
   {
     id: 3,
@@ -48,6 +53,7 @@ const projects: Project[] = [
     location: 'Ecuador',
     description: 'Soluciones de filtración y tratamiento para procesos industriales.',
     image: '/images/proyectos/repsol-duragas.png',
+    relatedProducts: [{ label: 'Ozono', to: '/productos#ozono' }],
   },
   {
     id: 5,
@@ -56,6 +62,10 @@ const projects: Project[] = [
     location: 'Ecuador',
     description: 'Sistema de desmineralización para procesos farmacéuticos.',
     image: '/images/proyectos/laboratorio-indunidas.png',
+    relatedProducts: [
+      { label: 'Esterilización UV', to: '/productos#esterilizacion-uv' },
+      { label: 'Ósmosis Inversa', to: '/productos#osmosis-inversa' },
+    ],
   },
   {
     id: 7,
@@ -64,6 +74,10 @@ const projects: Project[] = [
     location: 'Playas',
     description: 'Planta envasadora con sistema completo de tratamiento y purificación.',
     image: '/images/proyectos/agua-latina-playas.jpg',
+    relatedProducts: [
+      { label: 'Ósmosis Inversa', to: '/productos#osmosis-inversa' },
+      { label: 'Esterilización UV', to: '/productos#esterilizacion-uv' },
+    ],
   },
   {
     id: 13,
@@ -72,6 +86,10 @@ const projects: Project[] = [
     location: 'Ecuador',
     description: 'Tratamiento de agua para procesos avícolas y faenamiento.',
     image: '/images/proyectos/avicola-2007.jpg',
+    relatedProducts: [
+      { label: 'Ozono', to: '/productos#ozono' },
+      { label: 'Esterilización UV', to: '/productos#esterilizacion-uv' },
+    ],
   },
   {
     id: 17,
@@ -80,6 +98,7 @@ const projects: Project[] = [
     location: 'Ecuador',
     description: 'Sistema de tratamiento de agua para áreas hospitalarias.',
     image: '/images/proyectos/hospital-alcivar.jpg',
+    relatedProducts: [{ label: 'Esterilización UV', to: '/productos#esterilizacion-uv' }],
   },
   {
     id: 19,
@@ -88,6 +107,10 @@ const projects: Project[] = [
     location: 'Ecuador',
     description: 'Tratamiento de agua para cadena hotelera de lujo.',
     image: '/images/proyectos/sonesta.jpg',
+    relatedProducts: [
+      { label: 'Ósmosis Inversa', to: '/productos#osmosis-inversa' },
+      { label: 'Ozono', to: '/productos#ozono' },
+    ],
   },
   {
     id: 20,
@@ -96,6 +119,10 @@ const projects: Project[] = [
     location: 'Durán',
     description: 'Sistema de agua potable para institución educativa.',
     image: '/images/proyectos/colegio-duran.jpg',
+    relatedProducts: [
+      { label: 'Esterilización UV', to: '/productos#esterilizacion-uv' },
+      { label: 'Ósmosis Inversa', to: '/productos#osmosis-inversa' },
+    ],
   },
   {
     id: 22,
@@ -104,6 +131,7 @@ const projects: Project[] = [
     location: 'Ecuador',
     description: 'Tratamiento de agua para procesos de generación eléctrica.',
     image: '/images/proyectos/celec.png',
+    relatedProducts: [{ label: 'Ósmosis Inversa', to: '/productos#osmosis-inversa' }],
   },
   {
     id: 23,
@@ -112,6 +140,7 @@ const projects: Project[] = [
     location: 'Samborondón',
     description: 'Sistema doméstico de purificación de agua completo.',
     image: '/images/proyectos/casa-estancias.jpg',
+    relatedProducts: [{ label: 'Ósmosis Inversa', to: '/productos#osmosis-inversa' }],
   },
   {
     id: 24,
@@ -120,6 +149,10 @@ const projects: Project[] = [
     location: 'Guayaquil',
     description: 'Tratamiento integral de agua para edificio corporativo.',
     image: '/images/proyectos/edificio-helisa.jpg',
+    relatedProducts: [
+      { label: 'Ósmosis Inversa', to: '/productos#osmosis-inversa' },
+      { label: 'Esterilización UV', to: '/productos#esterilizacion-uv' },
+    ],
   },
 ]
 
@@ -236,8 +269,16 @@ onUnmounted(() => {
           <span class="line-wrap"><span class="text-gradient">transforman vidas</span></span>
         </h1>
         <p class="hero-desc">
-          Más de 15 años instalando sistemas de tratamiento de agua y aire en los sectores más exigentes del Ecuador.
+          Más de 20 años instalando sistemas de tratamiento de agua y aire en los sectores más exigentes del Ecuador.
         </p>
+
+        <div class="projects-hero__visual">
+          <img src="/images/proyectos/edificio-helisa.jpg" alt="Portada corporativa de HELISA" class="projects-hero__image" />
+          <div class="projects-hero__caption">
+            <span>Portada corporativa</span>
+            <strong>Obra, equipo y tecnología en una sola imagen.</strong>
+          </div>
+        </div>
 
         <div class="projects-filters">
           <div class="category-tabs" role="tablist" aria-label="Filtrar proyectos por categoría">
@@ -296,6 +337,17 @@ onUnmounted(() => {
                   {{ project.location }}
                 </p>
                 <p class="project-card__desc">{{ project.description }}</p>
+                <div class="project-card__links">
+                  <button
+                    v-for="link in project.relatedProducts"
+                    :key="link.to"
+                    type="button"
+                    class="project-card__link"
+                    @click="router.push(link.to)"
+                  >
+                    {{ link.label }}
+                  </button>
+                </div>
                 <button type="button" class="btn-contact-project" @click="router.push('/calificar')">
                   Contactar Ahora
                   <i class="fa-solid fa-arrow-right"></i>
@@ -311,13 +363,13 @@ onUnmounted(() => {
       <div class="container">
         <div class="projects-stats__grid">
           <div class="projects-stat">
-            <div class="projects-stat__icon">
-              <i class="fa-solid fa-calendar-check"></i>
-            </div>
-            <div class="projects-stat__body">
-              <span class="projects-stat__value">15+</span>
-              <span class="projects-stat__label">Años de experiencia</span>
-            </div>
+              <div class="projects-stat__icon">
+                <i class="fa-solid fa-calendar-check"></i>
+              </div>
+              <div class="projects-stat__body">
+                <span class="projects-stat__value">20+</span>
+                <span class="projects-stat__label">Años de experiencia</span>
+              </div>
           </div>
           <div class="projects-stat">
             <div class="projects-stat__icon">
@@ -486,6 +538,49 @@ onUnmounted(() => {
   max-width: 700px;
   margin: 0 auto;
   line-height: 1.6;
+}
+
+.projects-hero__visual {
+  width: 100%;
+  max-width: 960px;
+  margin-top: 3rem;
+  border-radius: 28px;
+  overflow: hidden;
+  border: 1px solid $border;
+  box-shadow: 0 20px 50px rgba($black, 0.08);
+  background: $white;
+}
+
+.projects-hero__image {
+  display: block;
+  width: 100%;
+  height: min(52vw, 420px);
+  object-fit: cover;
+}
+
+.projects-hero__caption {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  padding: 1rem 1.25rem;
+  background: $white;
+  text-align: left;
+
+  span {
+    font-family: $font-secondary;
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: $gray-500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  strong {
+    font-family: $font-display;
+    font-size: 1.1rem;
+    font-weight: 500;
+    color: $primary;
+  }
 }
 
 .projects-filters {
@@ -762,6 +857,33 @@ onUnmounted(() => {
     line-height: 1.6;
     margin: 0 0 2rem;
     flex: 1;
+  }
+
+  &__links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.65rem;
+    margin-bottom: 1.25rem;
+  }
+
+  &__link {
+    border: 1px solid $border;
+    background: rgba($white, 0.8);
+    color: $primary;
+    border-radius: 999px;
+    padding: 0.7rem 0.95rem;
+    font-family: $font-secondary;
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+
+    &:hover {
+      border-color: $primary;
+      background: $primary;
+      color: $white;
+      transform: translateY(-2px);
+    }
   }
 }
 

@@ -8,52 +8,62 @@ gsap.registerPlugin(ScrollTrigger)
 
 const router = useRouter()
 const navigate = (path: string) => router.push(path)
+const scrollToSection = (id: string) => document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' })
 
 const triggers: ScrollTrigger[] = []
 
-const products = [
+interface TechnologySection {
+  slug: string
+  eyebrow: string
+  title: string
+  summary: string
+  intro: string
+  image: string
+  equipment: string[]
+  spareParts: string[]
+  subproducts: string[]
+}
+
+const catalogSections: TechnologySection[] = [
   {
-    id: 1,
-    title: 'Ozono',
-    subtitle: 'Desinfección total',
-    description: 'Sistemas de ozono que eliminan bacterias, virus, hongos y olores sin dejar residuos químicos. Ideal para purificación de agua y aire en hogares, oficinas e industrias.',
-    features: ['Elimina patógenos', 'Sin químicos', 'Aire y agua', 'Bajo mantenimiento'],
-    icon: 'fa-atom',
-    image: '/images/patio-naves.webp',
-  },
-  {
-    id: 2,
-    title: 'Luz Ultravioleta',
-    subtitle: 'Esterilización instantánea',
-    description: 'Lámparas UV de alta eficiencia que desactivan microorganismos al instante. Tecnología probada, segura y ecológica para agua potable y procesos industriales.',
-    features: ['99.9% efectividad', 'Sin sabor ni olor', 'Eco-amigable', 'Larga vida útil'],
-    icon: 'fa-sun',
-    image: '/images/nave-supersacos.jpg',
-  },
-  {
-    id: 3,
-    title: 'Ósmosis Inversa',
-    subtitle: 'Máxima pureza',
-    description: 'Sistemas de ósmosis inversa que eliminan sales, metales pesados, cloro y contaminantes. El estándar de oro para agua ultrapura en hogares y negocios.',
-    features: ['Agua ultrapura', 'Remueve metales', 'Sabor natural', 'Membranas de alta calidad'],
-    icon: 'fa-filter',
-    image: '/images/nave-tarimas.jpg',
-  },
-  {
-    id: 4,
-    title: 'Filtración Integral',
-    subtitle: 'Soluciones completas',
-    description: 'Filtros, cartuchos, medios granulares y equipos personalizados para cada necesidad. Con repuestos garantizados y soporte técnico en todo el Ecuador.',
-    features: ['Repuestos originales', 'Diseño a medida', 'Soporte nacional', 'Garantía real'],
-    icon: 'fa-water',
+    slug: 'osmosis-inversa',
+    eyebrow: 'Sistema principal',
+    title: 'Sistemas de Ósmosis Inversa',
+    summary: 'Soluciones compactas e industriales para agua de alta pureza con control de sales, metales y contaminantes.',
+    intro: 'Diseñamos e instalamos sistemas de ósmosis inversa para hogares, industrias, laboratorios y plantas de agua. El catálogo incluye desde equipos domésticos hasta skids industriales listos para operación.',
     image: '/images/curso-carbon.jpg',
+    equipment: ['Equipos domésticos de 1 a 5 etapas', 'Sistemas compactos para oficina y comercio', 'Skids industriales de alta capacidad', 'Bombas presurizadoras y multietapa'],
+    spareParts: ['Membranas RO', 'Cartuchos sedimentadores', 'Carcasas porta membrana', 'Manómetros y válvulas check'],
+    subproducts: ['Bebederos', 'Tanques presurizados', 'Grifos para agua purificada', 'Kits de conexión e instalación'],
+  },
+  {
+    slug: 'ozono',
+    eyebrow: 'Oxidación avanzada',
+    title: 'Ozono',
+    summary: 'Desinfección sin químicos para agua y aire con alto poder oxidante y bajo mantenimiento.',
+    intro: 'El ozono es ideal para eliminar bacterias, virus, hongos, olores y compuestos orgánicos. Lo aplicamos en agua, ambientes y procesos industriales donde se requiere sanidad y control microbiológico.',
+    image: '/images/patio-naves.webp',
+    equipment: ['Generadores de ozono corona', 'Inyectores Venturi', 'Contactores y tanques de reacción', 'Destructores de ozono'],
+    spareParts: ['Piedras difusoras', 'Mangueras y conectores', 'Válvulas check', 'Placas y celdas de reemplazo'],
+    subproducts: ['Difusores para tanques', 'Paneles de control', 'Filtros de pretratamiento', 'Kits de ozonización para agua y aire'],
+  },
+  {
+    slug: 'esterilizacion-uv',
+    eyebrow: 'Desinfección final',
+    title: 'Esterilización UV',
+    summary: 'Tecnología segura y ecológica para desactivar microorganismos sin alterar el sabor, olor o composición del agua.',
+    intro: 'La esterilización UV es el complemento ideal para plantas de agua, laboratorios, clínicas y sistemas industriales que necesitan una barrera sanitaria confiable y continua.',
+    image: '/images/nave-supersacos.jpg',
+    equipment: ['Reactores UV de baja y alta presión', 'Lámparas UV-C', 'Balastros electrónicos', 'Sensores y cámaras de desinfección'],
+    spareParts: ['Camisas de cuarzo', 'Lámparas de reemplazo', 'O-rings y sellos', 'Controladores de intensidad'],
+    subproducts: ['Prefiltros para UV', 'Monitores de dosis', 'Cámaras de paso en acero', 'Sistemas para agua potable y procesos'],
   },
 ]
 
 const whyUs = [
-  { icon: 'fa-circle-check', title: 'Calidad certificada', desc: 'Equipos e insumos seleccionados bajo estrictos estándares.' },
+  { icon: 'fa-circle-check', title: 'Catálogo técnico', desc: 'Desglose claro de tecnologías, equipos, repuestos y subproductos.' },
   { icon: 'fa-clock', title: 'Respuesta rápida', desc: 'Soporte técnico ágil en todo el territorio nacional.' },
-  { icon: 'fa-handshake', title: 'Asesoría personalizada', desc: 'Diseñamos la solución ideal para tu hogar o industria.' },
+  { icon: 'fa-handshake', title: 'Asesoría personalizada', desc: 'Diseñamos la solución ideal para tu hogar, industria o laboratorio.' },
 ]
 
 onMounted(() => {
@@ -61,12 +71,13 @@ onMounted(() => {
   tl.from('.hero-badge', { y: 20, opacity: 0, duration: 0.8, ease: 'power3.out' })
     .from('.hero-title span > span', { y: 100, opacity: 0, duration: 1, stagger: 0.1, ease: 'power4.out', clipPath: 'inset(0% 0% 100% 0%)' }, '-=0.5')
     .from('.hero-desc', { y: 20, opacity: 0, duration: 0.8, ease: 'power3.out' }, '-=0.6')
+    .from('.catalog-index__item', { y: 24, opacity: 0, duration: 0.6, stagger: 0.08, ease: 'power3.out' }, '-=0.2')
 
-  document.querySelectorAll('.product-card').forEach((card) => {
+  document.querySelectorAll('.technology-card').forEach((card) => {
     const tween = gsap.fromTo(card, {
       y: 60,
       opacity: 0,
-      scale: 0.95
+      scale: 0.96,
     }, {
       y: 0,
       opacity: 1,
@@ -108,56 +119,69 @@ onUnmounted(() => {
       </div>
       
       <div class="container products-hero__content">
-        <div class="hero-badge">Portafolio</div>
+        <div class="hero-badge">Catálogo técnico</div>
         <h1 class="hero-title">
           <span class="line-wrap"><span>Productos y</span></span>
           <span class="line-wrap"><span class="text-gradient">tecnologías</span></span>
         </h1>
         <p class="hero-desc">
-          Soluciones de tratamiento de agua y aire respaldadas por ingeniería, innovación tecnológica y experiencia real.
+          Más de 20 años instalando sistemas de tratamiento de agua y aire para hogares, industrias, laboratorios y plantas de producción.
         </p>
+        <div class="catalog-index">
+          <button v-for="section in catalogSections" :key="section.slug" type="button" class="catalog-index__item" @click="scrollToSection(section.slug)">
+            {{ section.title }}
+          </button>
+        </div>
       </div>
     </section>
 
-    <section class="products-list section-padding">
-      <div class="container">
-        <div class="products-list__items">
-          <article
-            v-for="product in products"
-            :key="product.id"
-            class="product-card"
-          >
-            <div class="product-card__bg">
-              <img :src="product.image" :alt="product.title" class="product-card__image" loading="lazy" />
-              <div class="product-card__overlay"></div>
-            </div>
-            
-            <div class="product-card__content">
-              <div class="product-card__icon">
-                <i :class="['fa-solid', product.icon]"></i>
+    <section class="catalog section-padding">
+      <div class="container catalog__inner">
+        <article v-for="section in catalogSections" :id="section.slug" :key="section.slug" class="technology-card">
+          <div class="technology-card__visual">
+            <img :src="section.image" :alt="section.title" class="technology-card__image" loading="lazy" />
+            <span class="technology-card__eyebrow">{{ section.eyebrow }}</span>
+          </div>
+
+          <div class="technology-card__content">
+            <h2 class="technology-card__title">{{ section.title }}</h2>
+            <p class="technology-card__summary">{{ section.summary }}</p>
+            <p class="technology-card__intro">{{ section.intro }}</p>
+
+            <div class="technology-card__groups">
+              <div class="technology-card__group">
+                <h3>Equipos</h3>
+                <ul>
+                  <li v-for="item in section.equipment" :key="item">{{ item }}</li>
+                </ul>
               </div>
-              <span class="product-card__subtitle">{{ product.subtitle }}</span>
-              <h2 class="product-card__title">{{ product.title }}</h2>
-              <p class="product-card__desc">{{ product.description }}</p>
-              
-              <ul class="product-card__features">
-                <li v-for="feature in product.features" :key="feature">
-                  <i class="fa-solid fa-check"></i> {{ feature }}
-                </li>
-              </ul>
-              
-              <button
-                type="button"
-                class="btn btn--glass product-card__cta"
-                :aria-label="`Solicitar cotización de ${product.title}`"
-                @click="navigate('/calificar')"
-              >
+
+              <div class="technology-card__group">
+                <h3>Repuestos</h3>
+                <ul>
+                  <li v-for="item in section.spareParts" :key="item">{{ item }}</li>
+                </ul>
+              </div>
+
+              <div class="technology-card__group">
+                <h3>Subproductos</h3>
+                <ul>
+                  <li v-for="item in section.subproducts" :key="item">{{ item }}</li>
+                </ul>
+              </div>
+            </div>
+
+            <div class="technology-card__actions">
+              <button type="button" class="btn btn--glass" @click="navigate('/calificar')">
                 Solicitar cotización
                 <i class="fa-solid fa-arrow-right"></i>
               </button>
+              <button type="button" class="btn btn--outline" @click="navigate('/proyectos')">
+                Ver proyectos relacionados
+              </button>
             </div>
-          </article>
-        </div>
+          </div>
+        </article>
       </div>
     </section>
 
@@ -166,7 +190,7 @@ onUnmounted(() => {
       <div class="container">
         <div class="why-header">
           <span class="why-label">¿Por qué elegirnos?</span>
-          <h2 class="why-title">Compromiso de <span class="text-gradient">principio a fin</span></h2>
+          <h2 class="why-title">Catálogo pensado para <span class="text-gradient">convertir visitas en ventas</span></h2>
         </div>
         <div class="why-grid">
           <div v-for="item in whyUs" :key="item.title" class="why-card">
@@ -304,6 +328,203 @@ onUnmounted(() => {
   max-width: 650px;
   margin: 0 auto;
   line-height: 1.6;
+}
+
+.catalog-index {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.75rem;
+  margin-top: 2.5rem;
+
+  &__item {
+    padding: 0.8rem 1.1rem;
+    border: 1px solid $border;
+    border-radius: 999px;
+    background: rgba($white, 0.65);
+    color: $primary;
+    font-family: $font-secondary;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+
+    &:hover {
+      transform: translateY(-2px);
+      border-color: $primary;
+      box-shadow: 0 10px 24px rgba($black, 0.08);
+    }
+  }
+}
+
+.catalog {
+  position: relative;
+  z-index: 2;
+
+  &__inner {
+    display: flex;
+    flex-direction: column;
+    gap: 3rem;
+  }
+}
+
+.technology-card {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+  padding: 1.25rem;
+  border: 1px solid $border;
+  border-radius: 28px;
+  background: $white;
+  box-shadow: 0 20px 40px rgba($black, 0.05);
+
+  @media (min-width: 900px) {
+    grid-template-columns: minmax(280px, 360px) 1fr;
+    align-items: stretch;
+    padding: 1.5rem;
+  }
+
+  &__visual {
+    position: relative;
+    border-radius: 24px;
+    overflow: hidden;
+    min-height: 280px;
+    background: $background-soft;
+  }
+
+  &__image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  &__eyebrow {
+    position: absolute;
+    left: 1rem;
+    top: 1rem;
+    padding: 0.45rem 0.8rem;
+    border-radius: 999px;
+    background: rgba($white, 0.92);
+    font-family: $font-secondary;
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: $primary;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
+  &__content {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    padding: 0.5rem 0.25rem;
+  }
+
+  &__title {
+    font-family: $font-display;
+    font-size: clamp(1.8rem, 4vw, 3rem);
+    font-weight: 500;
+    color: $primary;
+    margin: 0;
+    letter-spacing: -0.03em;
+  }
+
+  &__summary,
+  &__intro {
+    font-family: $font-secondary;
+    line-height: 1.7;
+    color: $foreground-muted;
+    margin: 0;
+  }
+
+  &__summary {
+    font-size: 1.05rem;
+  }
+
+  &__intro {
+    font-size: 0.98rem;
+  }
+
+  &__groups {
+    display: grid;
+    gap: 1rem;
+
+    @media (min-width: 768px) {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
+  &__group {
+    padding: 1rem;
+    border-radius: 18px;
+    background: $background-soft;
+    border: 1px solid $border;
+
+    h3 {
+      font-family: $font-secondary;
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: $primary;
+      margin: 0 0 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    ul {
+      margin: 0;
+      padding-left: 1.1rem;
+      display: grid;
+      gap: 0.45rem;
+      font-family: $font-secondary;
+      color: $foreground-muted;
+      line-height: 1.5;
+    }
+  }
+
+  &__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-top: 0.5rem;
+  }
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  border-radius: 999px;
+  padding: 0.95rem 1.4rem;
+  border: 1px solid transparent;
+  font-family: $font-secondary;
+  font-size: 0.92rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn--glass {
+  background: $primary;
+  color: $white;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 14px 28px rgba($black, 0.12);
+  }
+}
+
+.btn--outline {
+  background: transparent;
+  border-color: $border;
+  color: $primary;
+
+  &:hover {
+    border-color: $primary;
+    background: rgba($primary, 0.04);
+    transform: translateY(-2px);
+  }
 }
 
 /* PRODUCTS LIST */

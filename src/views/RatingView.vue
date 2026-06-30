@@ -6,9 +6,26 @@ const form = ref({
   name: '',
   email: '',
   phone: '',
-  company: '',
+  sector: '',
   message: '',
 })
+
+const sectors = [
+  'Domicilio',
+  'Oficina',
+  'Restaurante',
+  'Industria Agrícola',
+  'Industria Acuacultura',
+  'Industria Ganadera',
+  'Fábrica',
+  'Industria',
+  'Laboratorio',
+  'Planta de agua',
+  'Turismo',
+  'Clínica/Hospital',
+  'REVENDEDOR',
+  'Otro',
+]
 
 const isSubmitting = ref(false)
 const showToast = ref(false)
@@ -43,7 +60,7 @@ const submitForm = async () => {
     name: form.value.name,
     email: form.value.email,
     phone: form.value.phone,
-    company: form.value.company,
+    sector: form.value.sector,
     message: form.value.message,
     createdAt: new Date().toLocaleString('es-EC'),
     status: 'nuevo',
@@ -53,7 +70,7 @@ const submitForm = async () => {
   stored.unshift(newLead)
   localStorage.setItem('helisa_crm_leads', JSON.stringify(stored))
 
-  form.value = { name: '', email: '', phone: '', company: '', message: '' }
+  form.value = { name: '', email: '', phone: '', sector: '', message: '' }
   isSubmitting.value = false
 
   showNotification('¡Gracias! Hemos recibido tu solicitud. Te contactaremos pronto.')
@@ -98,6 +115,17 @@ onMounted(() => {
     <section class="lead-form-section">
       <div class="container lead-form-container">
         <div class="lead-form-wrapper">
+          <div class="lead-form__addresses">
+            <div class="lead-form__address">
+              <span class="lead-form__address-label">Dirección Matriz</span>
+              <p>Av. Francisco de Orellana diagonal a Riocentro Norte (Alborada XIII Etapa Mz. 22 V. 9).</p>
+            </div>
+            <div class="lead-form__address">
+              <span class="lead-form__address-label">Dirección Planta de Producción</span>
+              <p>Parque Industrial Inmaconsa, Avenida 43NO.</p>
+            </div>
+          </div>
+
           <form class="lead-form" @submit.prevent="submitForm">
             <div class="form-grid">
               <div class="input-group">
@@ -118,9 +146,12 @@ onMounted(() => {
                 <div class="input-line"></div>
               </div>
 
-              <div class="input-group">
-                <input v-model="form.company" type="text" id="company" placeholder=" " />
-                <label for="company">Empresa / Sector (opcional)</label>
+              <div class="input-group input-group--select">
+                <select v-model="form.sector" id="sector" class="form__select" required>
+                  <option value="" disabled>Selecciona un sector</option>
+                  <option v-for="sector in sectors" :key="sector" :value="sector">{{ sector }}</option>
+                </select>
+                <label for="sector">Sector *</label>
                 <div class="input-line"></div>
               </div>
             </div>
@@ -300,6 +331,41 @@ onMounted(() => {
   }
 }
 
+.lead-form__addresses {
+  display: grid;
+  gap: 1rem;
+  margin-bottom: 2rem;
+
+  @media (min-width: 768px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.lead-form__address {
+  padding: 1rem 1.25rem;
+  border-radius: 1rem;
+  background: rgba($white, 0.65);
+  border: 1px solid rgba($border, 0.9);
+
+  p {
+    margin: 0.35rem 0 0;
+    font-family: $font-secondary;
+    font-size: 0.95rem;
+    line-height: 1.6;
+    color: $foreground-muted;
+  }
+}
+
+.lead-form__address-label {
+  display: block;
+  font-family: $font-secondary;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: $primary;
+}
+
 .form-grid {
   display: flex;
   flex-direction: column;
@@ -325,7 +391,15 @@ onMounted(() => {
     margin-bottom: 3rem;
   }
 
+  &--select {
+    label {
+      transform: translateY(-1.8rem) scale(0.85);
+      color: $foreground-muted;
+    }
+  }
+
   input,
+  select,
   textarea {
     width: 100%;
     box-sizing: border-box;
@@ -349,6 +423,22 @@ onMounted(() => {
         opacity: 1;
       }
     }
+  }
+
+  select:valid {
+    ~label {
+      transform: translateY(-1.8rem) scale(0.85);
+      color: $foreground-muted;
+    }
+  }
+
+  select {
+    appearance: none;
+    padding-right: 1.75rem;
+    background-image: linear-gradient(45deg, transparent 50%, $gray-400 50%), linear-gradient(135deg, $gray-400 50%, transparent 50%);
+    background-position: calc(100% - 0.65rem) calc(1.1rem), calc(100% - 0.3rem) calc(1.1rem);
+    background-size: 0.4rem 0.4rem;
+    background-repeat: no-repeat;
   }
 
   textarea {
@@ -389,6 +479,7 @@ onMounted(() => {
   }
 
   input:focus~.input-line::after,
+  select:focus~.input-line::after,
   textarea:focus~.input-line::after {
     transform: scaleX(1);
   }
