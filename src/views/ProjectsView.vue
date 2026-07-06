@@ -3,158 +3,12 @@ import { ref, onMounted, onUnmounted, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
+import { projectCategories, projects } from '@/data/projects'
 
 gsap.registerPlugin(ScrollTrigger)
 
 const router = useRouter()
-const selectedImage = ref<string | null>(null)
-
-interface Project {
-  id: number
-  title: string
-  category: string
-  location?: string
-  description: string
-  image: string
-  relatedProducts: Array<{ label: string; to: string }>
-}
-
-const categories = [
-  'Todos',
-  'Industria Petrolera',
-  'Laboratorios',
-  'Plantas Envasadoras',
-  'Potabilización y PTAR',
-  'Sector Agrícola',
-  'Sector de Salud',
-  'Sector de Turismo',
-  'Sector Educativo',
-  'Sector Industrial',
-  'Tratamiento Hogar',
-]
-
-const projects: Project[] = [
-  {
-    id: 1,
-    title: 'Petro Ecuador',
-    category: 'Industria Petrolera',
-    location: 'Ecuador',
-    description: 'Sistema de tratamiento de agua para operaciones petroleras con altos estándares de calidad.',
-    image: '/images/proyectos/petro-ecuador.png',
-    relatedProducts: [
-      { label: 'Ósmosis Inversa', to: '/productos#osmosis-inversa' },
-      { label: 'Ozono', to: '/productos#ozono' },
-    ],
-  },
-  {
-    id: 3,
-    title: 'Repsol Duragas',
-    category: 'Industria Petrolera',
-    location: 'Ecuador',
-    description: 'Soluciones de filtración y tratamiento para procesos industriales.',
-    image: '/images/proyectos/repsol-duragas.png',
-    relatedProducts: [{ label: 'Ozono', to: '/productos#ozono' }],
-  },
-  {
-    id: 5,
-    title: 'Laboratorios Indunidas',
-    category: 'Laboratorios',
-    location: 'Ecuador',
-    description: 'Sistema de desmineralización para procesos farmacéuticos.',
-    image: '/images/proyectos/laboratorio-indunidas.png',
-    relatedProducts: [
-      { label: 'Esterilización UV', to: '/productos#esterilizacion-uv' },
-      { label: 'Ósmosis Inversa', to: '/productos#osmosis-inversa' },
-    ],
-  },
-  {
-    id: 7,
-    title: 'Agua Latina en Playas',
-    category: 'Plantas Envasadoras',
-    location: 'Playas',
-    description: 'Planta envasadora con sistema completo de tratamiento y purificación.',
-    image: '/images/proyectos/agua-latina-playas.jpg',
-    relatedProducts: [
-      { label: 'Ósmosis Inversa', to: '/productos#osmosis-inversa' },
-      { label: 'Esterilización UV', to: '/productos#esterilizacion-uv' },
-    ],
-  },
-  {
-    id: 13,
-    title: 'Avícola 2007',
-    category: 'Sector Agrícola',
-    location: 'Ecuador',
-    description: 'Tratamiento de agua para procesos avícolas y faenamiento.',
-    image: '/images/proyectos/avicola-2007.jpg',
-    relatedProducts: [
-      { label: 'Ozono', to: '/productos#ozono' },
-      { label: 'Esterilización UV', to: '/productos#esterilizacion-uv' },
-    ],
-  },
-  {
-    id: 17,
-    title: 'Hospital Miguel H. Alcívar',
-    category: 'Sector de Salud',
-    location: 'Ecuador',
-    description: 'Sistema de tratamiento de agua para áreas hospitalarias.',
-    image: '/images/proyectos/hospital-alcivar.jpg',
-    relatedProducts: [{ label: 'Esterilización UV', to: '/productos#esterilizacion-uv' }],
-  },
-  {
-    id: 19,
-    title: 'Sonesta',
-    category: 'Sector de Turismo',
-    location: 'Ecuador',
-    description: 'Tratamiento de agua para cadena hotelera de lujo.',
-    image: '/images/proyectos/sonesta.jpg',
-    relatedProducts: [
-      { label: 'Ósmosis Inversa', to: '/productos#osmosis-inversa' },
-      { label: 'Ozono', to: '/productos#ozono' },
-    ],
-  },
-  {
-    id: 20,
-    title: 'Colegio en Durán',
-    category: 'Sector Educativo',
-    location: 'Durán',
-    description: 'Sistema de agua potable para institución educativa.',
-    image: '/images/proyectos/colegio-duran.jpg',
-    relatedProducts: [
-      { label: 'Esterilización UV', to: '/productos#esterilizacion-uv' },
-      { label: 'Ósmosis Inversa', to: '/productos#osmosis-inversa' },
-    ],
-  },
-  {
-    id: 22,
-    title: 'Proyecto CELEC',
-    category: 'Sector Industrial',
-    location: 'Ecuador',
-    description: 'Tratamiento de agua para procesos de generación eléctrica.',
-    image: '/images/proyectos/celec.png',
-    relatedProducts: [{ label: 'Ósmosis Inversa', to: '/productos#osmosis-inversa' }],
-  },
-  {
-    id: 23,
-    title: 'Casa en Estancias del Río',
-    category: 'Tratamiento Hogar',
-    location: 'Samborondón',
-    description: 'Sistema doméstico de purificación de agua completo.',
-    image: '/images/proyectos/casa-estancias.jpg',
-    relatedProducts: [{ label: 'Ósmosis Inversa', to: '/productos#osmosis-inversa' }],
-  },
-  {
-    id: 24,
-    title: 'Edificio Helisa',
-    category: 'Tratamiento Hogar',
-    location: 'Guayaquil',
-    description: 'Tratamiento integral de agua para edificio corporativo.',
-    image: '/images/proyectos/edificio-helisa.jpg',
-    relatedProducts: [
-      { label: 'Ósmosis Inversa', to: '/productos#osmosis-inversa' },
-      { label: 'Esterilización UV', to: '/productos#esterilizacion-uv' },
-    ],
-  },
-]
+const categories = projectCategories
 
 const activeCategory = ref('Todos')
 const searchQuery = ref('')
@@ -273,7 +127,7 @@ onUnmounted(() => {
         </p>
 
         <div class="projects-hero__visual">
-          <img src="/images/proyectos/edificio-helisa.jpg" alt="Portada corporativa de HELISA" class="projects-hero__image" />
+          <img src="https://res.cloudinary.com/bmtcnrkr/image/upload/v1783372958/helisa/projects/edificio-helisa.jpg" alt="Portada corporativa de HELISA" class="projects-hero__image" />
           <div class="projects-hero__caption">
             <span>Portada corporativa</span>
             <strong>Obra, equipo y tecnología en una sola imagen.</strong>
@@ -308,8 +162,8 @@ onUnmounted(() => {
     </section>
 
     <section class="projects-grid section-padding">
-      <div class="container">
-        <div v-if="filteredProjects.length === 0" class="projects-empty">
+        <div class="container">
+          <div v-if="filteredProjects.length === 0" class="projects-empty">
           <div class="projects-empty__icon"><i class="fa-solid fa-folder-open"></i></div>
           <p>No encontramos proyectos para esta búsqueda.</p>
         </div>
@@ -318,13 +172,15 @@ onUnmounted(() => {
             v-for="project in filteredProjects"
             :key="project.id"
             class="project-card"
+            role="link"
+            tabindex="0"
+            @click="router.push(`/proyectos/${project.slug}`)"
+            @keydown.enter.prevent="router.push(`/proyectos/${project.slug}`)"
+            @keydown.space.prevent="router.push(`/proyectos/${project.slug}`)"
           >
             <div class="project-card__frame">
-              <div class="project-card__visual" @click="selectedImage = project.image">
+              <div class="project-card__visual">
                 <img :src="project.image" :alt="project.title" class="project-card__image" loading="lazy" />
-                <div class="project-card__overlay">
-                  <i class="fa-solid fa-magnifying-glass-plus overlay-icon"></i>
-                </div>
                 <div class="project-card__category-badge">
                   <i class="fa-solid fa-tag"></i>
                   <span>{{ project.category }}</span>
@@ -343,12 +199,12 @@ onUnmounted(() => {
                     :key="link.to"
                     type="button"
                     class="project-card__link"
-                    @click="router.push(link.to)"
+                    @click.stop="router.push(link.to)"
                   >
                     {{ link.label }}
                   </button>
                 </div>
-                <button type="button" class="btn-contact-project" @click="router.push('/calificar')">
+                <button type="button" class="btn-contact-project" @click.stop="router.push('/calificar')">
                   Contactar Ahora
                   <i class="fa-solid fa-arrow-right"></i>
                 </button>
@@ -395,24 +251,13 @@ onUnmounted(() => {
             </div>
             <div class="projects-stat__body">
               <span class="projects-stat__value">24/7</span>
-              <span class="projects-stat__label">Soporte técnico</span>
+              <span class="projects-stat__label">Más de 50,000 productos vendidos</span>
             </div>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- LIGHTBOX MODAL -->
-    <Transition name="fade">
-      <div v-if="selectedImage" class="lightbox" @click="selectedImage = null" role="dialog" aria-modal="true" aria-label="Visualización de proyecto ampliada">
-        <button type="button" class="lightbox__close" aria-label="Cerrar imagen" @click="selectedImage = null">
-          <i class="fa-solid fa-xmark"></i>
-        </button>
-        <div class="lightbox__content">
-          <img :src="selectedImage" alt="Proyecto ampliado" class="lightbox__image" @click.stop />
-        </div>
-      </div>
-    </Transition>
   </main>
 </template>
 
@@ -724,9 +569,14 @@ onUnmounted(() => {
   display: flex;
   flex-direction: column;
   width: 100%;
-  cursor: default;
+  cursor: pointer;
   flex: 1 1 300px;
   max-width: 450px;
+
+  &:focus-visible .project-card__frame {
+    outline: 3px solid rgba($azul-medio, 0.35);
+    outline-offset: 4px;
+  }
 
   &__frame {
     display: flex;

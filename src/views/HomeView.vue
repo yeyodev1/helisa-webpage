@@ -3,6 +3,7 @@ import { onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
+import { getProjectBySlug } from '@/data/projects'
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -14,7 +15,7 @@ const navigate = (path: string) => router.push(path)
 const stats = [
   { value: '20+', label: 'Años de experiencia' },
   { value: '100%', label: 'Atención personalizada' },
-  { value: '24/7', label: 'Soporte técnico' },
+  { value: '24/7', label: 'Más de 50,000 productos vendidos' },
   { value: '10K+', label: 'Clientes satisfechos' },
 ]
 
@@ -26,10 +27,10 @@ const services = [
 ]
 
 const featuredProjects = [
-  { title: 'Petro Ecuador', category: 'Industria Petrolera', image: '/images/proyectos/petro-ecuador.png' },
-  { title: 'Hospital Miguel H. Alcívar', category: 'Sector de Salud', image: '/images/proyectos/hospital-alcivar.jpg' },
-  { title: 'Sonesta', category: 'Sector de Turismo', image: '/images/proyectos/sonesta.jpg' },
-]
+  getProjectBySlug('petro-ecuador'),
+  getProjectBySlug('hospital-miguel-h-alcivar'),
+  getProjectBySlug('sonesta'),
+].filter((project): project is NonNullable<typeof project> => Boolean(project))
 
 onMounted(() => {
   gsap.timeline({ delay: 0.2 })
@@ -52,6 +53,10 @@ onMounted(() => {
 
   document.querySelectorAll('.stat__value').forEach((stat) => {
     const targetText = stat.getAttribute('data-value') || '0'
+    if (targetText.includes('/')) {
+      stat.textContent = targetText
+      return
+    }
     const numericTarget = parseInt(targetText.replace(/\D/g, ''), 10) || 0
     const suffix = targetText.replace(/[0-9]/g, '')
     const counter = gsap.to(stat, {
@@ -97,7 +102,7 @@ onUnmounted(() => {
 
       <div class="hero__visual">
         <div class="hero__frame">
-          <img src="/images/curso-carbon.jpg" alt="Sistema de tratamiento de agua HELISA" class="hero__image" />
+          <img src="https://res.cloudinary.com/bmtcnrkr/image/upload/v1783372958/helisa/projects/edificio-helisa.jpg" alt="Edificio corporativo de HELISA" class="hero__image" />
 
           <div class="hero__badge hero__badge--top">
             <span class="hero__badge-dot"></span>
@@ -144,7 +149,7 @@ onUnmounted(() => {
 
     <section class="about" data-reveal>
       <div class="container about__inner">
-        <img src="/images/proyectos/edificio-helisa.jpg" alt="Edificio corporativo de HELISA" class="about__image reveal-item" />
+        <img src="https://res.cloudinary.com/bmtcnrkr/image/upload/v1783372899/helisa/projects/imagen-agua.jpg" alt="Sistema de tratamiento de agua HELISA" class="about__image reveal-item" />
         <div class="about__text">
           <span class="section-label reveal-item">Nosotros</span>
           <h2 class="section-title reveal-item">Pensando en <span class="text-gradient">su bienestar</span></h2>
@@ -184,7 +189,16 @@ onUnmounted(() => {
           </button>
         </div>
         <div class="featured__grid">
-          <article v-for="(project, i) in featuredProjects" :key="project.title" :class="['featured-card', 'reveal-item', { 'featured-card--large': i === 0 }]">
+          <article
+            v-for="(project, i) in featuredProjects"
+            :key="project.title"
+            :class="['featured-card', 'reveal-item', { 'featured-card--large': i === 0 }]"
+            role="link"
+            tabindex="0"
+            @click="router.push(`/proyectos/${project.slug}`)"
+            @keydown.enter.prevent="router.push(`/proyectos/${project.slug}`)"
+            @keydown.space.prevent="router.push(`/proyectos/${project.slug}`)"
+          >
             <div class="featured-card__visual">
               <img :src="project.image" :alt="project.title" class="featured-card__image" />
             </div>

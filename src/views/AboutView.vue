@@ -16,10 +16,10 @@ const values = [
 ]
 
 const timeline = [
-  { year: '2003', title: 'Origen', desc: 'Nacimos con la visión de transformar el acceso a agua tratada y segura en Ecuador.', image: '/images/proyectos/edificio-helisa.jpg' },
-  { year: '2010', title: 'Expansión', desc: 'Ampliamos nuestra cobertura nacional con soporte técnico en todas las regiones.', image: '/images/nave-tarimas.jpg' },
-  { year: '2018', title: 'Innovación', desc: 'Incorporamos tecnologías de ozono, UV y ósmosis inversa de última generación.', image: '/images/patio-naves.webp' },
-  { year: '2025', title: 'Liderazgo', desc: 'Consolidados como referentes en tratamiento de agua y aire del país.', image: '/images/curso-carbon.jpg' },
+  { year: '2003', title: 'Origen', desc: 'Nacimos con la visión de llevar agua tratada, segura y confiable a hogares e industrias del Ecuador.', image: 'https://res.cloudinary.com/bmtcnrkr/image/upload/v1783372958/helisa/projects/edificio-helisa.jpg' },
+  { year: '2010', title: 'Expansión', desc: 'Ampliamos nuestra cobertura nacional con soporte técnico y comercial en nuevas provincias.', image: '/images/nave-tarimas.jpg' },
+  { year: '2016', title: 'Consolidación técnica', desc: 'Fortalecimos soluciones de ozono, UV y ósmosis inversa para proyectos de mayor exigencia.', image: '/images/patio-naves.webp' },
+  { year: '2026', title: 'Nueva etapa', desc: 'Evolucionamos con una operación más visible, ágil y enfocada en experiencia de cliente.', image: 'https://res.cloudinary.com/bmtcnrkr/image/upload/v1783372899/helisa/projects/imagen-agua.jpg' },
 ]
 
 onMounted(() => {
@@ -104,7 +104,7 @@ onUnmounted(() => {
 
         <div class="story__visual">
           <div class="story__frame">
-            <img src="/images/nave-supersacos.jpg" alt="Instalaciones HELISA" class="story__image" />
+            <img src="https://res.cloudinary.com/bmtcnrkr/image/upload/v1783372899/helisa/projects/imagen-agua.jpg" alt="Instalaciones HELISA" class="story__image" />
             <div class="story__badge story__badge--top">
               <span class="story__badge-dot"></span>
               <span class="story__badge-text">Ecuador</span>

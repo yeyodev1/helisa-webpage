@@ -29,20 +29,11 @@ const socials = [
       <div class="footer__inner">
         <div class="footer__brand">
           <img src="/images/logo/helisa-logo.png" alt="HELISA" class="footer__logo-img" />
-          <div>
+          <div class="footer__brand-copy">
             <span class="footer__name">HELISA</span>
             <span class="footer__tagline">Health &amp; Life S.A.</span>
           </div>
-        </div>
-
-        <div class="footer__certification">
-          <div class="footer__certification-icon">
-            <i class="fa-solid fa-certificate"></i>
-          </div>
-          <div class="footer__certification-body">
-            <span class="footer__certification-title">Compañía con Certificación ISO</span>
-            <span class="footer__certification-text">Procesos orientados a calidad y satisfacción del cliente.</span>
-          </div>
+          <span class="footer__iso-badge">ISO 9001</span>
         </div>
 
         <div class="footer__columns">
@@ -128,47 +119,33 @@ const socials = [
     display: flex;
     align-items: center;
     gap: 0.75rem;
+    flex-wrap: wrap;
   }
 
-  &__certification {
+  &__brand-copy {
+    display: flex;
+    flex-direction: column;
+  }
+
+  &__iso-badge {
     display: flex;
     align-items: center;
     gap: 0.9rem;
-    padding: 1rem 1.25rem;
-    border: 1px solid rgba($white, 0.12);
-    border-radius: 18px;
-    background: rgba($white, 0.04);
-  }
-
-  &__certification-icon {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 44px;
-    height: 44px;
-    border-radius: 14px;
-    background: rgba($white, 0.12);
-    color: $white;
-    flex-shrink: 0;
-  }
-
-  &__certification-body {
-    display: flex;
-    flex-direction: column;
-    gap: 0.2rem;
-  }
-
-  &__certification-title {
     font-family: $font-secondary;
-    font-size: 0.95rem;
+    font-size: 0.72rem;
     font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
     color: $white;
-  }
-
-  &__certification-text {
-    font-family: $font-secondary;
-    font-size: 0.78rem;
-    color: rgba($white, 0.55);
+    width: 58px;
+    height: 58px;
+    border-radius: 50%;
+    border: 1px solid rgba($white, 0.18);
+    background: linear-gradient(180deg, rgba($white, 0.12), rgba($white, 0.04));
+    justify-content: center;
+    text-align: center;
+    flex-shrink: 0;
+    box-shadow: inset 0 0 0 1px rgba($white, 0.06);
   }
 
   &__logo-img {

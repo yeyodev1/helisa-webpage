@@ -20,6 +20,12 @@ const routes: Array<RouteRecordRaw> = [
     meta: { title: 'Proyectos | HELISA' },
   },
   {
+    path: '/proyectos/:slug',
+    name: 'ProjectDetail',
+    component: () => import('../views/ProjectDetailView.vue'),
+    meta: { title: 'Detalle de proyecto | HELISA' },
+  },
+  {
     path: '/nosotros',
     name: 'About',
     component: () => import('../views/AboutView.vue'),
