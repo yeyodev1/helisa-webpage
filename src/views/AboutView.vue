@@ -16,10 +16,15 @@ const values = [
 ]
 
 const timeline = [
-  { year: '2003', title: 'Origen', desc: 'Nacimos con la visión de llevar agua tratada, segura y confiable a hogares e industrias del Ecuador.', image: 'https://res.cloudinary.com/bmtcnrkr/image/upload/v1783372958/helisa/projects/edificio-helisa.jpg' },
-  { year: '2010', title: 'Expansión', desc: 'Ampliamos nuestra cobertura nacional con soporte técnico y comercial en nuevas provincias.', image: '/images/nave-tarimas.jpg' },
-  { year: '2016', title: 'Consolidación técnica', desc: 'Fortalecimos soluciones de ozono, UV y ósmosis inversa para proyectos de mayor exigencia.', image: '/images/patio-naves.webp' },
-  { year: '2026', title: 'Nueva etapa', desc: 'Evolucionamos con una operación más visible, ágil y enfocada en experiencia de cliente.', image: 'https://res.cloudinary.com/bmtcnrkr/image/upload/v1783372899/helisa/projects/imagen-agua.jpg' },
+  { year: '2003', title: 'Fundación de HELISA', desc: 'Apertura de nuestro primer local en Guayaquil, iniciando operaciones con la comercialización de equipos de tratamiento de agua y limpieza.', image: 'https://res.cloudinary.com/bmtcnrkr/image/upload/v1783372958/helisa/projects/edificio-helisa.jpg' },
+  { year: '2004', title: 'Primer gran éxito', desc: 'Participación destacada en una feria internacional. El respaldo familiar y las ventas récord impulsaron de forma decisiva el posicionamiento de la marca.', image: '/images/nave-tarimas.jpg' },
+  { year: '2005', title: 'Crecimiento continuo', desc: 'Gracias a nuestra mayor participación en el mercado, nos trasladamos a unas instalaciones más amplias en la Av. de las Américas para atender la creciente demanda.', image: '/images/patio-naves.webp' },
+  { year: '2008', title: 'Incursión industrial', desc: 'Ingresamos con fuerza al exigente sector industrial, respaldando nuestros procesos con la capacitación técnica y constante de todo el personal.', image: 'https://res.cloudinary.com/bmtcnrkr/image/upload/v1783372899/helisa/projects/imagen-agua.jpg' },
+  { year: '2013', title: 'Sede matriz propia', desc: 'Inauguración de nuestro edificio principal en la Av. Francisco de Orellana (Guayaquil), un hito que consolidó nuestra presencia comercial a nivel nacional.', image: 'https://res.cloudinary.com/bmtcnrkr/image/upload/v1783372958/helisa/projects/edificio-helisa.jpg' },
+  { year: '2017', title: 'Especialización estratégica', desc: 'Transición del modelo de negocio para enfocarnos al 100% en el desarrollo e instalación de tecnologías avanzadas en purificación de agua y aire.', image: 'https://res.cloudinary.com/bmtcnrkr/image/upload/v1783372899/helisa/projects/imagen-agua.jpg' },
+  { year: '2021', title: 'Estándares de calidad', desc: 'Iniciamos el riguroso proceso de implementación de la normativa internacional ISO 9001:2015, reafirmando nuestro compromiso con la excelencia.', image: '/images/nave-tarimas.jpg' },
+  { year: '2024', title: 'Expansión operativa', desc: 'Adquisición de nuestra Planta de Producción en el Parque Industrial Inmaconsa, fortaleciendo nuestra capacidad logística y de fabricación.', image: '/images/patio-naves.webp' },
+  { year: 'Actualidad', title: 'Pensando en su bienestar', desc: 'Continuamos innovando y mejorando nuestros procesos cada día, brindando la mejor atención y tecnología enfocados siempre en la salud y satisfacción de nuestros clientes.', image: 'https://res.cloudinary.com/bmtcnrkr/image/upload/v1783372899/helisa/projects/imagen-agua.jpg' },
 ]
 
 onMounted(() => {
