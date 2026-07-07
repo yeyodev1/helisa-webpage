@@ -2,7 +2,6 @@
 import { computed, onMounted, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { getProjectBySlug } from '@/data/projects'
-import { cloudinaryVariant } from '@/utils/cloudinary'
 
 const route = useRoute()
 const router = useRouter()
@@ -13,18 +12,10 @@ const mediaImages = computed(() => {
   const current = project.value
   if (!current) return []
 
-  const baseImages = [current.image, ...current.gallery].filter(Boolean)
-  const variants = baseImages.flatMap((url) => [
-    url,
-    cloudinaryVariant(url, 'c_fill,w_1400,h_980,g_auto'),
-    cloudinaryVariant(url, 'c_fill,w_900,h_900,g_auto'),
-  ])
-
-  return Array.from(new Set(variants))
+  return Array.from(new Set([current.image, ...current.gallery].filter(Boolean)))
 })
 
 const heroImage = computed(() => mediaImages.value[0] ?? '')
-const sideImages = computed(() => mediaImages.value.slice(1, 4))
 
 const setTitle = () => {
   document.title = project.value ? `${project.value.title} | HELISA` : 'Proyecto | HELISA'
@@ -37,97 +28,92 @@ onMounted(setTitle)
 <template>
   <main class="project-detail">
     <template v-if="project">
-      <section class="project-detail__hero section-padding">
-        <div class="container project-detail__back-row">
-          <button type="button" class="project-detail__back" @click="router.push('/proyectos')">
-            <i class="fa-solid fa-arrow-left"></i>
-            Volver a proyectos
-          </button>
-        </div>
-
-        <div class="container project-detail__hero-shell">
-          <div class="project-detail__media">
-            <div class="project-detail__media-main">
-              <img :src="heroImage" :alt="project.title" class="project-detail__image" />
-              <div class="project-detail__media-overlay">
-                <span class="project-detail__eyebrow">{{ project.category }}</span>
-                <h1 class="project-detail__title">{{ project.title }}</h1>
-                <p class="project-detail__subtitle">{{ project.location }}</p>
-              </div>
-            </div>
-
-            <div class="project-detail__media-stack">
-              <img v-for="image in sideImages" :key="image" :src="image" :alt="project.title" class="project-detail__stack-image" />
-            </div>
-          </div>
-
-          <aside class="project-detail__panel">
-            <span class="section-label">Ficha técnica</span>
-            <p class="project-detail__description">{{ project.description }}</p>
-
-            <div class="project-detail__chips">
-              <span class="project-detail__chip">{{ project.category }}</span>
-              <span v-if="project.location" class="project-detail__chip">{{ project.location }}</span>
-              <span class="project-detail__chip">{{ project.gallery.length }} imagen(es)</span>
-            </div>
-
-            <div class="project-detail__highlights">
-              <article v-for="item in project.highlights" :key="item" class="project-detail__highlight">
-                <i class="fa-solid fa-circle-check"></i>
-                <span>{{ item }}</span>
-              </article>
-            </div>
-
-            <div class="project-detail__actions">
-              <button type="button" class="btn btn--primary" @click="router.push('/calificar')">
-                Solicitar información
-                <i class="fa-solid fa-arrow-right"></i>
-              </button>
-              <button type="button" class="btn btn--outline" @click="router.push('/proyectos')">Ver más proyectos</button>
-            </div>
-          </aside>
-        </div>
+      
+      <!-- Back Button Section -->
+      <section class="project-detail__top">
+        <button type="button" class="project-detail__back" aria-label="Volver atrás" title="Volver" @click="router.back()">
+          <i class="fa-solid fa-arrow-left"></i>
+        </button>
       </section>
 
-      <section class="project-detail__gallery section-padding">
-        <div class="container">
-          <div class="section-header">
-            <span class="section-label">Galería</span>
-            <h2 class="section-title">Más vistas del proyecto</h2>
-          </div>
-
-          <div class="project-detail__gallery-grid">
-            <figure v-for="image in mediaImages.slice(0, 6)" :key="image" class="project-detail__gallery-item">
-              <img :src="image" :alt="project.title" class="project-detail__gallery-image" />
-            </figure>
-          </div>
+      <!-- Hero & Info Section -->
+      <section class="project-detail__hero">
+        <div class="project-detail__hero-content">
+          <span class="project-detail__eyebrow">{{ project.category }}</span>
+          <h1 class="project-detail__title">{{ project.title }}</h1>
+          <p class="project-detail__subtitle">{{ project.location }}</p>
         </div>
-      </section>
 
-      <section class="project-detail__related section-padding">
-        <div class="container project-detail__related-shell">
-          <div>
-            <span class="section-label">Solución</span>
-            <h2 class="section-title">Tecnologías relacionadas</h2>
+        <div class="project-detail__main-image-wrapper">
+          <img :src="heroImage" :alt="project.title" class="project-detail__main-image" />
+        </div>
+
+        <div class="project-detail__info-panel">
+          <span class="section-label">Ficha técnica</span>
+          <p class="project-detail__description">{{ project.description }}</p>
+          
+          <div class="project-detail__chips">
+            <span class="project-detail__chip">{{ project.category }}</span>
+            <span v-if="project.location" class="project-detail__chip">{{ project.location }}</span>
+            <span class="project-detail__chip">{{ project.gallery.length }} imagen(es)</span>
           </div>
 
-          <div class="project-detail__related-list">
-            <button
-              v-for="product in project.relatedProducts"
-              :key="product.to"
-              type="button"
-              class="project-detail__related-link"
-              @click="router.push(product.to)"
-            >
-              {{ product.label }}
+          <div class="project-detail__highlights">
+            <article v-for="item in project.highlights" :key="item" class="project-detail__highlight">
+              <i class="fa-solid fa-circle-check"></i>
+              <span>{{ item }}</span>
+            </article>
+          </div>
+
+          <div class="project-detail__actions">
+            <button type="button" class="btn btn--primary" @click="router.push('/calificar')">
+              Solicitar información
+              <i class="fa-solid fa-arrow-right"></i>
+            </button>
+            <button type="button" class="btn btn--outline" @click="router.push('/proyectos')">
+              Ver más proyectos
             </button>
           </div>
         </div>
       </section>
+
+      <!-- Gallery Section -->
+      <section class="project-detail__gallery">
+        <div class="project-detail__section-header">
+          <span class="section-label">Galería</span>
+          <h2 class="section-title">Más vistas del proyecto</h2>
+        </div>
+
+        <div class="project-detail__gallery-grid">
+          <figure v-for="image in mediaImages.slice(0, 6)" :key="image" class="project-detail__gallery-item">
+            <img :src="image" :alt="project.title" class="project-detail__gallery-image" />
+          </figure>
+        </div>
+      </section>
+
+      <!-- Related Section -->
+      <section class="project-detail__related">
+        <div class="project-detail__section-header">
+          <span class="section-label">Solución</span>
+          <h2 class="section-title">Tecnologías relacionadas</h2>
+        </div>
+
+        <div class="project-detail__related-list">
+          <button
+            v-for="product in project.relatedProducts"
+            :key="product.to"
+            type="button"
+            class="project-detail__related-link"
+            @click="router.push(product.to)"
+          >
+            {{ product.label }}
+          </button>
+        </div>
+      </section>
     </template>
 
-    <section v-else class="project-detail__empty section-padding">
-      <div class="container project-detail__empty-card">
+    <section v-else class="project-detail__empty">
+      <div class="project-detail__empty-card">
         <span class="section-label">Proyecto</span>
         <h1 class="section-title">Proyecto no encontrado</h1>
         <p>No encontramos ese proyecto dentro del portafolio disponible.</p>
@@ -146,185 +132,126 @@ onMounted(setTitle)
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
+  text-align: center;
   background:
     radial-gradient(circle at top center, rgba($azul-medio, 0.07), transparent 35%),
     linear-gradient(180deg, $background 0%, rgba($white, 0.82) 100%);
-  text-align: center;
-
-  &__back-row {
-    margin-bottom: 2rem;
+  padding: 6rem 1rem 3rem;
+  
+  &__top {
+    width: 100%;
+    max-width: 1200px;
     display: flex;
-    justify-content: center;
+    justify-content: flex-start;
+    margin-bottom: 2rem;
   }
 
   &__back {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: 0.75rem;
-    padding: 0.85rem 1.5rem;
-    border-radius: 999px;
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    border-radius: 50%;
     border: 1px solid $border;
-    background: rgba($white, 0.9);
+    background: $white;
     color: $primary;
-    font-family: $font-secondary;
-    font-weight: 700;
-    box-shadow: 0 10px 24px rgba($black, 0.05);
+    box-shadow: 0 4px 15px rgba($black, 0.05);
     transition: all 0.3s ease;
+    cursor: pointer;
+    font-size: 1.1rem;
 
     &:hover {
-      background: $white;
       transform: translateY(-2px);
-      box-shadow: 0 15px 30px rgba($black, 0.1);
+      box-shadow: 0 8px 25px rgba($black, 0.1);
+      background: $primary;
+      color: $white;
     }
   }
 
-  &__hero-shell {
+  &__hero {
+    width: 100%;
+    max-width: 1200px;
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 2rem;
-
-    @media (min-width: 1100px) {
-      flex-direction: row;
-      align-items: stretch;
-      text-align: left;
-    }
+    margin-bottom: 4rem;
   }
 
-  &__media {
-    display: flex;
-    flex-direction: column;
-    gap: 1.5rem;
-    width: 100%;
-    
-    @media (min-width: 1100px) {
-      flex: 1.15;
-    }
-  }
-
-  &__media-main {
-    position: relative;
-    overflow: hidden;
-    border-radius: 32px;
-    min-height: 400px;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-end;
-    border: 1px solid $border;
-    background: $white;
-    box-shadow: 0 28px 60px rgba($black, 0.1);
-
-    @media (min-width: 768px) {
-      min-height: 520px;
-    }
-  }
-
-  &__image {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
-
-  &__media-overlay {
-    position: relative;
-    padding: 2rem;
-    background: linear-gradient(to top, rgba($black, 0.85), rgba($black, 0.2) 70%, transparent);
-    color: $white;
+  &__hero-content {
     display: flex;
     flex-direction: column;
     align-items: center;
-
-    @media (min-width: 1100px) {
-      align-items: flex-start;
-    }
+    gap: 0.5rem;
   }
 
   &__eyebrow {
-    display: inline-flex;
     padding: 0.5rem 1rem;
-    border-radius: 999px;
-    background: rgba($white, 0.15);
-    backdrop-filter: blur(16px);
+    border-radius: 99px;
+    background: $primary;
+    color: $white;
     font-family: $font-secondary;
     font-size: 0.75rem;
     font-weight: 700;
-    letter-spacing: 0.15em;
+    letter-spacing: 0.1em;
     text-transform: uppercase;
-    margin-bottom: 1rem;
   }
 
   &__title {
     font-family: $font-display;
-    font-size: clamp(2rem, 5vw, 4.5rem);
+    font-size: clamp(2rem, 5vw, 4rem);
     line-height: 1.1;
-    letter-spacing: -0.02em;
-    margin: 0 0 0.5rem;
+    color: $foreground;
+    margin: 0;
   }
 
   &__subtitle {
-    margin: 0;
     font-family: $font-secondary;
-    font-size: 1rem;
-    color: rgba($white, 0.9);
+    font-size: 1.1rem;
+    color: $foreground-muted;
+    margin: 0;
   }
 
-  &__media-stack {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
+  &__main-image-wrapper {
     width: 100%;
-
-    @media (min-width: 640px) {
-      flex-direction: row;
-      justify-content: center;
-    }
-  }
-
-  &__stack-image {
-    width: 100%;
-    aspect-ratio: 4 / 3;
-    object-fit: cover;
+    max-width: 900px;
+    overflow: hidden;
     border-radius: 24px;
-    border: 1px solid $border;
-    background: $white;
-    box-shadow: 0 18px 40px rgba($black, 0.08);
-
-    @media (min-width: 640px) {
-      flex: 1;
-    }
+    box-shadow: 0 20px 40px rgba($black, 0.1);
+    display: flex;
+    justify-content: center;
   }
 
-  &__panel {
+  &__main-image {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 16/9;
+    object-fit: cover;
+    display: block;
+  }
+
+  &__info-panel {
+    width: 100%;
+    max-width: 800px;
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 1.5rem;
     padding: 2rem;
-    border-radius: 30px;
+    border-radius: 24px;
+    background: rgba($white, 0.9);
     border: 1px solid $border;
-    background: rgba($white, 0.95);
-    box-shadow: 0 22px 45px rgba($black, 0.06);
-    width: 100%;
-
-    @media (min-width: 1100px) {
-      flex: 0.85;
-      position: sticky;
-      top: 120px;
-      align-items: flex-start;
-      text-align: left;
-    }
+    box-shadow: 0 10px 30px rgba($black, 0.05);
   }
 
   &__description {
     font-family: $font-secondary;
-    font-size: 1.05rem;
+    font-size: 1.1rem;
     line-height: 1.8;
     color: $foreground-muted;
-    margin: 0;
   }
 
   &__chips {
@@ -332,15 +259,11 @@ onMounted(setTitle)
     flex-wrap: wrap;
     justify-content: center;
     gap: 0.75rem;
-
-    @media (min-width: 1100px) {
-      justify-content: flex-start;
-    }
   }
 
   &__chip {
-    padding: 0.6rem 1rem;
-    border-radius: 999px;
+    padding: 0.5rem 1rem;
+    border-radius: 99px;
     border: 1px solid $border;
     background: $white;
     color: $primary;
@@ -352,6 +275,7 @@ onMounted(setTitle)
   &__highlights {
     display: flex;
     flex-direction: column;
+    align-items: center;
     gap: 0.75rem;
     width: 100%;
   }
@@ -361,61 +285,161 @@ onMounted(setTitle)
     align-items: center;
     justify-content: center;
     gap: 0.75rem;
-    padding: 1rem 1.25rem;
-    border-radius: 18px;
-    border: 1px solid rgba($border, 0.9);
-    background: rgba($gris-fondo, 0.7);
-    font-family: $font-secondary;
+    padding: 0.75rem 1.5rem;
+    border-radius: 12px;
+    background: rgba($gris-fondo, 0.5);
+    border: 1px solid rgba($border, 0.5);
     color: $foreground;
-    text-align: left;
-
-    @media (min-width: 1100px) {
-      justify-content: flex-start;
-    }
+    font-family: $font-secondary;
+    width: 100%;
+    max-width: 400px;
 
     i {
-      color: $azul-medio;
-      font-size: 1.1rem;
+      color: $primary;
+      font-size: 1.2rem;
     }
   }
 
-  &__actions,
-  &__related-list {
+  &__actions {
     display: flex;
     flex-direction: column;
+    align-items: center;
     gap: 1rem;
     width: 100%;
+    margin-top: 1rem;
 
     @media (min-width: 640px) {
       flex-direction: row;
       justify-content: center;
     }
-
-    @media (min-width: 1100px) {
-      justify-content: flex-start;
-    }
   }
 
   .btn {
-    width: 100%;
+    display: inline-flex;
+    align-items: center;
     justify-content: center;
+    gap: 0.5rem;
+    padding: 0.85rem 2rem;
+    border-radius: 99px;
+    font-family: $font-secondary;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: none;
+    text-decoration: none;
 
-    @media (min-width: 640px) {
-      width: auto;
+    &--primary {
+      background: $primary;
+      color: $white;
+      &:hover {
+        background: darken($primary, 10%);
+        transform: translateY(-2px);
+      }
     }
+
+    &--outline {
+      background: transparent;
+      border: 2px solid $primary;
+      color: $primary;
+      &:hover {
+        background: $primary;
+        color: $white;
+        transform: translateY(-2px);
+      }
+    }
+  }
+
+  &__section-header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 2rem;
+  }
+
+  .section-label {
+    font-family: $font-secondary;
+    font-weight: 700;
+    color: $primary;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    font-size: 0.85rem;
+  }
+
+  .section-title {
+    font-family: $font-display;
+    font-size: clamp(1.8rem, 4vw, 2.5rem);
+    color: $foreground;
+    margin: 0;
   }
 
   &__gallery {
     width: 100%;
+    max-width: 1200px;
     display: flex;
     flex-direction: column;
     align-items: center;
+    margin-bottom: 4rem;
   }
 
   &__gallery-grid {
     display: flex;
     flex-direction: column;
+    align-items: center;
     gap: 1.5rem;
+    width: 100%;
+
+    @media (min-width: 768px) {
+      flex-direction: row;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+  }
+
+  &__gallery-item {
+    width: 100%;
+    max-width: 500px;
+    margin: 0;
+    display: flex;
+    justify-content: center;
+
+    @media (min-width: 768px) {
+      width: calc(50% - 1rem);
+    }
+    
+    @media (min-width: 1024px) {
+      width: calc(33.333% - 1rem);
+    }
+  }
+
+  &__gallery-image {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 4/3;
+    object-fit: cover;
+    border-radius: 20px;
+    box-shadow: 0 10px 20px rgba($black, 0.08);
+  }
+
+  &__related {
+    width: 100%;
+    max-width: 1000px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 3rem 1.5rem;
+    background: rgba($white, 0.8);
+    border: 1px solid $border;
+    border-radius: 24px;
+    box-shadow: 0 15px 30px rgba($black, 0.05);
+    margin-bottom: 2rem;
+  }
+
+  &__related-list {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
     width: 100%;
 
     @media (min-width: 640px) {
@@ -425,82 +449,27 @@ onMounted(setTitle)
     }
   }
 
-  &__gallery-item {
-    margin: 0;
-    width: 100%;
-
-    @media (min-width: 640px) {
-      width: calc(50% - 0.75rem);
-    }
-
-    @media (min-width: 1100px) {
-      width: calc(33.333% - 1rem);
-    }
-  }
-
-  &__gallery-image {
-    width: 100%;
-    display: block;
-    aspect-ratio: 4 / 3;
-    object-fit: cover;
-    border-radius: 24px;
-    border: 1px solid $border;
-    background: $white;
-    box-shadow: 0 18px 36px rgba($black, 0.06);
-    transition: transform 0.3s ease;
-
-    &:hover {
-      transform: scale(1.02);
-    }
-  }
-
-  &__related {
-    width: 100%;
-    display: flex;
-    justify-content: center;
-  }
-
-  &__related-shell {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 2rem;
-    padding: 2.5rem 2rem;
-    border-radius: 28px;
-    border: 1px solid $border;
-    background: rgba($white, 0.95);
-    box-shadow: 0 18px 40px rgba($black, 0.05);
-    width: 100%;
-
-    @media (min-width: 900px) {
-      flex-direction: row;
-      justify-content: space-between;
-      text-align: left;
-    }
-  }
-
   &__related-link {
     display: inline-flex;
     justify-content: center;
     align-items: center;
-    padding: 1rem 1.5rem;
-    border-radius: 999px;
-    border: 1px solid $border;
+    padding: 1rem 2rem;
+    border-radius: 99px;
     background: $white;
+    border: 1px solid $border;
     color: $primary;
     font-family: $font-secondary;
     font-weight: 700;
-    box-shadow: 0 10px 24px rgba($black, 0.04);
+    cursor: pointer;
+    box-shadow: 0 5px 15px rgba($black, 0.05);
     transition: all 0.3s ease;
     width: 100%;
-
-    @media (min-width: 640px) {
-      width: auto;
-    }
+    max-width: 300px;
 
     &:hover {
-      background: rgba($primary, 0.05);
-      transform: translateY(-2px);
+      background: $primary;
+      color: $white;
+      transform: translateY(-3px);
     }
   }
 
@@ -508,21 +477,24 @@ onMounted(setTitle)
     width: 100%;
     display: flex;
     justify-content: center;
+    align-items: center;
+    min-height: 50vh;
   }
 
   &__empty-card {
     display: flex;
     flex-direction: column;
     align-items: center;
+    justify-content: center;
     text-align: center;
     gap: 1rem;
-    max-width: 680px;
     padding: 3rem 2rem;
-    border-radius: 28px;
+    background: $white;
+    border-radius: 24px;
     border: 1px solid $border;
-    background: rgba($white, 0.95);
-    box-shadow: 0 18px 40px rgba($black, 0.06);
+    box-shadow: 0 20px 40px rgba($black, 0.05);
     width: 100%;
+    max-width: 600px;
   }
 }
 </style>
