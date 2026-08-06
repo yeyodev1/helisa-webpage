@@ -1,17 +1,62 @@
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue'
+import { computed, ref, watch, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { findProduct, productLines } from '@/data/products'
+import { productsService } from '@/services/productsService'
+import { categoriesService } from '@/services/categoriesService'
+import type { CatalogCategory, CatalogProduct } from '@/data/productTypes'
 
 const route = useRoute()
 const router = useRouter()
 const selectedImage = ref('')
 
-const result = computed(() => findProduct(String(route.params.category), String(route.params.product)))
-const category = computed(() => result.value?.category)
-const product = computed(() => result.value?.product)
+const dynamicProduct = ref<CatalogProduct | null>(null)
+const dynamicCategory = ref<CatalogCategory | null>(null)
+
+const staticResult = computed(() => findProduct(String(route.params.category), String(route.params.product)))
+
+const category = computed(() => dynamicCategory.value || staticResult.value?.category)
+const product = computed(() => dynamicProduct.value || staticResult.value?.product)
 const gallery = computed(() => Array.from(new Set(product.value?.gallery?.length ? product.value.gallery : [product.value?.image ?? ''])).filter(Boolean))
 const lineName = computed(() => productLines.find((line) => line.id === category.value?.line)?.name)
+
+const fetchProductFromApi = async () => {
+  try {
+    const catSlug = String(route.params.category)
+    const prodSlug = String(route.params.product)
+    const p = await productsService.getProductBySlug(catSlug, prodSlug)
+    if (p) {
+      dynamicProduct.value = {
+        slug: p.slug,
+        name: p.name,
+        image: p.image,
+        gallery: p.gallery,
+        description: p.description,
+        availability: p.availability,
+        features: p.features,
+        specs: p.specs,
+      }
+      const c = await categoriesService.getCategoryBySlug(catSlug)
+      if (c) {
+        dynamicCategory.value = {
+          slug: c.slug,
+          line: c.line,
+          name: c.name,
+          sourceUrl: c.sourceUrl || '',
+          description: c.description,
+          benefits: c.benefits,
+          products: [],
+        }
+      }
+    }
+  } catch (e) {
+    // Fallback to static result
+  }
+}
+
+onMounted(() => {
+  fetchProductFromApi()
+})
 
 watch(product, (value) => {
   if (!value) {

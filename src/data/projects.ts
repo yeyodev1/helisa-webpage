@@ -1435,4 +1435,6 @@ export const projectCategories = [
   "Tratamiento Hogar"
 ];
 
-export const getProjectBySlug = (slug: string) => projects.find((project) => project.slug === slug);
+export function getProjectBySlug(slug: string) {
+  return projects.find((project) => project.slug === slug)
+}

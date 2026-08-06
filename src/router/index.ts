@@ -43,6 +43,18 @@ const routes: Array<RouteRecordRaw> = [
     component: () => import('../views/RatingView.vue'),
     meta: { title: 'Calificar y CRM | HELISA' },
   },
+  {
+    path: '/login',
+    name: 'Login',
+    component: () => import('../views/LoginView.vue'),
+    meta: { title: 'Iniciar Sesión | HELISA' },
+  },
+  {
+    path: '/admin',
+    name: 'Admin',
+    component: () => import('../views/AdminView.vue'),
+    meta: { title: 'Panel de Administración | HELISA', requiresAuth: true },
+  },
 ]
 
 const router = createRouter({
@@ -62,7 +74,7 @@ router.beforeEach((to, _from, next) => {
   }
 
   if (to.path === '/login' && hasToken) {
-    return next({ path: '/', replace: true })
+    return next({ path: '/admin', replace: true })
   }
 
   next()

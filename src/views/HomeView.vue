@@ -3,7 +3,7 @@ import { onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
-import { getProjectBySlug } from '@/data/projects'
+import { projects } from '@/data/projects'
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -11,6 +11,8 @@ const router = useRouter()
 const triggers: ScrollTrigger[] = []
 
 const navigate = (path: string) => router.push(path)
+
+const getProjectBySlug = (slug: string) => projects.find((project) => project.slug === slug)
 
 const stats = [
   { value: '20+', label: 'Años de experiencia' },

@@ -1,12 +1,43 @@
 <script setup lang="ts">
-import { computed, onMounted, watch } from 'vue'
+import { computed, ref, onMounted, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { getProjectBySlug } from '@/data/projects'
+import { projects as staticProjects, type Project } from '@/data/projects'
+import { projectsService } from '@/services/projectsService'
 
 const route = useRoute()
 const router = useRouter()
 
-const project = computed(() => getProjectBySlug(String(route.params.slug || '')))
+const dynamicProject = ref<Project | null>(null)
+
+const staticProject = computed(() => staticProjects.find((p) => p.slug === String(route.params.slug || '')))
+const project = computed(() => dynamicProject.value || staticProject.value)
+
+const fetchDynamicProject = async () => {
+  try {
+    const slug = String(route.params.slug || '')
+    const p = await projectsService.getProjectBySlug(slug)
+    if (p) {
+      dynamicProject.value = {
+        id: 1,
+        slug: p.slug,
+        title: p.title,
+        category: p.category,
+        location: p.location,
+        description: p.description,
+        image: p.image,
+        gallery: p.gallery || [p.image],
+        highlights: p.highlights || [],
+        relatedProducts: p.relatedProducts || [],
+      }
+    }
+  } catch (e) {
+    // Fallback to staticProject
+  }
+}
+
+onMounted(() => {
+  fetchDynamicProject()
+})
 
 const mediaImages = computed(() => {
   const current = project.value

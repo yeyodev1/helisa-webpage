@@ -41,6 +41,7 @@ const navLinks = [
   { label: 'Proyectos', to: '/proyectos' },
   { label: 'Nosotros', to: '/nosotros' },
   { label: 'Contacto', to: '/calificar' },
+  { label: 'Admin', to: '/admin' },
 ]
 
 const isActive = (path: string) => route.path === path

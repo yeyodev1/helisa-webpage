@@ -1,7 +1,9 @@
 <script setup lang="ts">
 import { computed, nextTick, onMounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { productCategories, productLines, type ProductLine } from '@/data/products'
+import { productCategories as staticCategories, productLines, type ProductLine, type CatalogCategory } from '@/data/products'
+import { categoriesService } from '@/services/categoriesService'
+import { productsService } from '@/services/productsService'
 
 const route = useRoute()
 const router = useRouter()
@@ -9,8 +11,49 @@ const activeLine = ref<ProductLine>('industrial')
 const activeCategorySlug = ref('')
 const search = ref('')
 
+const dynamicCategories = ref<CatalogCategory[]>([])
+
+const allCategories = computed<CatalogCategory[]>(() => {
+  return dynamicCategories.value.length > 0 ? dynamicCategories.value : staticCategories
+})
+
+const fetchDynamicData = async () => {
+  try {
+    const [cats, prods] = await Promise.all([
+      categoriesService.getCategories(),
+      productsService.getProducts(),
+    ])
+
+    if (cats.length > 0) {
+      const merged: CatalogCategory[] = cats.map((c) => ({
+        slug: c.slug,
+        line: c.line,
+        name: c.name,
+        sourceUrl: c.sourceUrl || '',
+        description: c.description,
+        benefits: c.benefits,
+        products: prods
+          .filter((p) => p.categorySlug === c.slug)
+          .map((p) => ({
+            slug: p.slug,
+            name: p.name,
+            image: p.image,
+            gallery: p.gallery,
+            description: p.description,
+            availability: p.availability,
+            features: p.features,
+            specs: p.specs,
+          })),
+      }))
+      dynamicCategories.value = merged
+    }
+  } catch (e) {
+    // Fallback to staticCategories automatically
+  }
+}
+
 const lineCategories = computed(() =>
-  productCategories.filter((category) => category.line === activeLine.value),
+  allCategories.value.filter((category) => category.line === activeLine.value),
 )
 
 const activeCategory = computed(() =>
@@ -34,12 +77,12 @@ const visibleProducts = computed(() => {
 })
 
 const totalProducts = computed(() =>
-  productCategories.reduce((total, category) => total + category.products.length, 0),
+  allCategories.value.reduce((total, category) => total + category.products.length, 0),
 )
 
 const selectLine = (line: ProductLine) => {
   activeLine.value = line
-  activeCategorySlug.value = productCategories.find((category) => category.line === line)?.slug ?? ''
+  activeCategorySlug.value = allCategories.value.find((category) => category.line === line)?.slug ?? ''
   search.value = ''
 }
 
@@ -53,7 +96,7 @@ const selectCategory = async (slug: string) => {
 
 const setCategoryFromHash = () => {
   const slug = route.hash.slice(1)
-  const category = productCategories.find((item) => item.slug === slug)
+  const category = allCategories.value.find((item) => item.slug === slug)
   if (!category) {
     activeCategorySlug.value = lineCategories.value[0]?.slug ?? ''
     return
@@ -64,7 +107,10 @@ const setCategoryFromHash = () => {
 }
 
 watch(() => route.hash, setCategoryFromHash)
-onMounted(setCategoryFromHash)
+onMounted(async () => {
+  await fetchDynamicData()
+  setCategoryFromHash()
+})
 </script>
 
 <template>
@@ -80,7 +126,7 @@ onMounted(setCategoryFromHash)
           de agua y aire.
         </p>
         <div class="catalog-hero__stats" aria-label="Resumen del catálogo">
-          <div><strong>{{ productCategories.length }}</strong><span>Categorías</span></div>
+          <div><strong>{{ allCategories.length }}</strong><span>Categorías</span></div>
           <div><strong>{{ totalProducts }}</strong><span>Productos y modelos</span></div>
           <div><strong>3</strong><span>Líneas especializadas</span></div>
         </div>
@@ -100,7 +146,7 @@ onMounted(setCategoryFromHash)
             @click="selectLine(line.id)"
           >
             <span>{{ line.name }}</span>
-            <small>{{ productCategories.filter((category) => category.line === line.id).length }} categorías</small>
+            <small>{{ allCategories.filter((category: CatalogCategory) => category.line === line.id).length }} categorías</small>
           </button>
         </div>
 

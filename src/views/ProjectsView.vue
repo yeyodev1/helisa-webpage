@@ -3,7 +3,8 @@ import { ref, onMounted, onUnmounted, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
-import { projectCategories, projects } from '@/data/projects'
+import { projectCategories, projects as staticProjects, type Project } from '@/data/projects'
+import { projectsService } from '@/services/projectsService'
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -14,8 +15,36 @@ const activeCategory = ref('Todos')
 const searchQuery = ref('')
 const triggers: ScrollTrigger[] = []
 
+const dynamicProjects = ref<Project[]>([])
+
+const allProjectsList = computed(() => {
+  return dynamicProjects.value.length > 0 ? dynamicProjects.value : staticProjects
+})
+
+const fetchDynamicProjects = async () => {
+  try {
+    const list = await projectsService.getProjects() // Returns active projects
+    if (list && list.length > 0) {
+      dynamicProjects.value = list.map((p, index) => ({
+        id: index + 1,
+        slug: p.slug,
+        title: p.title,
+        category: p.category,
+        location: p.location,
+        description: p.description,
+        image: p.image,
+        gallery: p.gallery || [p.image],
+        highlights: p.highlights || [],
+        relatedProducts: p.relatedProducts || [],
+      }))
+    }
+  } catch (e) {
+    // Fallback to staticProjects
+  }
+}
+
 const filteredProjects = computed(() => {
-  let result = projects
+  let result = allProjectsList.value
   if (activeCategory.value !== 'Todos') {
     result = result.filter((p) => p.category === activeCategory.value)
   }
@@ -40,7 +69,8 @@ const setCategory = (cat: string) => {
   )
 }
 
-onMounted(() => {
+onMounted(async () => {
+  await fetchDynamicProjects()
   const tl = gsap.timeline()
   tl.from('.hero-badge', { y: 20, opacity: 0, duration: 0.8, ease: 'power3.out' })
     .from('.hero-title span > span', { y: 100, opacity: 0, duration: 1, stagger: 0.1, ease: 'power4.out', clipPath: 'inset(0% 0% 100% 0%)' }, '-=0.5')

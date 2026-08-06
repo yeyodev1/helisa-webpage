@@ -1,9 +1,27 @@
 <script setup lang="ts">
-import { RouterView } from 'vue-router'
+import { onMounted, onUnmounted } from 'vue'
+import { RouterView, useRouter } from 'vue-router'
 import NavBar from '@/components/NavBar.vue'
 import FooterSection from '@/components/FooterSection.vue'
 import ScrollToTop from '@/components/ScrollToTop.vue'
 import AppPreloader from '@/components/AppPreloader.vue'
+import { useUserStore } from '@/stores/user'
+
+const router = useRouter()
+const userStore = useUserStore()
+
+const handleTokenExpired = () => {
+  userStore.clear()
+  router.push('/login')
+}
+
+onMounted(() => {
+  window.addEventListener('auth:token-expired', handleTokenExpired)
+})
+
+onUnmounted(() => {
+  window.removeEventListener('auth:token-expired', handleTokenExpired)
+})
 </script>
 
 <template>
