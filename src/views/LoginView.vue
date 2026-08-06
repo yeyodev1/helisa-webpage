@@ -7,9 +7,8 @@ import { useUserStore } from '@/stores/user'
 const router = useRouter()
 const userStore = useUserStore()
 
-// Default credentials pre-filled for convenience as requested
-const email = ref('dreyes@bakano.ec')
-const password = ref('123456789')
+const email = ref('')
+const password = ref('')
 const loading = ref(false)
 const errorMessage = ref('')
 
@@ -32,15 +31,10 @@ const handleLogin = async () => {
     })
     await router.push('/admin')
   } catch (err: any) {
-    errorMessage.value = err.message || 'Error al iniciar sesión. Revisa que el backend esté corriendo en localhost:8100.'
+    errorMessage.value = err.message || 'Error al iniciar sesión. Revisa tus credenciales.'
   } finally {
     loading.value = false
   }
-}
-
-const fillDefaultCredentials = () => {
-  email.value = 'dreyes@bakano.ec'
-  password.value = '123456789'
 }
 </script>
 
@@ -58,17 +52,6 @@ const fillDefaultCredentials = () => {
           Ingresa tus credenciales para gestionar productos, categorías y usuarios de HELISA.
         </p>
 
-        <!-- Default Credentials Quick Action -->
-        <div class="demo-box" @click="fillDefaultCredentials">
-          <div class="demo-box__info">
-            <span class="demo-box__label">Usuario por defecto:</span>
-            <span class="demo-box__val">dreyes@bakano.ec</span>
-          </div>
-          <button type="button" class="demo-box__btn">
-            <i class="fa-solid fa-wand-magic-sparkles" /> Usar
-          </button>
-        </div>
-
         <form class="login-form" @submit.prevent="handleLogin">
           <div v-if="errorMessage" class="alert-box">
             <i class="fa-solid fa-circle-exclamation" />
@@ -83,7 +66,7 @@ const fillDefaultCredentials = () => {
                 id="login-email"
                 v-model="email"
                 type="email"
-                placeholder="dreyes@bakano.ec"
+                placeholder="ejemplo@bakano.ec"
                 required
               />
             </div>
@@ -97,7 +80,7 @@ const fillDefaultCredentials = () => {
                 id="login-password"
                 v-model="password"
                 type="password"
-                placeholder="123456789"
+                placeholder="••••••••"
                 required
               />
             </div>
@@ -177,61 +160,6 @@ const fillDefaultCredentials = () => {
     color: #64748b;
     margin: 0 0 24px 0;
     line-height: 1.5;
-  }
-}
-
-.demo-box {
-  width: 100%;
-  background: #f1f5f9;
-  border: 1px dashed #cbd5e1;
-  border-radius: 12px;
-  padding: 12px 16px;
-  margin-bottom: 24px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  box-sizing: border-box;
-
-  &:hover {
-    background: #e2e8f0;
-    border-color: #0052cc;
-  }
-
-  &__info {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    font-size: 0.82rem;
-  }
-
-  &__label {
-    color: #64748b;
-    font-size: 0.75rem;
-  }
-
-  &__val {
-    color: #0f172a;
-    font-weight: 600;
-  }
-
-  &__btn {
-    background: #0052cc;
-    color: #ffffff;
-    border: none;
-    padding: 6px 12px;
-    border-radius: 6px;
-    font-size: 0.78rem;
-    font-weight: 600;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 4px;
-
-    &:hover {
-      background: #003e99;
-    }
   }
 }
 
