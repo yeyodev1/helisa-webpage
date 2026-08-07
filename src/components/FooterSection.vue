@@ -87,7 +87,12 @@ const socials = [
             <i :class="['fa-brands', social.icon]"></i>
           </a>
         </div>
-        <span class="footer__copyright">&copy; {{ year }} HELISA. Todos los derechos reservados.</span>
+        <div class="footer__copyright-group">
+          <span class="footer__copyright">&copy; {{ year }} HELISA. Todos los derechos reservados.</span>
+          <div class="footer__credits">
+            Hecho por <a href="https://www.instagram.com/yeyo.dev?igsh=MTlqM2lmNGRoN3RnMw==" target="_blank" rel="noopener noreferrer">yeyo</a> y <a href="https://www.instagram.com/heyitsandres_dev?igsh=MXhnMGpxd2w4NGxxag==" target="_blank" rel="noopener noreferrer">Kankox</a>
+          </div>
+        </div>
       </div>
     </div>
   </footer>
@@ -259,6 +264,37 @@ const socials = [
     font-family: $font-secondary;
     font-size: 0.8rem;
     color: rgba($white, 0.4);
+  }
+
+  &__copyright-group {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.35rem;
+    text-align: center;
+
+    @media (min-width: 640px) {
+      align-items: flex-end;
+      text-align: right;
+    }
+  }
+
+  &__credits {
+    font-family: $font-secondary;
+    font-size: 0.75rem;
+    color: rgba($white, 0.45);
+
+    a {
+      color: rgba($white, 0.7);
+      text-decoration: none;
+      font-weight: 500;
+      transition: color 0.2s ease;
+
+      &:hover {
+        color: $white;
+        text-decoration: underline;
+      }
+    }
   }
 }
 </style>

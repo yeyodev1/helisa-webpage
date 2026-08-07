@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { productsService, type ApiProduct } from '@/services/productsService'
 import { categoriesService, type ApiCategory } from '@/services/categoriesService'
@@ -28,6 +28,21 @@ const pendingGalleryPreviews = ref<{ file: File; url: string }[]>([])
 
 // Data lists
 const products = ref<ApiProduct[]>([])
+const productSearchQuery = ref('')
+
+const filteredProducts = computed(() => {
+  if (!productSearchQuery.value.trim()) return products.value
+  const query = productSearchQuery.value.toLowerCase().trim()
+  return products.value.filter(p => {
+    return (
+      p.name.toLowerCase().includes(query) ||
+      p.slug.toLowerCase().includes(query) ||
+      p.line.toLowerCase().includes(query) ||
+      p.categorySlug.toLowerCase().includes(query) ||
+      (p.description && p.description.toLowerCase().includes(query))
+    )
+  })
+})
 const categories = ref<ApiCategory[]>([])
 const projectsList = ref<ApiProject[]>([])
 const users = ref<ApiUser[]>([])
@@ -37,6 +52,12 @@ const showProductModal = ref(false)
 const showCategoryModal = ref(false)
 const showProjectModal = ref(false)
 const showUserModal = ref(false)
+const showConfirmDeleteModal = ref(false)
+const deleteTarget = ref<{
+  type: 'product' | 'category' | 'project' | 'user'
+  idOrSlug: string
+  name: string
+} | null>(null)
 
 // Product Form
 const isEditingProduct = ref(false)
@@ -64,6 +85,24 @@ const productForm = ref<{
   features: [],
   specs: [],
 })
+
+// Filtrar categorías según la línea seleccionada en el formulario de producto
+const filteredCategoriesForProduct = computed(() => {
+  return categories.value.filter(c => c.line === productForm.value.line)
+})
+
+// Observar cambios en la línea para pre-seleccionar una categoría válida de esa línea
+watch(
+  () => productForm.value.line,
+  (newLine) => {
+    // Si la categoría actualmente seleccionada no pertenece a la nueva línea seleccionada
+    const currentCatObj = categories.value.find(c => c.slug === productForm.value.categorySlug)
+    if (!currentCatObj || currentCatObj.line !== newLine) {
+      const firstValidCat = categories.value.find(c => c.line === newLine)?.slug || ''
+      productForm.value.categorySlug = firstValidCat
+    }
+  }
+)
 
 const newFeature = ref('')
 const newSpecLabel = ref('')
@@ -310,7 +349,7 @@ const openCreateProduct = () => {
   clearAllPendingPreviews()
   isEditingProduct.value = false
   currentProductId.value = null
-  const firstCat = categories.value[0]?.slug || ''
+  const firstCat = categories.value.find(c => c.line === 'industrial')?.slug || ''
   productForm.value = {
     name: '',
     slug: '',
@@ -392,20 +431,12 @@ const saveProduct = async () => {
   }
 }
 
-const deleteProduct = async (id?: string) => {
-  if (!id) return
-  if (!confirm('¿Estás seguro de eliminar este producto?')) return
-
-  loading.value = true
-  try {
-    await productsService.deleteProduct(id)
-    notify('success', 'Producto eliminado.')
-    await loadData()
-  } catch (err: any) {
-    notify('error', 'Error al eliminar el producto.')
-  } finally {
-    loading.value = false
-  }
+const deleteProduct = (idOrSlug?: string) => {
+  if (!idOrSlug) return
+  const prod = products.value.find(p => p._id === idOrSlug || p.slug === idOrSlug)
+  const name = prod ? prod.name : 'este producto'
+  deleteTarget.value = { type: 'product', idOrSlug, name }
+  showConfirmDeleteModal.value = true
 }
 
 // Category Handlers
@@ -459,20 +490,12 @@ const saveCategory = async () => {
   }
 }
 
-const deleteCategory = async (id?: string) => {
+const deleteCategory = (id?: string) => {
   if (!id) return
-  if (!confirm('¿Estás seguro de eliminar esta categoría?')) return
-
-  loading.value = true
-  try {
-    await categoriesService.deleteCategory(id)
-    notify('success', 'Categoría eliminada.')
-    await loadData()
-  } catch (err: any) {
-    notify('error', 'Error al eliminar la categoría.')
-  } finally {
-    loading.value = false
-  }
+  const cat = categories.value.find(c => c._id === id || c.slug === id)
+  const name = cat ? cat.name : 'esta categoría'
+  deleteTarget.value = { type: 'category', idOrSlug: id, name }
+  showConfirmDeleteModal.value = true
 }
 
 // Project Handlers
@@ -570,20 +593,12 @@ const saveProject = async () => {
   }
 }
 
-const deleteProject = async (id?: string) => {
+const deleteProject = (id?: string) => {
   if (!id) return
-  if (!confirm('¿Estás seguro de eliminar este proyecto?')) return
-
-  loading.value = true
-  try {
-    await projectsService.deleteProject(id)
-    notify('success', 'Proyecto eliminado.')
-    await loadData()
-  } catch (err: any) {
-    notify('error', 'Error al eliminar el proyecto.')
-  } finally {
-    loading.value = false
-  }
+  const proj = projectsList.value.find(p => p._id === id || p.slug === id)
+  const name = proj ? proj.title : 'este proyecto'
+  deleteTarget.value = { type: 'project', idOrSlug: id, name }
+  showConfirmDeleteModal.value = true
 }
 
 // User Handlers
@@ -611,18 +626,44 @@ const saveUser = async () => {
   }
 }
 
-const deleteUser = async (id: string) => {
-  if (!confirm('¿Deseas eliminar este usuario?')) return
+const deleteUser = (id?: string) => {
+  if (!id) return
+  const u = users.value.find(user => user._id === id)
+  const name = u ? u.name : 'este usuario'
+  deleteTarget.value = { type: 'user', idOrSlug: id, name }
+  showConfirmDeleteModal.value = true
+}
 
+const executeDelete = async () => {
+  if (!deleteTarget.value) return
+  const { type, idOrSlug } = deleteTarget.value
+  showConfirmDeleteModal.value = false
+  
   loading.value = true
   try {
-    await usersService.deleteUser(id)
-    notify('success', 'Usuario eliminado.')
+    if (type === 'product') {
+      await productsService.deleteProduct(idOrSlug)
+      products.value = products.value.filter(p => p._id !== idOrSlug && p.slug !== idOrSlug)
+      notify('success', 'Producto eliminado.')
+    } else if (type === 'category') {
+      await categoriesService.deleteCategory(idOrSlug)
+      categories.value = categories.value.filter(c => c._id !== idOrSlug && c.slug !== idOrSlug)
+      notify('success', 'Categoría eliminada.')
+    } else if (type === 'project') {
+      await projectsService.deleteProject(idOrSlug)
+      projectsList.value = projectsList.value.filter(p => p._id !== idOrSlug && p.slug !== idOrSlug)
+      notify('success', 'Proyecto eliminado.')
+    } else if (type === 'user') {
+      await usersService.deleteUser(idOrSlug)
+      users.value = users.value.filter(u => u._id !== idOrSlug)
+      notify('success', 'Usuario eliminado.')
+    }
     await loadData()
   } catch (err: any) {
-    notify('error', 'Error al eliminar usuario.')
+    notify('error', `Error al eliminar el/la ${type === 'product' ? 'producto' : type === 'category' ? 'categoría' : type === 'project' ? 'proyecto' : 'usuario'}.`)
   } finally {
     loading.value = false
+    deleteTarget.value = null
   }
 }
 </script>
@@ -688,7 +729,28 @@ const deleteUser = async (id: string) => {
       <!-- TAB 1: PRODUCTS -->
       <section v-if="activeTab === 'products'" class="tab-panel">
         <div class="tab-panel__top">
-          <h2>Catálogo de Productos ({{ products.length }})</h2>
+          <h2>Catálogo de Productos ({{ filteredProducts.length }} / {{ products.length }})</h2>
+          
+          <!-- Buscador de Productos -->
+          <div class="admin-search-box">
+            <i class="fa-solid fa-magnifying-glass search-icon" />
+            <input 
+              v-model="productSearchQuery" 
+              type="text" 
+              placeholder="Buscar por nombre, slug, línea, categoría..." 
+              aria-label="Buscar productos"
+            />
+            <button 
+              v-if="productSearchQuery" 
+              type="button" 
+              class="clear-btn" 
+              @click="productSearchQuery = ''"
+              aria-label="Limpiar búsqueda"
+            >
+              <i class="fa-solid fa-xmark" />
+            </button>
+          </div>
+
           <button type="button" class="btn btn--primary" @click="openCreateProduct">
             <i class="fa-solid fa-plus" />
             <span>Agregar Producto</span>
@@ -708,7 +770,7 @@ const deleteUser = async (id: string) => {
               </tr>
             </thead>
             <tbody>
-              <tr v-for="prod in products" :key="prod._id || prod.slug">
+              <tr v-for="prod in filteredProducts" :key="prod._id || prod.slug">
                 <td>
                   <img :src="prod.image" :alt="prod.name" class="img-thumb" @click="previewImageUrl = prod.image" />
                 </td>
@@ -724,14 +786,16 @@ const deleteUser = async (id: string) => {
                     <button type="button" class="icon-btn icon-btn--edit" title="Editar" @click="openEditProduct(prod)">
                       <i class="fa-solid fa-pen" />
                     </button>
-                    <button type="button" class="icon-btn icon-btn--danger" title="Eliminar" @click="deleteProduct(prod._id)">
+                    <button type="button" class="icon-btn icon-btn--danger" title="Eliminar" @click="deleteProduct(prod._id || prod.slug)">
                       <i class="fa-solid fa-trash" />
                     </button>
                   </div>
                 </td>
               </tr>
-              <tr v-if="products.length === 0">
-                <td colspan="6" class="empty-state">No hay productos registrados en la base de datos.</td>
+              <tr v-if="filteredProducts.length === 0">
+                <td colspan="6" class="empty-state">
+                  {{ products.length === 0 ? 'No hay productos registrados en la base de datos.' : 'No se encontraron productos que coincidan con la búsqueda.' }}
+                </td>
               </tr>
             </tbody>
           </table>
@@ -927,7 +991,7 @@ const deleteUser = async (id: string) => {
             <div class="flex-field">
               <label>Categoría *</label>
               <select v-model="productForm.categorySlug" required>
-                <option v-for="c in categories" :key="c.slug" :value="c.slug">
+                <option v-for="c in filteredCategoriesForProduct" :key="c.slug" :value="c.slug">
                   {{ c.name }} ({{ c.line }})
                 </option>
               </select>
@@ -1260,6 +1324,44 @@ const deleteUser = async (id: string) => {
       </div>
     </div>
 
+    <!-- MODAL: CONFIRM DELETE -->
+    <div v-if="showConfirmDeleteModal && deleteTarget" class="modal-overlay" @click.self="showConfirmDeleteModal = false">
+      <div class="modal-box modal-box--sm confirm-delete-box">
+        <div class="modal-box__head">
+          <div class="modal-title-group warning-title">
+            <i class="fa-solid fa-triangle-exclamation modal-title-icon" />
+            <h3>Confirmar Eliminación</h3>
+          </div>
+          <button type="button" class="close-icon" @click="showConfirmDeleteModal = false">×</button>
+        </div>
+
+        <div class="modal-box__body confirm-delete-body">
+          <p class="confirm-message">
+            ¿Estás seguro de que deseas eliminar permanentemente el siguiente elemento?
+          </p>
+          <div class="confirm-target-card">
+            <span class="confirm-target-type">
+              {{ deleteTarget.type === 'product' ? 'Producto' : deleteTarget.type === 'category' ? 'Categoría' : deleteTarget.type === 'project' ? 'Proyecto' : 'Usuario' }}
+            </span>
+            <span class="confirm-target-name">{{ deleteTarget.name }}</span>
+          </div>
+          <p class="confirm-warning-note">
+            <i class="fa-solid fa-circle-info" /> Esta acción es irreversible y afectará los datos relacionados.
+          </p>
+
+          <div class="modal-box__foot">
+            <button type="button" class="btn btn--outline" @click="showConfirmDeleteModal = false" :disabled="loading">
+              Cancelar
+            </button>
+            <button type="button" class="btn btn--danger" @click="executeDelete" :disabled="loading">
+              <i v-if="loading" class="fa-solid fa-spinner fa-spin" />
+              <span v-else>Sí, Eliminar</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- LIGHTBOX: Fullscreen Image Preview -->
     <div v-if="previewImageUrl" class="lightbox-overlay" @click.self="previewImageUrl = null">
       <div class="lightbox-box">
@@ -1406,6 +1508,74 @@ const deleteUser = async (id: string) => {
       font-size: 1.35rem;
       font-weight: 700;
       color: #1e293b;
+      margin: 0;
+    }
+  }
+}
+
+/* --- Buscador del Admin Panel --- */
+.admin-search-box {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  max-width: 400px;
+  margin: 0 20px;
+
+  .search-icon {
+    position: absolute;
+    left: 14px;
+    color: #94a3b8;
+    font-size: 0.9rem;
+    pointer-events: none;
+  }
+
+  input {
+    width: 100%;
+    padding: 10px 16px 10px 40px;
+    border: 1px solid #cbd5e1;
+    border-radius: 10px;
+    font-size: 0.9rem;
+    color: #0f172a;
+    background: #f8fafc;
+    outline: none;
+    transition: all 0.2s ease;
+
+    &:focus {
+      border-color: #0052cc;
+      background: #ffffff;
+      box-shadow: 0 0 0 3px rgba(0, 82, 204, 0.12);
+    }
+  }
+
+  .clear-btn {
+    position: absolute;
+    right: 12px;
+    background: none;
+    border: none;
+    color: #94a3b8;
+    cursor: pointer;
+    padding: 4px;
+    font-size: 0.95rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: color 0.15s ease;
+
+    &:hover {
+      color: #ef4444;
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .tab-panel__top {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 15px;
+
+    .admin-search-box {
+      max-width: 100%;
       margin: 0;
     }
   }
@@ -2119,6 +2289,75 @@ const deleteUser = async (id: string) => {
       color: #dc2626;
       border-color: #fecaca;
     }
+  }
+
+  &--danger {
+    background: #e2352c;
+    color: #ffffff;
+
+    &:hover:not(:disabled) {
+      background: #b92019;
+    }
+  }
+}
+
+/* --- Confirm Delete Modal --- */
+.confirm-delete-box {
+  border-top: 4px solid #e2352c;
+}
+
+.warning-title {
+  color: #e2352c !important;
+}
+
+.confirm-delete-body {
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+
+  .confirm-message {
+    font-size: 0.95rem;
+    color: #475569;
+    margin: 0;
+  }
+
+  .confirm-target-card {
+    background: #fef2f2;
+    border-left: 4px solid #e2352c;
+    padding: 12px 16px;
+    border-radius: 6px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .confirm-target-type {
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: #e2352c;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .confirm-target-name {
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: #0f172a;
+    word-break: break-all;
+  }
+
+  .confirm-warning-note {
+    font-size: 0.8rem;
+    color: #ef4444;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin: 0;
+    background: #fff5f5;
+    padding: 8px 12px;
+    border-radius: 6px;
+    border: 1px solid rgba(#ef4444, 0.12);
   }
 }
 </style>

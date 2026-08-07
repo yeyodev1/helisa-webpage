@@ -9,6 +9,7 @@ import type { CatalogCategory, CatalogProduct } from '@/data/productTypes'
 const route = useRoute()
 const router = useRouter()
 const selectedImage = ref('')
+const loadingProduct = ref(true)
 
 const dynamicProduct = ref<CatalogProduct | null>(null)
 const dynamicCategory = ref<CatalogCategory | null>(null)
@@ -21,6 +22,7 @@ const gallery = computed(() => Array.from(new Set(product.value?.gallery?.length
 const lineName = computed(() => productLines.find((line) => line.id === category.value?.line)?.name)
 
 const fetchProductFromApi = async () => {
+  loadingProduct.value = true
   try {
     const catSlug = String(route.params.category)
     const prodSlug = String(route.params.product)
@@ -51,6 +53,8 @@ const fetchProductFromApi = async () => {
     }
   } catch (e) {
     // Fallback to static result
+  } finally {
+    loadingProduct.value = false
   }
 }
 
@@ -58,12 +62,106 @@ onMounted(() => {
   fetchProductFromApi()
 })
 
-watch(product, (value) => {
-  if (!value) {
+// --- Lógica para Especificaciones Tabulares ---
+const searchQuery = ref('')
+const sortBy = ref<string | null>(null)
+const sortOrder = ref<'asc' | 'desc'>('asc')
+
+const parseSpecValue = (valStr: string) => {
+  return valStr.split('·').map(part => {
+    const cleanPart = part.trim()
+    if (cleanPart.startsWith('Conexión ')) {
+      return { header: 'Conexión', val: cleanPart.replace('Conexión ', '') }
+    }
+    if (cleanPart.startsWith('Botella ')) {
+      return { header: 'Vol. Botella', val: cleanPart.replace('Botella ', '') }
+    }
+    if (cleanPart.startsWith('Carga ')) {
+      return { header: 'Vol. Carga', val: cleanPart.replace('Carga ', '') }
+    }
+    if (cleanPart.endsWith('kg') || cleanPart.includes(' kg')) {
+      return { header: 'Peso', val: cleanPart }
+    }
+    if (cleanPart.includes('x') && (cleanPart.includes('mm') || cleanPart.includes('in') || cleanPart.includes('"'))) {
+      return { header: 'Dimensiones', val: cleanPart }
+    }
+    return { header: 'Detalle', val: cleanPart }
+  })
+}
+
+const isTabularSpecs = computed(() => {
+  return product.value?.specs?.some(spec => spec.value.includes('·')) ?? false
+})
+
+const parsedSpecs = computed(() => {
+  if (!product.value?.specs) return []
+  return product.value.specs.map(spec => {
+    const parsedParts = spec.value.includes('·')
+      ? parseSpecValue(spec.value)
+      : [{ header: 'Valor', val: spec.value }]
+    return {
+      label: spec.label,
+      parts: parsedParts
+    }
+  })
+})
+
+const tableHeaders = computed(() => {
+  if (!isTabularSpecs.value) return []
+  const firstTabular = parsedSpecs.value.find(s => s.parts.length > 1)
+  if (!firstTabular) return []
+  return ['Modelo / Tamaño', ...firstTabular.parts.map(p => p.header)]
+})
+
+const filteredAndSortedSpecs = computed(() => {
+  let result = parsedSpecs.value
+
+  // Filtrado por búsqueda
+  if (searchQuery.value.trim()) {
+    const query = searchQuery.value.toLowerCase().trim()
+    result = result.filter(row => {
+      const matchesLabel = row.label.toLowerCase().includes(query)
+      const matchesParts = row.parts.some(p => p.val.toLowerCase().includes(query))
+      return matchesLabel || matchesParts
+    })
+  }
+
+  // Ordenación
+  if (sortBy.value) {
+    const sortCol = sortBy.value
+    const order = sortOrder.value === 'asc' ? 1 : -1
+
+    result = [...result].sort((a, b) => {
+      if (sortCol === 'Modelo / Tamaño') {
+        return a.label.localeCompare(b.label, undefined, { numeric: true, sensitivity: 'base' }) * order
+      } else {
+        const valA = a.parts.find(p => p.header === sortCol)?.val || ''
+        const valB = b.parts.find(p => p.header === sortCol)?.val || ''
+        return valA.localeCompare(valB, undefined, { numeric: true, sensitivity: 'base' }) * order
+      }
+    })
+  }
+
+  return result
+})
+
+const handleSort = (header: string) => {
+  if (sortBy.value === header) {
+    sortOrder.value = sortOrder.value === 'asc' ? 'desc' : 'asc'
+  } else {
+    sortBy.value = header
+    sortOrder.value = 'asc'
+  }
+}
+
+watch([product, loadingProduct], ([value, isLoading]) => {
+  if (!isLoading && !value) {
     router.replace('/productos')
     return
   }
-  selectedImage.value = value.image
+  if (value) {
+    selectedImage.value = value.image
+  }
 }, { immediate: true })
 </script>
 
@@ -128,10 +226,97 @@ watch(product, (value) => {
           </div>
         </article>
 
-        <article v-if="product.specs?.length" class="detail-panel detail-panel--specs">
-          <span>Ficha técnica</span>
-          <h2>Especificaciones</h2>
-          <dl class="spec-list">
+        <article 
+          v-if="product.specs?.length" 
+          class="detail-panel detail-panel--specs"
+          :class="{ 'detail-panel--tabular': isTabularSpecs }"
+        >
+          <div class="specs-header-row">
+            <div class="specs-header-titles">
+              <span>Ficha técnica</span>
+              <h2>Especificaciones</h2>
+            </div>
+            
+            <!-- Barra de búsqueda para especificaciones tabulares -->
+            <div v-if="isTabularSpecs" class="specs-search-container">
+              <i class="fa-solid fa-magnifying-glass search-icon" />
+              <input
+                type="text"
+                v-model="searchQuery"
+                placeholder="Buscar modelo, dimensiones, conexión..."
+                aria-label="Buscar en especificaciones"
+              />
+              <button 
+                v-if="searchQuery" 
+                @click="searchQuery = ''" 
+                class="clear-search-btn"
+                aria-label="Limpiar búsqueda"
+              >
+                <i class="fa-solid fa-xmark" />
+              </button>
+            </div>
+          </div>
+
+          <!-- Vista Tabular Interactiva -->
+          <div v-if="isTabularSpecs" class="table-responsive">
+            <table class="specs-table">
+              <thead>
+                <tr>
+                  <th 
+                    v-for="header in tableHeaders" 
+                    :key="header"
+                    @click="handleSort(header)"
+                    :class="{ 'sortable': true, 'active-sort': sortBy === header }"
+                  >
+                    <div class="th-content">
+                      <span>{{ header }}</span>
+                      <span class="sort-indicator">
+                        <i 
+                          v-if="sortBy !== header" 
+                          class="fa-solid fa-sort sort-icon-inactive" 
+                        />
+                        <i 
+                          v-else-if="sortOrder === 'asc'" 
+                          class="fa-solid fa-sort-up sort-icon-active" 
+                        />
+                          <i 
+                          v-else 
+                          class="fa-solid fa-sort-down sort-icon-active" 
+                        />
+                      </span>
+                    </div>
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr 
+                  v-for="row in filteredAndSortedSpecs" 
+                  :key="row.label"
+                  class="spec-table-row"
+                >
+                  <td class="font-bold spec-model-cell">{{ row.label }}</td>
+                  <td 
+                    v-for="(part, pIdx) in row.parts" 
+                    :key="pIdx"
+                    :data-label="part.header"
+                  >
+                    {{ part.val }}
+                  </td>
+                </tr>
+                <tr v-if="filteredAndSortedSpecs.length === 0">
+                  <td :colspan="tableHeaders.length" class="no-results-cell">
+                    <div class="no-results-content">
+                      <i class="fa-solid fa-circle-info" />
+                      <span>No se encontraron especificaciones que coincidan con "{{ searchQuery }}".</span>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Vista Tradicional DL para especificaciones simples -->
+          <dl v-else class="spec-list">
             <div v-for="spec in product.specs" :key="`${spec.label}-${spec.value}`">
               <dt>{{ spec.label }}</dt>
               <dd>{{ spec.value }}</dd>
@@ -347,5 +532,212 @@ watch(product, (value) => {
   .detail-panel { flex-basis: 100%; }
   .spec-list div { align-items: flex-start; flex-direction: column; gap: 0.3rem; }
   .spec-list dd { text-align: left; }
+}
+
+/* --- Estilos para Especificaciones Tabulares --- */
+.detail-panel--tabular {
+  flex: 1 1 100% !important; // Ocupa el 100% de la anchura para dar espacio a la tabla
+}
+
+.specs-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+  border-bottom: 1px solid $border;
+  padding-bottom: 1.5rem;
+}
+
+.specs-header-titles {
+  h2 {
+    margin: 0.5rem 0 0;
+  }
+}
+
+.specs-search-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  max-width: 380px;
+
+  .search-icon {
+    position: absolute;
+    left: 1rem;
+    color: $foreground-subtle;
+    font-size: 0.9rem;
+    pointer-events: none;
+  }
+
+  input {
+    width: 100%;
+    padding: 0.75rem 2.5rem 0.75rem 2.5rem;
+    border: 1px solid $border;
+    border-radius: 12px;
+    font: 0.9rem $font-secondary;
+    color: $foreground;
+    background: $background-soft;
+    outline: none;
+    transition: all 0.2s ease;
+
+    &:focus {
+      border-color: $primary;
+      background: $white;
+      box-shadow: 0 0 0 3px rgba($primary, 0.12);
+    }
+  }
+
+  .clear-search-btn {
+    position: absolute;
+    right: 0.75rem;
+    background: none;
+    border: none;
+    color: $foreground-subtle;
+    cursor: pointer;
+    padding: 0.25rem;
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: color 0.15s ease;
+
+    &:hover {
+      color: $accent;
+    }
+  }
+}
+
+.table-responsive {
+  width: 100%;
+  overflow-x: auto;
+  border-radius: 16px;
+  border: 1px solid $border;
+  background: $white;
+  box-shadow: 0 4px 20px rgba($black, 0.02);
+
+  // Personalización de la barra de desplazamiento
+  &::-webkit-scrollbar {
+    height: 8px;
+  }
+  &::-webkit-scrollbar-track {
+    background: $background-soft;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: $border-strong;
+    border-radius: 99px;
+  }
+  &::-webkit-scrollbar-thumb:hover {
+    background: $foreground-subtle;
+  }
+}
+
+.specs-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  font: 0.9rem $font-secondary;
+
+  th {
+    background: lighten($primary, 92%); // Un celeste/azul sutilísimo para la cabecera
+    color: $primary-dark;
+    font-weight: 700;
+    padding: 1.25rem 1rem;
+    border-bottom: 2px solid $border;
+    user-select: none;
+    white-space: nowrap;
+
+    &.sortable {
+      cursor: pointer;
+      transition: background-color 0.2s ease;
+
+      &:hover {
+        background: lighten($primary, 88%);
+      }
+    }
+
+    &.active-sort {
+      background: lighten($primary, 86%);
+      color: $primary;
+    }
+  }
+
+  .th-content {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .sort-indicator {
+    display: inline-flex;
+    font-size: 0.8rem;
+    
+    .sort-icon-inactive {
+      color: rgba($primary-dark, 0.25);
+    }
+    
+    .sort-icon-active {
+      color: $primary;
+    }
+  }
+
+  td {
+    padding: 1.1rem 1rem;
+    border-bottom: 1px solid $border;
+    color: $foreground-muted;
+    white-space: nowrap;
+    transition: background-color 0.15s ease;
+  }
+
+  .spec-model-cell {
+    color: $primary-dark;
+    font-weight: 600;
+    background: $background-soft;
+  }
+
+  .spec-table-row {
+    &:last-child td {
+      border-bottom: none;
+    }
+
+    &:hover td {
+      background-color: rgba($primary, 0.03);
+    }
+  }
+
+  // Celda de no resultados
+  .no-results-cell {
+    text-align: center;
+    padding: 3rem 1.5rem;
+    color: $foreground-muted;
+
+    .no-results-content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.75rem;
+      
+      i {
+        font-size: 1.8rem;
+        color: $foreground-subtle;
+      }
+      
+      span {
+        font-size: 0.95rem;
+      }
+    }
+  }
+}
+
+@media (max-width: 520px) {
+  .specs-header-row {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 1rem;
+  }
+  .specs-search-container {
+    max-width: 100%;
+  }
 }
 </style>
