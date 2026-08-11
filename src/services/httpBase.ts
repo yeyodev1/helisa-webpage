@@ -38,6 +38,17 @@ class APIBase {
     return `${this.baseUrl}/${endpoint}`
   }
 
+  private handleRequestError(error: unknown): never {
+    if (axios.isAxiosError(error)) {
+      throw {
+        status: error.response?.status || 500,
+        message: error.response?.data?.message || error.message || 'Error de conexión',
+        data: error.response?.data,
+      }
+    }
+    throw { status: 500, message: error instanceof Error ? error.message : 'Unknown error' }
+  }
+
   protected getHeaders(): Record<string, string> {
     const headers: Record<string, string> = {
       'Content-Type': 'application/json',
@@ -63,14 +74,7 @@ class APIBase {
         ...config,
       })
     } catch (error: unknown) {
-      if (axios.isAxiosError(error) && error.response) {
-        throw {
-          status: error.response.status,
-          message: error.response.data?.message || error.message,
-          data: error.response.data,
-        }
-      }
-      throw { status: 500, message: 'Unknown error' }
+      this.handleRequestError(error)
     }
   }
 
@@ -94,14 +98,7 @@ class APIBase {
         ...config,
       })
     } catch (error: unknown) {
-      if (axios.isAxiosError(error) && error.response) {
-        throw {
-          status: error.response.status,
-          message: error.response.data?.message || error.message,
-          data: error.response.data,
-        }
-      }
-      throw { status: 500, message: 'Unknown error' }
+      this.handleRequestError(error)
     }
   }
 
@@ -118,14 +115,7 @@ class APIBase {
         ...config,
       })
     } catch (error: unknown) {
-      if (axios.isAxiosError(error) && error.response) {
-        throw {
-          status: error.response.status,
-          message: error.response.data?.message || error.message,
-          data: error.response.data,
-        }
-      }
-      throw { status: 500, message: 'Unknown error' }
+      this.handleRequestError(error)
     }
   }
 
@@ -142,14 +132,7 @@ class APIBase {
         ...config,
       })
     } catch (error: unknown) {
-      if (axios.isAxiosError(error) && error.response) {
-        throw {
-          status: error.response.status,
-          message: error.response.data?.message || error.message,
-          data: error.response.data,
-        }
-      }
-      throw { status: 500, message: 'Unknown error' }
+      this.handleRequestError(error)
     }
   }
 
@@ -165,14 +148,7 @@ class APIBase {
         ...config,
       })
     } catch (error: unknown) {
-      if (axios.isAxiosError(error) && error.response) {
-        throw {
-          status: error.response.status,
-          message: error.response.data?.message || error.message,
-          data: error.response.data,
-        }
-      }
-      throw { status: 500, message: 'Unknown error' }
+      this.handleRequestError(error)
     }
   }
 }

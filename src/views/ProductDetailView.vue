@@ -68,25 +68,23 @@ const sortBy = ref<string | null>(null)
 const sortOrder = ref<'asc' | 'desc'>('asc')
 
 const parseSpecValue = (valStr: string) => {
-  return valStr.split('·').map(part => {
-    const cleanPart = part.trim()
-    if (cleanPart.startsWith('Conexión ')) {
-      return { header: 'Conexión', val: cleanPart.replace('Conexión ', '') }
+  const parts = valStr.split('·').map(part => part.trim())
+  const result = []
+
+  for (const part of parts) {
+    if (part.startsWith('Conexión ')) {
+      result.push({
+        header: 'Conexion superior/inferior',
+        val: part.replace('Conexión ', '').trim()
+      })
+    } else if (part.includes('x') && (part.includes('mm') || part.includes('in') || part.includes('"'))) {
+      result.push({
+        header: 'Diametro x Altura (mm)',
+        val: part.replace(' mm', '').trim()
+      })
     }
-    if (cleanPart.startsWith('Botella ')) {
-      return { header: 'Vol. Botella', val: cleanPart.replace('Botella ', '') }
-    }
-    if (cleanPart.startsWith('Carga ')) {
-      return { header: 'Vol. Carga', val: cleanPart.replace('Carga ', '') }
-    }
-    if (cleanPart.endsWith('kg') || cleanPart.includes(' kg')) {
-      return { header: 'Peso', val: cleanPart }
-    }
-    if (cleanPart.includes('x') && (cleanPart.includes('mm') || cleanPart.includes('in') || cleanPart.includes('"'))) {
-      return { header: 'Dimensiones', val: cleanPart }
-    }
-    return { header: 'Detalle', val: cleanPart }
-  })
+  }
+  return result
 }
 
 const isTabularSpecs = computed(() => {
@@ -110,7 +108,7 @@ const tableHeaders = computed(() => {
   if (!isTabularSpecs.value) return []
   const firstTabular = parsedSpecs.value.find(s => s.parts.length > 1)
   if (!firstTabular) return []
-  return ['Modelo / Tamaño', ...firstTabular.parts.map(p => p.header)]
+  return ['Tamaño(pul)', ...firstTabular.parts.map(p => p.header)]
 })
 
 const filteredAndSortedSpecs = computed(() => {
@@ -132,7 +130,7 @@ const filteredAndSortedSpecs = computed(() => {
     const order = sortOrder.value === 'asc' ? 1 : -1
 
     result = [...result].sort((a, b) => {
-      if (sortCol === 'Modelo / Tamaño') {
+      if (sortCol === 'Tamaño(pul)') {
         return a.label.localeCompare(b.label, undefined, { numeric: true, sensitivity: 'base' }) * order
       } else {
         const valA = a.parts.find(p => p.header === sortCol)?.val || ''
@@ -236,25 +234,6 @@ watch([product, loadingProduct], ([value, isLoading]) => {
               <span>Ficha técnica</span>
               <h2>Especificaciones</h2>
             </div>
-            
-            <!-- Barra de búsqueda para especificaciones tabulares -->
-            <div v-if="isTabularSpecs" class="specs-search-container">
-              <i class="fa-solid fa-magnifying-glass search-icon" />
-              <input
-                type="text"
-                v-model="searchQuery"
-                placeholder="Buscar modelo, dimensiones, conexión..."
-                aria-label="Buscar en especificaciones"
-              />
-              <button 
-                v-if="searchQuery" 
-                @click="searchQuery = ''" 
-                class="clear-search-btn"
-                aria-label="Limpiar búsqueda"
-              >
-                <i class="fa-solid fa-xmark" />
-              </button>
-            </div>
           </div>
 
           <!-- Vista Tabular Interactiva -->
@@ -294,7 +273,7 @@ watch([product, loadingProduct], ([value, isLoading]) => {
                   :key="row.label"
                   class="spec-table-row"
                 >
-                  <td class="font-bold spec-model-cell">{{ row.label }}</td>
+                  <td class="font-bold spec-model-cell">{{ row.label.replace(' - conexión 4"', '') }}</td>
                   <td 
                     v-for="(part, pIdx) in row.parts" 
                     :key="pIdx"
@@ -644,7 +623,7 @@ watch([product, loadingProduct], ([value, isLoading]) => {
     color: $primary-dark;
     font-weight: 700;
     padding: 1.25rem 1rem;
-    border-bottom: 2px solid $border;
+    border: 1px solid $border;
     user-select: none;
     white-space: nowrap;
 
@@ -684,7 +663,7 @@ watch([product, loadingProduct], ([value, isLoading]) => {
 
   td {
     padding: 1.1rem 1rem;
-    border-bottom: 1px solid $border;
+    border: 1px solid $border;
     color: $foreground-muted;
     white-space: nowrap;
     transition: background-color 0.15s ease;
@@ -697,10 +676,6 @@ watch([product, loadingProduct], ([value, isLoading]) => {
   }
 
   .spec-table-row {
-    &:last-child td {
-      border-bottom: none;
-    }
-
     &:hover td {
       background-color: rgba($primary, 0.03);
     }
@@ -730,14 +705,28 @@ watch([product, loadingProduct], ([value, isLoading]) => {
   }
 }
 
+@media (max-width: 600px) {
+  .specs-table {
+    font-size: 0.8rem;
+    
+    th, td {
+      padding: 0.75rem 0.5rem;
+      white-space: normal;
+      word-break: break-word;
+      text-align: center;
+    }
+
+    .th-content {
+      justify-content: center;
+    }
+  }
+}
+
 @media (max-width: 520px) {
   .specs-header-row {
     flex-direction: column;
     align-items: stretch;
     gap: 1rem;
-  }
-  .specs-search-container {
-    max-width: 100%;
   }
 }
 </style>

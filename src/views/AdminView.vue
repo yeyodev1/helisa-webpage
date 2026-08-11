@@ -368,7 +368,7 @@ const openCreateProduct = () => {
 const openEditProduct = (prod: ApiProduct) => {
   clearAllPendingPreviews()
   isEditingProduct.value = true
-  currentProductId.value = prod._id || null
+  currentProductId.value = prod._id || prod.slug || null
   productForm.value = {
     name: prod.name,
     slug: prod.slug,
@@ -414,10 +414,10 @@ const saveProduct = async () => {
 
     if (isEditingProduct.value && currentProductId.value) {
       await productsService.updateProduct(currentProductId.value, productForm.value)
-      notify('success', 'Producto guardado en MongoDB Atlas e imágenes subidas a Cloudinary.')
+      notify('success', 'Producto guardado correctamente.')
     } else {
       await productsService.createProduct(productForm.value)
-      notify('success', 'Producto creado en MongoDB Atlas e imágenes subidas a Cloudinary.')
+      notify('success', 'Producto creado correctamente.')
     }
 
     clearAllPendingPreviews()
@@ -455,7 +455,7 @@ const openCreateCategory = () => {
 
 const openEditCategory = (cat: ApiCategory) => {
   isEditingCategory.value = true
-  currentCategoryId.value = cat._id || null
+  currentCategoryId.value = cat._id || cat.slug || null
   categoryForm.value = {
     name: cat.name,
     slug: cat.slug,
@@ -519,7 +519,7 @@ const openCreateProject = () => {
 const openEditProject = (proj: ApiProject) => {
   clearAllPendingPreviews()
   isEditingProject.value = true
-  currentProjectId.value = proj._id || null
+  currentProjectId.value = proj._id || proj.slug || null
   projectForm.value = {
     title: proj.title,
     slug: proj.slug,
@@ -576,10 +576,10 @@ const saveProject = async () => {
 
     if (isEditingProject.value && currentProjectId.value) {
       await projectsService.updateProject(currentProjectId.value, projectForm.value)
-      notify('success', 'Proyecto actualizado en MongoDB Atlas.')
+      notify('success', 'Proyecto guardado correctamente.')
     } else {
       await projectsService.createProject(projectForm.value)
-      notify('success', 'Proyecto creado en MongoDB Atlas.')
+      notify('success', 'Proyecto creado correctamente.')
     }
 
     clearAllPendingPreviews()
@@ -676,7 +676,7 @@ const executeDelete = async () => {
       <header class="admin-header">
         <div class="admin-header__titles">
           <h1>Panel de Administración HELISA</h1>
-          <p>Gestiona productos, categorías, proyectos, fotos en Cloudinary y usuarios del sistema.</p>
+          <p>Gestiona productos, categorías, proyectos y usuarios del sistema.</p>
         </div>
         <button type="button" class="btn btn--logout" @click="handleLogout">
           <i class="fa-solid fa-right-from-bracket" />
@@ -1016,7 +1016,7 @@ const executeDelete = async () => {
               <div class="dropzone-content">
                 <i class="fa-solid fa-cloud-arrow-up dropzone-icon" />
                 <span class="dropzone-title">Seleccionar Imagen Principal</span>
-                <span class="dropzone-subtitle">Se previsualiza al instante. Se sube a Cloudinary al dar clic en Guardar</span>
+                <span class="dropzone-subtitle">Selecciona una imagen para tu producto.</span>
               </div>
             </div>
 
@@ -1029,7 +1029,7 @@ const executeDelete = async () => {
               </div>
               <div class="preview-meta">
                 <span :class="['preview-tag', pendingMainPreviewUrl ? 'preview-tag--pending' : 'preview-tag--saved']">
-                  {{ pendingMainPreviewUrl ? '• Previsualización Local (Pendiente)' : '• Guardada en Cloudinary' }}
+                  {{ pendingMainPreviewUrl ? '• Nueva imagen seleccionada' : '• Imagen actual' }}
                 </span>
                 <button type="button" class="btn-remove-badge" @click="removePendingMainImage">
                   <i class="fa-solid fa-trash-can" /> Quitar
@@ -1046,7 +1046,7 @@ const executeDelete = async () => {
               <div class="dropzone-content">
                 <i class="fa-solid fa-images dropzone-icon" />
                 <span class="dropzone-title">Seleccionar Fotos de Galería (Max 3)</span>
-                <span class="dropzone-subtitle">Previsualiza tus fotos. Se guardarán en Cloudinary y MongoDB al dar clic en Guardar</span>
+                <span class="dropzone-subtitle">Selecciona hasta 3 fotos adicionales.</span>
               </div>
             </div>
 
@@ -1058,7 +1058,7 @@ const executeDelete = async () => {
                     <i class="fa-solid fa-magnifying-glass-plus" />
                   </div>
                 </div>
-                <span class="status-dot status-dot--saved" title="Guardada en Cloudinary" />
+                <span class="status-dot status-dot--saved" title="Imagen guardada" />
                 <button type="button" class="gallery-card__del" title="Eliminar foto" @click="removeExistingGalleryImage(idx)">
                   ×
                 </button>
@@ -1071,7 +1071,7 @@ const executeDelete = async () => {
                     <i class="fa-solid fa-magnifying-glass-plus" />
                   </div>
                 </div>
-                <span class="status-dot status-dot--pending" title="Pendiente por subir a Cloudinary" />
+                <span class="status-dot status-dot--pending" title="Nueva imagen" />
                 <button type="button" class="gallery-card__del" title="Quitar previsualización" @click="removePendingGalleryImage(idx)">
                   ×
                 </button>
@@ -1222,7 +1222,7 @@ const executeDelete = async () => {
               <div class="dropzone-content">
                 <i class="fa-solid fa-cloud-arrow-up dropzone-icon" />
                 <span class="dropzone-title">Seleccionar Foto Principal del Proyecto</span>
-                <span class="dropzone-subtitle">Previsualización previa a la subida a Cloudinary</span>
+                <span class="dropzone-subtitle">Selecciona la foto principal del proyecto.</span>
               </div>
             </div>
 
@@ -1235,7 +1235,7 @@ const executeDelete = async () => {
               </div>
               <div class="preview-meta">
                 <span :class="['preview-tag', pendingMainPreviewUrl ? 'preview-tag--pending' : 'preview-tag--saved']">
-                  {{ pendingMainPreviewUrl ? '• Previsualización Local (Pendiente)' : '• Guardada en Cloudinary' }}
+                  {{ pendingMainPreviewUrl ? '• Nueva foto seleccionada' : '• Foto actual' }}
                 </span>
                 <button type="button" class="btn-remove-badge" @click="removePendingMainImage">
                   <i class="fa-solid fa-trash-can" /> Quitar
@@ -1260,7 +1260,7 @@ const executeDelete = async () => {
                 <div class="gallery-card__thumb" @click="previewImageUrl = img">
                   <img :src="img" alt="Foto proyecto" />
                 </div>
-                <span class="status-dot status-dot--saved" title="Guardada en Cloudinary" />
+                <span class="status-dot status-dot--saved" title="Imagen guardada" />
                 <button type="button" class="gallery-card__del" title="Eliminar foto" @click="removeExistingGalleryImage(idx)">
                   ×
                 </button>
@@ -1270,7 +1270,7 @@ const executeDelete = async () => {
                 <div class="gallery-card__thumb" @click="previewImageUrl = item.url">
                   <img :src="item.url" alt="Previsualización local" />
                 </div>
-                <span class="status-dot status-dot--pending" title="Pendiente por subir a Cloudinary" />
+                <span class="status-dot status-dot--pending" title="Nueva imagen" />
                 <button type="button" class="gallery-card__del" title="Quitar previsualización" @click="removePendingGalleryImage(idx)">
                   ×
                 </button>
