@@ -17,7 +17,7 @@ class APIBase {
   private setupInterceptors() {
     this.axiosInstance.interceptors.request.use(
       (config) => {
-        config.timeout = config.timeout || 15000
+        config.timeout = config.timeout || 60000
         return config
       },
       (error) => Promise.reject(error),
