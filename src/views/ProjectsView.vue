@@ -230,11 +230,19 @@ onUnmounted(() => {
                     type="button"
                     class="project-card__link"
                     @click.stop="router.push(link.to)"
+                    @keydown.enter.stop
+                    @keydown.space.stop
                   >
                     {{ link.label }}
                   </button>
                 </div>
-                <button type="button" class="btn-contact-project" @click.stop="router.push('/calificar')">
+                <button
+                  type="button"
+                  class="btn-contact-project"
+                  @click.stop="router.push('/calificar')"
+                  @keydown.enter.stop
+                  @keydown.space.stop
+                >
                   Contactar Ahora
                   <i class="fa-solid fa-arrow-right"></i>
                 </button>

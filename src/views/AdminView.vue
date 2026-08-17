@@ -9,6 +9,7 @@ import { uploadService } from '@/services/uploadService'
 import { aboutService, type ApiAbout } from '@/services/aboutService'
 import { useUserStore } from '@/stores/user'
 import type { ProductLine } from '@/data/productTypes'
+import { compressImage } from '@/utils/compressImage'
 
 const router = useRouter()
 const userStore = useUserStore()
@@ -201,10 +202,14 @@ const aboutForm = ref<ApiAbout>({
 })
 
 // Notification helper
+let notificationTimeoutId: ReturnType<typeof setTimeout> | null = null
+
 const notify = (type: 'success' | 'error', message: string) => {
+  if (notificationTimeoutId) clearTimeout(notificationTimeoutId)
   notification.value = { type, message }
-  setTimeout(() => {
+  notificationTimeoutId = setTimeout(() => {
     notification.value = null
+    notificationTimeoutId = null
   }, 4000)
 }
 
@@ -218,22 +223,16 @@ const loadData = async () => {
 
   loading.value = true
   try {
-    const [prodsRes, catsRes, usersRes, projsRes, aboutRes] = await Promise.all([
+    const [prodsRes, catsRes, usersRes, projsRes] = await Promise.all([
       productsService.getProducts(),
       categoriesService.getCategories(),
       usersService.getUsers().catch(() => []),
       projectsService.getProjects({ all: true }).catch(() => []),
-      aboutService.getAbout().catch(() => null),
     ])
     products.value = prodsRes
     categories.value = catsRes
     users.value = usersRes
     projectsList.value = projsRes
-    if (aboutRes) {
-      aboutForm.value = aboutRes
-    } else {
-      notify('error', 'No se pudo conectar con el servidor para "Nosotros": se muestra el contenido actual, pero guardar no funcionará hasta que el backend esté disponible.')
-    }
   } catch (err: any) {
     if (err?.status === 401) {
       userStore.clear()
@@ -246,6 +245,18 @@ const loadData = async () => {
   }
 }
 
+// Se carga una sola vez al entrar al panel (no en cada loadData() posterior a
+// guardar un producto/categoría/proyecto), para no pisar ediciones de
+// "Nosotros" que el admin todavía no ha guardado.
+const loadAbout = async () => {
+  const aboutRes = await aboutService.getAbout().catch(() => null)
+  if (aboutRes) {
+    aboutForm.value = aboutRes
+  } else {
+    notify('error', 'No se pudo conectar con el servidor para "Nosotros": se muestra el contenido actual, pero guardar no funcionará hasta que el backend esté disponible.')
+  }
+}
+
 onMounted(() => {
   const token = localStorage.getItem('access_token')
   if (!token) {
@@ -253,6 +264,7 @@ onMounted(() => {
     return
   }
   loadData()
+  loadAbout()
 })
 
 const handleLogout = () => {
@@ -290,12 +302,22 @@ const onProjectTitleInput = () => {
   }
 }
 
+// Tamaño máximo tolerado tras comprimir, con margen por debajo del límite de 4.5MB de Vercel
+const MAX_UPLOAD_BYTES = 4 * 1024 * 1024
+
 // Local image selection (previsualization first without uploading to Cloudinary yet)
-const handleMainImageSelect = (e: Event) => {
+const handleMainImageSelect = async (e: Event) => {
   const target = e.target as HTMLInputElement
   if (!target.files || target.files.length === 0) return
-  const file = target.files[0]
-  if (!file) return
+  const rawFile = target.files[0]
+  if (!rawFile) return
+  target.value = ''
+
+  const file = await compressImage(rawFile)
+  if (file.size > MAX_UPLOAD_BYTES) {
+    notify('error', 'La imagen sigue siendo muy pesada incluso después de comprimirla. Intenta con otra foto.')
+    return
+  }
 
   pendingMainFile.value = file
   if (pendingMainPreviewUrl.value) {
@@ -305,24 +327,34 @@ const handleMainImageSelect = (e: Event) => {
   notify('success', 'Imagen seleccionada para previsualización.')
 }
 
-const handleGalleryImageSelect = (e: Event) => {
+const handleGalleryImageSelect = async (e: Event) => {
   const target = e.target as HTMLInputElement
   if (!target.files || target.files.length === 0) return
 
   const selectedFiles = Array.from(target.files)
+  target.value = ''
   if (selectedFiles.length > 3) {
     notify('error', 'Puedes seleccionar hasta un máximo de 3 imágenes a la vez.')
     return
   }
 
-  for (const f of selectedFiles) {
+  const compressedFiles = await Promise.all(selectedFiles.map((f) => compressImage(f)))
+  const oversized = compressedFiles.filter((f) => f.size > MAX_UPLOAD_BYTES)
+  const validFiles = compressedFiles.filter((f) => f.size <= MAX_UPLOAD_BYTES)
+
+  for (const f of validFiles) {
     pendingGalleryFiles.value.push(f)
     pendingGalleryPreviews.value.push({
       file: f,
       url: URL.createObjectURL(f),
     })
   }
-  notify('success', `${selectedFiles.length} foto(s) añadida(s) para previsualización.`)
+
+  if (oversized.length) {
+    notify('error', `${oversized.length} imagen(es) siguen siendo muy pesadas incluso después de comprimirlas y no se agregaron.`)
+  } else if (validFiles.length) {
+    notify('success', `${validFiles.length} foto(s) añadida(s) para previsualización.`)
+  }
 }
 
 const removePendingMainImage = () => {
@@ -364,6 +396,18 @@ const clearAllPendingPreviews = () => {
   }
   pendingGalleryFiles.value = []
   pendingGalleryPreviews.value = []
+}
+
+// Cerrar sin guardar también debe liberar los blob: URLs de las
+// previsualizaciones pendientes, igual que al abrir un modal nuevo.
+const closeProductModal = () => {
+  clearAllPendingPreviews()
+  showProductModal.value = false
+}
+
+const closeProjectModal = () => {
+  clearAllPendingPreviews()
+  showProjectModal.value = false
 }
 
 // Feature list helpers
@@ -447,37 +491,52 @@ const editSpec = (index: number) => {
 const handleAboutStoryImageSelect = async (e: Event) => {
   const target = e.target as HTMLInputElement
   if (!target.files || target.files.length === 0) return
-  const file = target.files[0]
-  if (!file) return
+  const rawFile = target.files[0]
+  if (!rawFile) return
+  target.value = ''
 
   uploadingAboutStoryImage.value = true
   try {
+    const file = await compressImage(rawFile)
+    if (file.size > MAX_UPLOAD_BYTES) {
+      notify('error', 'La imagen sigue siendo muy pesada incluso después de comprimirla. Intenta con otra foto.')
+      return
+    }
     const [url] = await uploadService.uploadImages([file])
     if (url) aboutForm.value.storyImage = url
   } catch {
     notify('error', 'Error al subir la imagen.')
   } finally {
     uploadingAboutStoryImage.value = false
-    target.value = ''
   }
 }
 
 const handleTimelineImageSelect = async (e: Event, index: number) => {
   const target = e.target as HTMLInputElement
   if (!target.files || target.files.length === 0) return
-  const file = target.files[0]
-  if (!file) return
+  const rawFile = target.files[0]
+  if (!rawFile) return
+  target.value = ''
+
+  // Se captura la referencia al objeto del evento ANTES de las esperas
+  // asíncronas: si mientras tanto se elimina/reordena otro evento de la
+  // línea de tiempo, `aboutForm.value.timeline[index]` ya no apuntaría al
+  // mismo evento, y la imagen terminaría escrita en el evento equivocado.
+  const item = aboutForm.value.timeline[index]
 
   uploadingTimelineImageIndex.value = index
   try {
+    const file = await compressImage(rawFile)
+    if (file.size > MAX_UPLOAD_BYTES) {
+      notify('error', 'La imagen sigue siendo muy pesada incluso después de comprimirla. Intenta con otra foto.')
+      return
+    }
     const [url] = await uploadService.uploadImages([file])
-    const item = aboutForm.value.timeline[index]
     if (url && item) item.image = url
   } catch {
     notify('error', 'Error al subir la imagen.')
   } finally {
     uploadingTimelineImageIndex.value = null
-    target.value = ''
   }
 }
 
@@ -492,7 +551,11 @@ const removeTimelineItem = (index: number) => {
 const saveAbout = async () => {
   savingAbout.value = true
   try {
-    aboutForm.value = await aboutService.updateAbout(aboutForm.value)
+    // No reasignamos aboutForm con la respuesta: el servidor persiste
+    // exactamente lo enviado, y sobrescribir el formulario aquí borraría
+    // cualquier edición que el admin haya seguido escribiendo mientras
+    // la petición estaba en curso.
+    await aboutService.updateAbout(aboutForm.value)
     notify('success', 'Contenido de "Nosotros" actualizado correctamente.')
   } catch {
     notify('error', 'Error al guardar el contenido de "Nosotros".')
@@ -1059,6 +1122,7 @@ const executeDelete = async () => {
                     type="button"
                     :class="['status-toggle-btn', proj.active ? 'status-toggle-btn--active' : 'status-toggle-btn--inactive']"
                     :title="proj.active ? 'Clic para Desactivar Proyecto' : 'Clic para Activar Proyecto'"
+                    :disabled="loading"
                     @click="toggleProjectActiveStatus(proj)"
                   >
                     <i :class="proj.active ? 'fa-solid fa-toggle-on' : 'fa-solid fa-toggle-off'" />
@@ -1267,14 +1331,14 @@ const executeDelete = async () => {
     </div>
 
     <!-- MODAL: PRODUCT -->
-    <div v-if="showProductModal" class="modal-overlay" @click.self="showProductModal = false">
+    <div v-if="showProductModal" class="modal-overlay" @click.self="closeProductModal">
       <div class="modal-box">
         <div class="modal-box__head">
           <div class="modal-title-group">
             <i class="fa-solid fa-box-open modal-title-icon" />
             <h3>{{ isEditingProduct ? 'Editar Producto' : 'Crear Nuevo Producto' }}</h3>
           </div>
-          <button type="button" class="close-icon" @click="showProductModal = false">×</button>
+          <button type="button" class="close-icon" @click="closeProductModal">×</button>
         </div>
 
         <form class="modal-box__body" @submit.prevent="saveProduct">
@@ -1477,7 +1541,7 @@ const executeDelete = async () => {
           </div>
 
           <div class="modal-box__foot">
-            <button type="button" class="btn btn--outline" @click="showProductModal = false">Cancelar</button>
+            <button type="button" class="btn btn--outline" @click="closeProductModal">Cancelar</button>
             <button type="submit" class="btn btn--primary" :disabled="loading || uploading">
               <i v-if="loading || uploading" class="fa-solid fa-spinner fa-spin" />
               <span v-else>Guardar Producto</span>
@@ -1532,14 +1596,14 @@ const executeDelete = async () => {
     </div>
 
     <!-- MODAL: PROJECT -->
-    <div v-if="showProjectModal" class="modal-overlay" @click.self="showProjectModal = false">
+    <div v-if="showProjectModal" class="modal-overlay" @click.self="closeProjectModal">
       <div class="modal-box">
         <div class="modal-box__head">
           <div class="modal-title-group">
             <i class="fa-solid fa-diagram-project modal-title-icon" />
             <h3>{{ isEditingProject ? 'Editar Proyecto' : 'Crear Nuevo Proyecto' }}</h3>
           </div>
-          <button type="button" class="close-icon" @click="showProjectModal = false">×</button>
+          <button type="button" class="close-icon" @click="closeProjectModal">×</button>
         </div>
 
         <form class="modal-box__body" @submit.prevent="saveProject">
@@ -1645,7 +1709,7 @@ const executeDelete = async () => {
           </div>
 
           <div class="modal-box__foot">
-            <button type="button" class="btn btn--outline" @click="showProjectModal = false">Cancelar</button>
+            <button type="button" class="btn btn--outline" @click="closeProjectModal">Cancelar</button>
             <button type="submit" class="btn btn--primary" :disabled="loading || uploading">
               <i v-if="loading || uploading" class="fa-solid fa-spinner fa-spin" />
               <span v-else>Guardar Proyecto</span>

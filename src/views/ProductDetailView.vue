@@ -22,6 +22,12 @@ const gallery = computed(() => Array.from(new Set(product.value?.gallery?.length
 const lineName = computed(() => productLines.find((line) => line.id === category.value?.line)?.name)
 
 const fetchProductFromApi = async () => {
+  // Vue Router reuses this component instance when navigating between two
+  // /productos/:category/:product URLs, so without resetting these first,
+  // `product`/`category` above keep showing the previous page's data (both
+  // while this fetch is in flight and, if it fails, indefinitely).
+  dynamicProduct.value = null
+  dynamicCategory.value = null
   loadingProduct.value = true
   try {
     const catSlug = String(route.params.category)
@@ -61,6 +67,8 @@ const fetchProductFromApi = async () => {
 onMounted(() => {
   fetchProductFromApi()
 })
+
+watch(() => [route.params.category, route.params.product], fetchProductFromApi)
 
 // --- Lógica para Especificaciones Tabulares ---
 const searchQuery = ref('')

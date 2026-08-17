@@ -175,7 +175,7 @@ onUnmounted(() => {
             :class="{ 'value-card--active': activeValue === value.id }"
           >
             <div class="value-card__icon">
-              <i :class="['fa-solid', value.icon]"></i>
+              <i :class="['fa-solid', value.icon || 'fa-star']"></i>
             </div>
             <h3 class="value-card__title">{{ value.title }}</h3>
             <p class="value-card__desc">{{ value.desc }}</p>

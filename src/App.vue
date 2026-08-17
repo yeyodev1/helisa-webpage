@@ -12,7 +12,13 @@ const userStore = useUserStore()
 
 const handleTokenExpired = () => {
   userStore.clear()
-  router.push('/login')
+  // Un token viejo/expirado en localStorage no debería sacar a un visitante
+  // anónimo de una página pública (Home, Productos, Nosotros...) — solo
+  // manda a /login si realmente está en una ruta que requiere sesión.
+  const requiresAuth = router.currentRoute.value.matched.some((record) => record.meta?.requiresAuth)
+  if (requiresAuth) {
+    router.push('/login')
+  }
 }
 
 onMounted(() => {

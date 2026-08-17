@@ -13,6 +13,10 @@ const staticProject = computed(() => staticProjects.find((p) => p.slug === Strin
 const project = computed(() => dynamicProject.value || staticProject.value)
 
 const fetchDynamicProject = async () => {
+  // Vue Router reuses this component instance when navigating between two
+  // /proyectos/:slug URLs, so without resetting this first, `project` above
+  // keeps showing the previous page's data while the new fetch is in flight.
+  dynamicProject.value = null
   try {
     const slug = String(route.params.slug || '')
     const p = await projectsService.getProjectBySlug(slug)
@@ -38,6 +42,8 @@ const fetchDynamicProject = async () => {
 onMounted(() => {
   fetchDynamicProject()
 })
+
+watch(() => route.params.slug, fetchDynamicProject)
 
 const mediaImages = computed(() => {
   const current = project.value

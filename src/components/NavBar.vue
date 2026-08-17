@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted, watch } from 'vue'
+import { ref, computed, onMounted, onUnmounted, watch } from 'vue'
 import { useRoute, RouterLink } from 'vue-router'
 
 const isScrolled = ref(false)
 const isMobileOpen = ref(false)
+const hasToken = ref(!!localStorage.getItem('access_token'))
 const route = useRoute()
 
 const handleScroll = () => {
@@ -18,11 +19,13 @@ onUnmounted(() => {
   window.removeEventListener('scroll', handleScroll)
 })
 
-// Close menu on route change
+// Close menu on route change, and re-check login state (login/logout always
+// navigate, so this is a reliable point to refresh it)
 watch(
   () => route.path,
   () => {
     isMobileOpen.value = false
+    hasToken.value = !!localStorage.getItem('access_token')
   }
 )
 
@@ -35,14 +38,17 @@ watch(isMobileOpen, (isOpen) => {
   }
 })
 
-const navLinks = [
-  { label: 'Inicio', to: '/' },
-  { label: 'Productos', to: '/productos' },
-  { label: 'Proyectos', to: '/proyectos' },
-  { label: 'Nosotros', to: '/nosotros' },
-  { label: 'Contacto', to: '/calificar' },
-  { label: 'Admin', to: '/admin' },
-]
+const navLinks = computed(() => {
+  const links = [
+    { label: 'Inicio', to: '/' },
+    { label: 'Productos', to: '/productos' },
+    { label: 'Proyectos', to: '/proyectos' },
+    { label: 'Nosotros', to: '/nosotros' },
+    { label: 'Contacto', to: '/calificar' },
+  ]
+  if (hasToken.value) links.push({ label: 'Admin', to: '/admin' })
+  return links
+})
 
 const isActive = (path: string) => route.path === path
 </script>

@@ -94,8 +94,22 @@ const selectCategory = async (slug: string) => {
   document.querySelector('.catalog-content')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
 }
 
+// Algunos enlaces de "productos relacionados" en las páginas de proyectos
+// (src/data/projects.ts) usan slugs cortos que nunca existieron como
+// categorías reales (p. ej. #ablandadores en vez de
+// #ablandadores-de-agua-automaticos). Sin este mapeo, ese enlace cae en el
+// fallback silencioso de abajo y muestra la primera categoría de la línea
+// en vez de la anunciada.
+const HASH_ALIASES: Record<string, string> = {
+  ablandadores: 'ablandadores-de-agua-automaticos',
+  bebederos: 'bebederos-y-dispensadores',
+  filtros: 'filtros-de-agua',
+  'esterilizacion-uv': 'lamparas-ultravioletas',
+}
+
 const setCategoryFromHash = () => {
-  const slug = route.hash.slice(1)
+  const rawSlug = route.hash.slice(1)
+  const slug = HASH_ALIASES[rawSlug] ?? rawSlug
   const category = allCategories.value.find((item) => item.slug === slug)
   if (!category) {
     activeCategorySlug.value = lineCategories.value[0]?.slug ?? ''

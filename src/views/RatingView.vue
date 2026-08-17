@@ -33,7 +33,7 @@ const toastMessage = ref('')
 const toastType = ref<'success' | 'error'>('success')
 
 const isFormValid = computed(() => {
-  return form.value.name.trim() !== '' && form.value.email.trim() !== ''
+  return form.value.name.trim() !== '' && form.value.email.trim() !== '' && form.value.sector.trim() !== ''
 })
 
 const showNotification = (message: string, type: 'success' | 'error' = 'success') => {
@@ -47,7 +47,7 @@ const showNotification = (message: string, type: 'success' | 'error' = 'success'
 
 const submitForm = async () => {
   if (!isFormValid.value) {
-    showNotification('Por favor, completa tu nombre y correo electrónico.', 'error')
+    showNotification('Por favor, completa tu nombre, correo electrónico y sector.', 'error')
     return
   }
 
