@@ -17,7 +17,7 @@ const getProjectBySlug = (slug: string) => projects.find((project) => project.sl
 const stats = [
   { value: '20+', label: 'Años de experiencia' },
   { value: '100%', label: 'Atención personalizada' },
-  { value: '24/7', label: 'Más de 50,000 productos vendidos' },
+  { value: '50K+', label: 'Más de 50,000 productos vendidos' },
   { value: '10K+', label: 'Clientes satisfechos' },
 ]
 
@@ -29,9 +29,10 @@ const services = [
 ]
 
 const featuredProjects = [
-  getProjectBySlug('petro-ecuador'),
-  getProjectBySlug('hospital-miguel-h-alcivar'),
-  getProjectBySlug('sonesta'),
+  getProjectBySlug('planta-envasadora-en-milagro'),
+  getProjectBySlug('agr-cola-dole'),
+  getProjectBySlug('centro-de-di-lisis'),
+  getProjectBySlug('celec'),
 ].filter((project): project is NonNullable<typeof project> => Boolean(project))
 
 onMounted(() => {
@@ -116,7 +117,8 @@ onUnmounted(() => {
               <i class="fa-solid fa-award"></i>
             </div>
             <div class="hero__badge-body">
-              <span class="hero__badge-label">Más de 20 años de experiencia</span>
+              <span class="hero__badge-number">23+</span>
+              <span class="hero__badge-label">Años de experiencia</span>
             </div>
           </div>
         </div>
@@ -192,9 +194,9 @@ onUnmounted(() => {
         </div>
         <div class="featured__grid">
           <article
-            v-for="(project, i) in featuredProjects"
+            v-for="project in featuredProjects"
             :key="project.title"
-            :class="['featured-card', 'reveal-item', { 'featured-card--large': i === 0 }]"
+            class="featured-card reveal-item"
             role="link"
             tabindex="0"
             @click="router.push(`/proyectos/${project.slug}`)"

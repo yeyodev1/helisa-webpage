@@ -6,13 +6,14 @@ import { categoriesService, type ApiCategory } from '@/services/categoriesServic
 import { projectsService, type ApiProject } from '@/services/projectsService'
 import { usersService, type ApiUser } from '@/services/usersService'
 import { uploadService } from '@/services/uploadService'
+import { aboutService, type ApiAbout } from '@/services/aboutService'
 import { useUserStore } from '@/stores/user'
 import type { ProductLine } from '@/data/productTypes'
 
 const router = useRouter()
 const userStore = useUserStore()
 
-const activeTab = ref<'products' | 'categories' | 'projects' | 'users'>('products')
+const activeTab = ref<'products' | 'categories' | 'projects' | 'users' | 'about'>('products')
 
 // Loading & Preview states
 const loading = ref(false)
@@ -108,6 +109,17 @@ const newFeature = ref('')
 const newSpecLabel = ref('')
 const newSpecValue = ref('')
 
+// Specs: modo "ficha técnica" (fila estructurada por sección)
+const specEntryMode = ref<'simple' | 'table'>('simple')
+const tableSpecForm = ref({
+  tamano: '',
+  conexion: '',
+  dimensiones: '',
+  botella: '',
+  carga: '',
+  peso: '',
+})
+
 // Category Form
 const isEditingCategory = ref(false)
 const currentCategoryId = ref<string | null>(null)
@@ -156,6 +168,22 @@ const userForm = ref({
   role: 'admin',
 })
 
+// About ("Nosotros") Form
+const savingAbout = ref(false)
+const uploadingAboutStoryImage = ref(false)
+const uploadingTimelineImageIndex = ref<number | null>(null)
+const aboutForm = ref<ApiAbout>({
+  storyImage: '',
+  storyParagraphs: ['', ''],
+  values: [
+    { title: '', desc: '', icon: 'fa-users' },
+    { title: '', desc: '', icon: 'fa-circle-check' },
+    { title: '', desc: '', icon: 'fa-heart' },
+    { title: '', desc: '', icon: 'fa-earth-americas' },
+  ],
+  timeline: [],
+})
+
 // Notification helper
 const notify = (type: 'success' | 'error', message: string) => {
   notification.value = { type, message }
@@ -174,16 +202,18 @@ const loadData = async () => {
 
   loading.value = true
   try {
-    const [prodsRes, catsRes, usersRes, projsRes] = await Promise.all([
+    const [prodsRes, catsRes, usersRes, projsRes, aboutRes] = await Promise.all([
       productsService.getProducts(),
       categoriesService.getCategories(),
       usersService.getUsers().catch(() => []),
       projectsService.getProjects({ all: true }).catch(() => []),
+      aboutService.getAbout().catch(() => null),
     ])
     products.value = prodsRes
     categories.value = catsRes
     users.value = usersRes
     projectsList.value = projsRes
+    if (aboutRes) aboutForm.value = aboutRes
   } catch (err: any) {
     if (err?.status === 401) {
       userStore.clear()
@@ -344,11 +374,122 @@ const removeSpec = (index: number) => {
   productForm.value.specs.splice(index, 1)
 }
 
+const resetTableSpecForm = () => {
+  tableSpecForm.value = { tamano: '', conexion: '', dimensiones: '', botella: '', carga: '', peso: '' }
+}
+
+const buildTableSpecValue = () => {
+  const f = tableSpecForm.value
+  const parts: string[] = []
+  if (f.conexion.trim()) parts.push(`Conexión ${f.conexion.trim()}`)
+  if (f.dimensiones.trim()) parts.push(`${f.dimensiones.trim()} mm`)
+  if (f.botella.trim()) parts.push(`Botella ${f.botella.trim()}`)
+  if (f.carga.trim()) parts.push(`Carga ${f.carga.trim()}`)
+  if (f.peso.trim()) parts.push(f.peso.trim())
+  return parts.join(' · ')
+}
+
+// Agrega una fila completa de ficha técnica (ej. tamaño 8x35 con todas sus columnas)
+const addTableSpec = () => {
+  const tamano = tableSpecForm.value.tamano.trim()
+  const value = buildTableSpecValue()
+  if (!tamano || !value) return
+  productForm.value.specs.push({ label: tamano, value })
+  resetTableSpecForm()
+}
+
+// Carga una especificación existente de vuelta en el formulario para corregirla y volver a agregarla
+const editSpec = (index: number) => {
+  const spec = productForm.value.specs[index]
+  if (!spec) return
+
+  if (spec.value.includes('·')) {
+    const fields = { tamano: spec.label, conexion: '', dimensiones: '', botella: '', carga: '', peso: '' }
+    for (const part of spec.value.split('·').map((p) => p.trim())) {
+      if (part.startsWith('Conexión ')) fields.conexion = part.replace('Conexión ', '').trim()
+      else if (part.startsWith('Botella ')) fields.botella = part.replace('Botella ', '').trim()
+      else if (part.startsWith('Carga ')) fields.carga = part.replace('Carga ', '').trim()
+      else if (/kg$/i.test(part)) fields.peso = part
+      else if (part.includes('x')) fields.dimensiones = part.replace(' mm', '').trim()
+    }
+    tableSpecForm.value = fields
+    specEntryMode.value = 'table'
+  } else {
+    newSpecLabel.value = spec.label
+    newSpecValue.value = spec.value
+    specEntryMode.value = 'simple'
+  }
+
+  productForm.value.specs.splice(index, 1)
+}
+
+// About ("Nosotros") helpers
+const handleAboutStoryImageSelect = async (e: Event) => {
+  const target = e.target as HTMLInputElement
+  if (!target.files || target.files.length === 0) return
+  const file = target.files[0]
+  if (!file) return
+
+  uploadingAboutStoryImage.value = true
+  try {
+    const [url] = await uploadService.uploadImages([file])
+    if (url) aboutForm.value.storyImage = url
+  } catch {
+    notify('error', 'Error al subir la imagen.')
+  } finally {
+    uploadingAboutStoryImage.value = false
+    target.value = ''
+  }
+}
+
+const handleTimelineImageSelect = async (e: Event, index: number) => {
+  const target = e.target as HTMLInputElement
+  if (!target.files || target.files.length === 0) return
+  const file = target.files[0]
+  if (!file) return
+
+  uploadingTimelineImageIndex.value = index
+  try {
+    const [url] = await uploadService.uploadImages([file])
+    const item = aboutForm.value.timeline[index]
+    if (url && item) item.image = url
+  } catch {
+    notify('error', 'Error al subir la imagen.')
+  } finally {
+    uploadingTimelineImageIndex.value = null
+    target.value = ''
+  }
+}
+
+const addTimelineItem = () => {
+  aboutForm.value.timeline.push({ year: '', title: '', desc: '', image: '' })
+}
+
+const removeTimelineItem = (index: number) => {
+  aboutForm.value.timeline.splice(index, 1)
+}
+
+const saveAbout = async () => {
+  savingAbout.value = true
+  try {
+    aboutForm.value = await aboutService.updateAbout(aboutForm.value)
+    notify('success', 'Contenido de "Nosotros" actualizado correctamente.')
+  } catch {
+    notify('error', 'Error al guardar el contenido de "Nosotros".')
+  } finally {
+    savingAbout.value = false
+  }
+}
+
 // Product Open Modal
 const openCreateProduct = () => {
   clearAllPendingPreviews()
   isEditingProduct.value = false
   currentProductId.value = null
+  specEntryMode.value = 'simple'
+  resetTableSpecForm()
+  newSpecLabel.value = ''
+  newSpecValue.value = ''
   const firstCat = categories.value.find(c => c.line === 'industrial')?.slug || ''
   productForm.value = {
     name: '',
@@ -369,6 +510,10 @@ const openEditProduct = (prod: ApiProduct) => {
   clearAllPendingPreviews()
   isEditingProduct.value = true
   currentProductId.value = prod._id || prod.slug || null
+  specEntryMode.value = 'simple'
+  resetTableSpecForm()
+  newSpecLabel.value = ''
+  newSpecValue.value = ''
   productForm.value = {
     name: prod.name,
     slug: prod.slug,
@@ -724,6 +869,14 @@ const executeDelete = async () => {
           <i class="fa-solid fa-users" />
           <span>Usuarios ({{ users.length }})</span>
         </button>
+        <button
+          type="button"
+          :class="['tab-item', { 'tab-item--active': activeTab === 'about' }]"
+          @click="activeTab = 'about'"
+        >
+          <i class="fa-solid fa-address-card" />
+          <span>Nosotros</span>
+        </button>
       </nav>
 
       <!-- TAB 1: PRODUCTS -->
@@ -952,6 +1105,145 @@ const executeDelete = async () => {
         </div>
       </section>
 
+      <!-- TAB 5: ABOUT ("NOSOTROS") -->
+      <section v-if="activeTab === 'about'" class="tab-panel">
+        <div class="tab-panel__top">
+          <h2>Contenido de la página "Nosotros"</h2>
+          <button type="button" class="btn btn--primary" :disabled="savingAbout" @click="saveAbout">
+            <i class="fa-solid fa-floppy-disk" />
+            <span>{{ savingAbout ? 'Guardando...' : 'Guardar Cambios' }}</span>
+          </button>
+        </div>
+
+        <div class="about-editor">
+          <div class="form-card">
+            <div class="form-card__head">
+              <span class="form-card__step">1</span>
+              <div class="form-card__head-text">
+                <h3>Nuestra Historia</h3>
+                <p>Imagen y párrafos de la sección "Nuestra esencia" en la página pública.</p>
+              </div>
+            </div>
+
+            <div class="flex-field">
+              <label>Imagen principal</label>
+              <div class="about-image-dropzone">
+                <div class="about-image-dropzone__preview">
+                  <img v-if="aboutForm.storyImage" :src="aboutForm.storyImage" alt="Imagen de historia" class="about-thumb about-thumb--lg" @click="previewImageUrl = aboutForm.storyImage" />
+                  <div v-else class="about-image-dropzone__placeholder">
+                    <i class="fa-regular fa-image" />
+                  </div>
+                </div>
+                <div class="about-image-dropzone__body">
+                  <label class="upload-dropzone upload-dropzone--compact">
+                    <input type="file" accept="image/*" class="upload-input-hidden" :disabled="uploadingAboutStoryImage" @change="handleAboutStoryImageSelect" />
+                    <div class="dropzone-content">
+                      <i class="fa-solid fa-cloud-arrow-up dropzone-icon" />
+                      <span class="dropzone-title">{{ aboutForm.storyImage ? 'Cambiar imagen' : 'Subir imagen' }}</span>
+                    </div>
+                  </label>
+                  <span v-if="uploadingAboutStoryImage" class="upload-hint">Subiendo imagen...</span>
+                </div>
+              </div>
+            </div>
+            <div class="flex-field" v-for="(_, i) in aboutForm.storyParagraphs" :key="i">
+              <label>Párrafo {{ i + 1 }}</label>
+              <textarea v-model="aboutForm.storyParagraphs[i]" rows="3" />
+            </div>
+          </div>
+
+          <div class="form-card">
+            <div class="form-card__head">
+              <span class="form-card__step">2</span>
+              <div class="form-card__head-text">
+                <h3>Pilares / Valores</h3>
+                <p>Las 4 tarjetas de valores que aparecen en la sección "Lo que nos mueve".</p>
+              </div>
+            </div>
+
+            <div class="value-edit-grid">
+              <div v-for="(value, i) in aboutForm.values" :key="i" class="value-edit-card">
+                <div class="value-edit-card__head">
+                  <span class="value-edit-card__icon-preview"><i :class="['fa-solid', value.icon || 'fa-star']" /></span>
+                  <span class="value-edit-card__index">Pilar {{ i + 1 }}</span>
+                </div>
+                <div class="flex-field">
+                  <label>Título</label>
+                  <input v-model="value.title" type="text" placeholder="Título del valor" />
+                </div>
+                <div class="flex-field">
+                  <label>Descripción</label>
+                  <input v-model="value.desc" type="text" placeholder="Descripción del valor" />
+                </div>
+                <div class="flex-field">
+                  <label>Ícono (Font Awesome)</label>
+                  <input v-model="value.icon" type="text" placeholder="ej. fa-heart" />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-card">
+            <div class="form-card__head">
+              <span class="form-card__step">3</span>
+              <div class="form-card__head-text">
+                <h3>Historia / Línea de Tiempo</h3>
+                <p>Los hitos que aparecen en orden en la sección "Nuestro camino".</p>
+              </div>
+            </div>
+
+            <div class="timeline-edit-list">
+              <div v-for="(item, i) in aboutForm.timeline" :key="i" class="timeline-edit-card">
+                <div class="timeline-edit-card__head">
+                  <span class="timeline-edit-card__index">Evento {{ i + 1 }}{{ item.year ? ` · ${item.year}` : '' }}</span>
+                  <button type="button" class="icon-btn icon-btn--danger" title="Eliminar evento" @click="removeTimelineItem(i)">
+                    <i class="fa-solid fa-trash" />
+                  </button>
+                </div>
+                <div class="timeline-edit-card__body">
+                  <div class="about-image-dropzone about-image-dropzone--compact">
+                    <div class="about-image-dropzone__preview">
+                      <img v-if="item.image" :src="item.image" alt="Imagen del evento" class="about-thumb" @click="previewImageUrl = item.image" />
+                      <div v-else class="about-image-dropzone__placeholder">
+                        <i class="fa-regular fa-image" />
+                      </div>
+                    </div>
+                    <label class="upload-dropzone upload-dropzone--compact">
+                      <input type="file" accept="image/*" class="upload-input-hidden" :disabled="uploadingTimelineImageIndex === i" @change="(e) => handleTimelineImageSelect(e, i)" />
+                      <div class="dropzone-content">
+                        <i class="fa-solid fa-cloud-arrow-up dropzone-icon" />
+                        <span class="dropzone-title">{{ item.image ? 'Cambiar' : 'Subir' }}</span>
+                      </div>
+                    </label>
+                    <span v-if="uploadingTimelineImageIndex === i" class="upload-hint">Subiendo...</span>
+                  </div>
+                  <div class="timeline-edit-card__fields">
+                    <div class="flex-row">
+                      <div class="flex-field">
+                        <label>Año</label>
+                        <input v-model="item.year" type="text" placeholder="ej. 2024" />
+                      </div>
+                      <div class="flex-field">
+                        <label>Título</label>
+                        <input v-model="item.title" type="text" placeholder="Título del evento" />
+                      </div>
+                    </div>
+                    <div class="flex-field">
+                      <label>Descripción</label>
+                      <textarea v-model="item.desc" rows="2" placeholder="Descripción del evento" />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <button type="button" class="btn btn--secondary" @click="addTimelineItem">
+              <i class="fa-solid fa-plus" />
+              <span>Agregar evento</span>
+            </button>
+          </div>
+        </div>
+      </section>
+
     </div>
 
     <!-- MODAL: PRODUCT -->
@@ -1094,18 +1386,72 @@ const executeDelete = async () => {
             </div>
           </div>
 
-          <!-- Specifications (Key/Value) -->
+          <!-- Specifications -->
           <div class="flex-field">
-            <label>Especificaciones Técnicas (Clave y Valor)</label>
-            <div class="input-inline">
-              <input v-model="newSpecLabel" type="text" placeholder="Etiqueta (ej. Voltaje)" />
-              <input v-model="newSpecValue" type="text" placeholder="Valor (ej. 110V / 220V)" />
+            <label>Especificaciones Técnicas</label>
+
+            <div class="spec-mode-toggle">
+              <button
+                type="button"
+                :class="['spec-mode-btn', { 'spec-mode-btn--active': specEntryMode === 'simple' }]"
+                @click="specEntryMode = 'simple'"
+              >
+                Especificación simple
+              </button>
+              <button
+                type="button"
+                :class="['spec-mode-btn', { 'spec-mode-btn--active': specEntryMode === 'table' }]"
+                @click="specEntryMode = 'table'"
+              >
+                Fila de ficha técnica
+              </button>
+            </div>
+
+            <!-- Modo simple: una etiqueta y un valor libre -->
+            <div v-if="specEntryMode === 'simple'" class="input-inline">
+              <input v-model="newSpecLabel" type="text" placeholder="Etiqueta (ej. Voltaje)" @keyup.enter.prevent="addSpec" />
+              <input v-model="newSpecValue" type="text" placeholder="Valor (ej. 110V / 220V)" @keyup.enter.prevent="addSpec" />
               <button type="button" class="btn btn--secondary" @click="addSpec">Agregar</button>
             </div>
+
+            <!-- Modo tabla: una fila de la ficha técnica, por sección -->
+            <div v-else class="table-spec-form">
+              <div class="table-spec-form__grid">
+                <div class="flex-field">
+                  <label>Tamaño (ej. 8x35)</label>
+                  <input v-model="tableSpecForm.tamano" type="text" placeholder="8x35" @keyup.enter.prevent="addTableSpec" />
+                </div>
+                <div class="flex-field">
+                  <label>Conexión superior/inferior</label>
+                  <input v-model="tableSpecForm.conexion" type="text" placeholder='2.5"/NA' @keyup.enter.prevent="addTableSpec" />
+                </div>
+                <div class="flex-field">
+                  <label>Diámetro x Altura (mm)</label>
+                  <input v-model="tableSpecForm.dimensiones" type="text" placeholder="203 x 889" @keyup.enter.prevent="addTableSpec" />
+                </div>
+                <div class="flex-field">
+                  <label>Volumen Botella (ft³)</label>
+                  <input v-model="tableSpecForm.botella" type="text" placeholder="0.88 ft3" @keyup.enter.prevent="addTableSpec" />
+                </div>
+                <div class="flex-field">
+                  <label>Carga (ft³)</label>
+                  <input v-model="tableSpecForm.carga" type="text" placeholder="0.66 ft3" @keyup.enter.prevent="addTableSpec" />
+                </div>
+                <div class="flex-field">
+                  <label>Peso (kg)</label>
+                  <input v-model="tableSpecForm.peso" type="text" placeholder="3.7 kg" @keyup.enter.prevent="addTableSpec" />
+                </div>
+              </div>
+              <button type="button" class="btn btn--secondary" @click="addTableSpec">Agregar fila a la ficha técnica</button>
+            </div>
+
             <div class="tags-column">
               <div v-for="(spec, idx) in productForm.specs" :key="idx" class="tag-chip">
                 <span><strong>{{ spec.label }}:</strong> {{ spec.value }}</span>
-                <button type="button" @click="removeSpec(idx)">×</button>
+                <div class="tag-chip__actions">
+                  <button type="button" title="Editar" @click="editSpec(idx)"><i class="fa-solid fa-pen" /></button>
+                  <button type="button" title="Eliminar" @click="removeSpec(idx)">×</button>
+                </div>
               </div>
             </div>
           </div>
@@ -1913,6 +2259,7 @@ const executeDelete = async () => {
 
 /* Cloudinary Upload Dropzone & Local Previews */
 .upload-dropzone {
+  display: block;
   position: relative;
   width: 100%;
   background: #f8fafc;
@@ -1923,6 +2270,10 @@ const executeDelete = async () => {
   cursor: pointer;
   transition: all 0.2s ease;
   box-sizing: border-box;
+
+  &--compact {
+    padding: 10px 14px;
+  }
 
   &:hover {
     background: #f0f7ff;
@@ -2240,6 +2591,62 @@ const executeDelete = async () => {
     font-weight: bold;
     cursor: pointer;
   }
+
+  &__actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-shrink: 0;
+
+    button:first-child {
+      color: #0052cc;
+      font-size: 0.9rem;
+    }
+  }
+}
+
+.spec-mode-toggle {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.spec-mode-btn {
+  padding: 8px 14px;
+  border-radius: 8px;
+  border: 1px solid #cbd5e1;
+  background: #f8fafc;
+  color: #475569;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &--active {
+    background: #0052cc;
+    border-color: #0052cc;
+    color: #ffffff;
+  }
+}
+
+.table-spec-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 16px;
+
+  &__grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 12px;
+
+    @media (min-width: 700px) {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
 }
 
 .btn {
@@ -2298,6 +2705,229 @@ const executeDelete = async () => {
     &:hover:not(:disabled) {
       background: #b92019;
     }
+  }
+}
+
+/* --- About ("Nosotros") Tab --- */
+.about-editor {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  width: 100%;
+}
+
+.form-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+
+  h3 {
+    margin: 0;
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: #0f172a;
+  }
+
+  &__head {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid #f1f5f9;
+  }
+
+  &__step {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    flex-shrink: 0;
+    border-radius: 50%;
+    background: #0052cc;
+    color: #ffffff;
+    font-size: 0.85rem;
+    font-weight: 700;
+  }
+
+  &__head-text {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+
+    p {
+      margin: 0;
+      font-size: 0.82rem;
+      color: #64748b;
+    }
+  }
+}
+
+.about-image-dropzone {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+
+  &--compact {
+    gap: 10px;
+    flex-direction: column;
+    align-items: flex-start;
+    flex-shrink: 0;
+
+    @media (min-width: 900px) {
+      width: 140px;
+    }
+  }
+
+  &__preview {
+    flex-shrink: 0;
+  }
+
+  &__placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 60px;
+    height: 60px;
+    border-radius: 8px;
+    border: 1px dashed #cbd5e1;
+    background: #f8fafc;
+    color: #94a3b8;
+    font-size: 1.2rem;
+  }
+
+  &__body {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-width: 180px;
+  }
+}
+
+.about-thumb {
+  width: 60px;
+  height: 60px;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+  cursor: pointer;
+  transition: transform 0.2s;
+  flex-shrink: 0;
+
+  &:hover {
+    transform: scale(1.1);
+  }
+
+  &--lg {
+    width: 140px;
+    height: 90px;
+  }
+}
+
+.upload-hint {
+  font-size: 0.82rem;
+  color: #0052cc;
+}
+
+.value-edit-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+
+  @media (min-width: 900px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.value-edit-card {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 16px;
+
+  &__head {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  &__icon-preview {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    background: #0052cc;
+    color: #ffffff;
+    font-size: 1rem;
+    flex-shrink: 0;
+  }
+
+  &__index {
+    font-size: 0.78rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #64748b;
+  }
+}
+
+.timeline-edit-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.timeline-edit-card {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 16px;
+  position: relative;
+
+  &__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  &__index {
+    font-size: 0.78rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #64748b;
+  }
+
+  &__body {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+
+    @media (min-width: 900px) {
+      flex-direction: row;
+      align-items: flex-start;
+    }
+  }
+
+  &__fields {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    flex: 1;
+    min-width: 0;
   }
 }
 

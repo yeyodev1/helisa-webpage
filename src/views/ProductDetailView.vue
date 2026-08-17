@@ -67,21 +67,44 @@ const searchQuery = ref('')
 const sortBy = ref<string | null>(null)
 const sortOrder = ref<'asc' | 'desc'>('asc')
 
+const SPEC_PART_MATCHERS: { header: string; test: (part: string) => boolean; extract: (part: string) => string }[] = [
+  {
+    header: 'Conexión superior/inferior',
+    test: (part) => part.startsWith('Conexión '),
+    extract: (part) => part.replace('Conexión ', '').trim(),
+  },
+  {
+    header: 'Diámetro x Altura (mm)',
+    test: (part) => part.includes('x') && (part.includes('mm') || part.includes('in') || part.includes('"')),
+    extract: (part) => part.replace(' mm', '').trim(),
+  },
+  {
+    header: 'Volumen Botella (ft³)',
+    test: (part) => part.startsWith('Botella '),
+    extract: (part) => part.replace('Botella ', '').trim(),
+  },
+  {
+    header: 'Carga (ft³)',
+    test: (part) => part.startsWith('Carga '),
+    extract: (part) => part.replace('Carga ', '').trim(),
+  },
+  {
+    header: 'Peso (kg)',
+    test: (part) => /kg$/i.test(part.trim()),
+    extract: (part) => part.trim(),
+  },
+]
+
 const parseSpecValue = (valStr: string) => {
-  const parts = valStr.split('·').map(part => part.trim())
+  const parts = valStr.split('·').map(part => part.trim()).filter(Boolean)
   const result = []
 
   for (const part of parts) {
-    if (part.startsWith('Conexión ')) {
-      result.push({
-        header: 'Conexion superior/inferior',
-        val: part.replace('Conexión ', '').trim()
-      })
-    } else if (part.includes('x') && (part.includes('mm') || part.includes('in') || part.includes('"'))) {
-      result.push({
-        header: 'Diametro x Altura (mm)',
-        val: part.replace(' mm', '').trim()
-      })
+    const matcher = SPEC_PART_MATCHERS.find((m) => m.test(part))
+    if (matcher) {
+      result.push({ header: matcher.header, val: matcher.extract(part) })
+    } else {
+      result.push({ header: 'Otro', val: part })
     }
   }
   return result
@@ -106,9 +129,15 @@ const parsedSpecs = computed(() => {
 
 const tableHeaders = computed(() => {
   if (!isTabularSpecs.value) return []
-  const firstTabular = parsedSpecs.value.find(s => s.parts.length > 1)
-  if (!firstTabular) return []
-  return ['Tamaño(pul)', ...firstTabular.parts.map(p => p.header)]
+  const headerOrder = SPEC_PART_MATCHERS.map((m) => m.header)
+  const seen = new Set<string>()
+  for (const row of parsedSpecs.value) {
+    for (const part of row.parts) seen.add(part.header)
+  }
+  if (seen.size === 0) return []
+  const ordered = headerOrder.filter((h) => seen.has(h))
+  const extra = [...seen].filter((h) => !headerOrder.includes(h))
+  return ['Tamaño(pul)', ...ordered, ...extra]
 })
 
 const filteredAndSortedSpecs = computed(() => {
@@ -274,12 +303,12 @@ watch([product, loadingProduct], ([value, isLoading]) => {
                   class="spec-table-row"
                 >
                   <td class="font-bold spec-model-cell">{{ row.label.replace(' - conexión 4"', '') }}</td>
-                  <td 
-                    v-for="(part, pIdx) in row.parts" 
-                    :key="pIdx"
-                    :data-label="part.header"
+                  <td
+                    v-for="header in tableHeaders.slice(1)"
+                    :key="header"
+                    :data-label="header"
                   >
-                    {{ part.val }}
+                    {{ row.parts.find((p) => p.header === header)?.val || '—' }}
                   </td>
                 </tr>
                 <tr v-if="filteredAndSortedSpecs.length === 0">

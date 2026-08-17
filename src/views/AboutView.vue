@@ -1,21 +1,28 @@
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, onMounted, onUnmounted, nextTick } from 'vue'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
+import { aboutService } from '@/services/aboutService'
 
 gsap.registerPlugin(ScrollTrigger)
 
 const triggers: ScrollTrigger[] = []
 const activeValue = ref<number | null>(null)
 
-const values = [
+const storyImage = ref('https://res.cloudinary.com/bmtcnrkr/image/upload/v1783372899/helisa/projects/imagen-agua.jpg')
+const storyParagraphs = ref<string[]>([
+  'HELISA representa el nacimiento de una vida más saludable. Nuestro propósito es ofrecer los mejores sistemas de tratamiento y purificación de agua y aire con respaldo de repuestos y atención personalizada en todo el Ecuador.',
+  'Para nosotros el agua es movimiento, dinamismo, salud y energía. Cada sistema que instalamos lleva esa filosofía: transformar espacios para que respires y bebas con confianza.',
+])
+
+const values = ref([
   { id: 1, title: 'Capital Humano', desc: 'Ambiente laboral excelente, proactivo e innovador.', icon: 'fa-users' },
   { id: 2, title: 'Productos y Servicios', desc: 'Alta calidad para ser líderes del mercado.', icon: 'fa-circle-check' },
   { id: 3, title: 'Responsabilidad Social', desc: 'Alianzas con fundaciones como Sembrando Sonrisas.', icon: 'fa-heart' },
   { id: 4, title: 'Planeta', desc: 'Responsabilidad ambiental ofreciendo agua y aire limpio.', icon: 'fa-earth-americas' },
-]
+])
 
-const timeline = [
+const timeline = ref([
   { year: '2003', title: 'Fundación de HELISA', desc: 'Apertura de nuestro primer local en Guayaquil, iniciando operaciones con la comercialización de equipos de tratamiento de agua y limpieza.', image: 'https://res.cloudinary.com/bmtcnrkr/image/upload/v1783372958/helisa/projects/edificio-helisa.jpg' },
   { year: '2004', title: 'Primer gran éxito', desc: 'Participación destacada en una feria internacional. El respaldo familiar y las ventas récord impulsaron de forma decisiva el posicionamiento de la marca.', image: '/images/nave-tarimas.jpg' },
   { year: '2005', title: 'Crecimiento continuo', desc: 'Gracias a nuestra mayor participación en el mercado, nos trasladamos a unas instalaciones más amplias en la Av. de las Américas para atender la creciente demanda.', image: '/images/patio-naves.webp' },
@@ -25,23 +32,11 @@ const timeline = [
   { year: '2021', title: 'Estándares de calidad', desc: 'Iniciamos el riguroso proceso de implementación de la normativa internacional ISO 9001:2015, reafirmando nuestro compromiso con la excelencia.', image: '/images/nave-tarimas.jpg' },
   { year: '2024', title: 'Expansión operativa', desc: 'Adquisición de nuestra Planta de Producción en el Parque Industrial Inmaconsa, fortaleciendo nuestra capacidad logística y de fabricación.', image: '/images/patio-naves.webp' },
   { year: 'Actualidad', title: 'Pensando en su bienestar', desc: 'Continuamos innovando y mejorando nuestros procesos cada día, brindando la mejor atención y tecnología enfocados siempre en la salud y satisfacción de nuestros clientes.', image: 'https://res.cloudinary.com/bmtcnrkr/image/upload/v1783372899/helisa/projects/imagen-agua.jpg' },
-]
+])
 
-onMounted(() => {
-  const tl = gsap.timeline()
-  tl.from('.hero-badge', { y: 20, opacity: 0, duration: 0.8, ease: 'power3.out' })
-    .from('.hero-title span > span', { y: 100, opacity: 0, duration: 1, stagger: 0.1, ease: 'power4.out', clipPath: 'inset(0% 0% 100% 0%)' }, '-=0.5')
-    .from('.hero-desc', { y: 20, opacity: 0, duration: 0.8, ease: 'power3.out' }, '-=0.6')
-
-  const storyTl = gsap.timeline({
-    scrollTrigger: { trigger: '.story', start: 'top 75%', toggleActions: 'play none none none' },
-  })
-  storyTl
-    .fromTo('.story__label', { y: 20, opacity: 0 }, { y: 0, opacity: 1, duration: 0.6 })
-    .fromTo('.story__title', { y: 40, opacity: 0 }, { y: 0, opacity: 1, duration: 0.8 }, '-=0.3')
-    .fromTo('.story__text p', { y: 24, opacity: 0 }, { y: 0, opacity: 1, duration: 0.8, stagger: 0.15 }, '-=0.4')
-    .fromTo('.story__visual', { scale: 1.05, opacity: 0, y: 40 }, { scale: 1, opacity: 1, y: 0, duration: 1, ease: 'power3.out' }, '-=0.6')
-  if (storyTl.scrollTrigger) triggers.push(storyTl.scrollTrigger)
+const replayAnimations = () => {
+  triggers.forEach((t) => t.kill())
+  triggers.length = 0
 
   document.querySelectorAll('.value-card').forEach((card, i) => {
     const tween = gsap.fromTo(card, {
@@ -62,6 +57,44 @@ onMounted(() => {
     })
     if (tween.scrollTrigger) triggers.push(tween.scrollTrigger)
   })
+
+  ScrollTrigger.refresh()
+}
+
+const loadAboutContent = async () => {
+  try {
+    const about = await aboutService.getAbout()
+    if (about.storyImage) storyImage.value = about.storyImage
+    if (about.storyParagraphs?.length) storyParagraphs.value = about.storyParagraphs
+    if (about.values?.length) {
+      values.value = about.values.map((v, i) => ({ id: i + 1, title: v.title, desc: v.desc, icon: v.icon }))
+    }
+    if (about.timeline?.length) timeline.value = about.timeline
+  } catch {
+    // Si la API falla, se mantiene el contenido estático por defecto
+  } finally {
+    await nextTick()
+    replayAnimations()
+  }
+}
+
+onMounted(() => {
+  loadAboutContent()
+
+  const tl = gsap.timeline()
+  tl.from('.hero-badge', { y: 20, opacity: 0, duration: 0.8, ease: 'power3.out' })
+    .from('.hero-title span > span', { y: 100, opacity: 0, duration: 1, stagger: 0.1, ease: 'power4.out', clipPath: 'inset(0% 0% 100% 0%)' }, '-=0.5')
+    .from('.hero-desc', { y: 20, opacity: 0, duration: 0.8, ease: 'power3.out' }, '-=0.6')
+
+  const storyTl = gsap.timeline({
+    scrollTrigger: { trigger: '.story', start: 'top 75%', toggleActions: 'play none none none' },
+  })
+  storyTl
+    .fromTo('.story__label', { y: 20, opacity: 0 }, { y: 0, opacity: 1, duration: 0.6 })
+    .fromTo('.story__title', { y: 40, opacity: 0 }, { y: 0, opacity: 1, duration: 0.8 }, '-=0.3')
+    .fromTo('.story__text p', { y: 24, opacity: 0 }, { y: 0, opacity: 1, duration: 0.8, stagger: 0.15 }, '-=0.4')
+    .fromTo('.story__visual', { scale: 1.05, opacity: 0, y: 40 }, { scale: 1, opacity: 1, y: 0, duration: 1, ease: 'power3.out' }, '-=0.6')
+  if (storyTl.scrollTrigger) triggers.push(storyTl.scrollTrigger)
 })
 
 onUnmounted(() => {
@@ -95,21 +128,15 @@ onUnmounted(() => {
           <span class="section-label story__label">Nuestra esencia</span>
           <h2 class="section-title story__title">Pensando en <span class="text-gradient">su bienestar</span></h2>
           <div class="story__paragraphs">
-            <p>
-              HELISA representa el nacimiento de una vida más saludable. Nuestro propósito es
-              ofrecer los mejores sistemas de tratamiento y purificación de agua y aire con
-              respaldo de repuestos y atención personalizada en todo el Ecuador.
-            </p>
-            <p>
-              Para nosotros el agua es movimiento, dinamismo, salud y energía. Cada sistema que
-              instalamos lleva esa filosofía: transformar espacios para que respires y bebas con confianza.
+            <p v-for="(paragraph, i) in storyParagraphs" :key="i">
+              {{ paragraph }}
             </p>
           </div>
         </div>
 
         <div class="story__visual">
           <div class="story__frame">
-            <img src="https://res.cloudinary.com/bmtcnrkr/image/upload/v1783372899/helisa/projects/imagen-agua.jpg" alt="Instalaciones HELISA" class="story__image" />
+            <img :src="storyImage" alt="Instalaciones HELISA" class="story__image" />
             <div class="story__badge story__badge--top">
               <span class="story__badge-dot"></span>
               <span class="story__badge-text">Ecuador</span>
